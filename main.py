@@ -26,7 +26,10 @@ def base_page():
   code = (request.data).decode()
 
   translator = Translator()
-  lua_code = translator.translate(code)
+  try:
+    lua_code = translator.translate(code)
+  except Exception as e:
+    return "CompileError!:"+str(e)
 
   return lua_code
 
