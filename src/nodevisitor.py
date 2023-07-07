@@ -329,7 +329,7 @@ class NodeVisitor(ast.NodeVisitor):
         self.visit_all(node.body)
         self.context.pop()
 
-        self.output[-1].append("::{}::".format(continue_label))
+        #self.output[-1].append("::{}::".format(continue_label))
 
         self.emit("end")
 
@@ -534,7 +534,7 @@ class NodeVisitor(ast.NodeVisitor):
         self.visit_all(node.body)
         self.context.pop()
 
-        self.output[-1].append("::{}::".format(continue_label))
+        #self.output[-1].append("::{}::".format(continue_label))
 
         self.emit("end")
 
