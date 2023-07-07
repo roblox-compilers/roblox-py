@@ -2,7 +2,7 @@
 Python compiler for roblox. 
 
 ## Dependencies
-- ``pip install pylint``
+- ``pip install --upgrade pyflakes``
 - ``pip install flask``
 
 ## Credits
