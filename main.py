@@ -19,7 +19,7 @@ class Reporter:
         @param msg: A message explaining the problem.
         @ptype msg: C{unicode}
         """
-        self.diagnostics.append(f"{filename}: {msg}\n")
+        self.diagnostics.append(f"1{filename}: {msg}\n")
 
     def syntaxError(self, filename, msg, lineno, offset, text):
         """
@@ -48,10 +48,10 @@ class Reporter:
         if offset is not None:
             # some versions of python emit an offset of -1 for certain encoding errors
             offset = max(offset, 1)
-            self.diagnostics.append('%s:%d:%d: %s\n' %
+            self.diagnostics.append('1%s:%d:%d: %s\n' %
                                (filename, lineno, offset, msg))
         else:
-            self.diagnostics.append('%s:%d: %s\n' % (filename, lineno, msg))
+            self.diagnostics.append('1%s:%d: %s\n' % (filename, lineno, msg))
 
         if line is not None:
             self.diagnostics.append(line)
@@ -66,7 +66,7 @@ class Reporter:
 
         @param: A L{pyflakes.messages.Message}.
         """
-        self.diagnostics.append(str(message))
+        self.diagnostics.append("2"+str(message))
         self.diagnostics.append('\n')
       
 app = Flask(__name__)
