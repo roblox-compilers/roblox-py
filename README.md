@@ -22,7 +22,7 @@ git clone https://github.com/AsynchronousAI/roblox.py/edit/main/README.md; cd ro
 If any issues occur here report it in github issues.
 
 ### #2 - Download client
-A download link is in the devforum post and releases, download the file and place it in your plugins folder. 
+A download link is in the releases, download the file and place it in your plugins folder. 
 
 You can check where your plugins folder is by:
 - opening Roblox Studio
