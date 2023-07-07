@@ -11,7 +11,7 @@ Heavily modified version of pythonlua.
 - [Highlighter](https://github.com/boatbomber/Highlighter)
 - [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus)
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua)
-
+  (read licenses in [copyright.txt](/copyright.txt))
 ## Guide
 ### #1 - Clone and start server
 ```
