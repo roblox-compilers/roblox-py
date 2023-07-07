@@ -14,7 +14,7 @@ Python compiler for Roblox.
 ### #1 - Clone and start server
 In the terminal write the following
 ```
-git clone https://github.com/AsynchronousAI/roblox.py/edit/main/README.md; cd roblox.py; python .
+git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python .
 ```
 
 > Note: This process will end whenever you restart your computer or close the terminal. We recommend using Replit instead.
