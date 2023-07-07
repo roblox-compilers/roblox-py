@@ -4,7 +4,8 @@ from pyflakes import api
 import re
 import os
 
-os.system()
+os.system("pip install --upgrade pyflakes")
+os.system("pip install flask")
 
 class Reporter:
     """
