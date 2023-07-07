@@ -2,8 +2,9 @@
 Python compiler for Roblox. 
 
 ## Dependencies
-- ``pip install --upgrade pyflakes``
-- ``pip install flask``
+- ``pip3 install --upgrade pyflakes``
+- ``pip3 install flask``
+- ``pip3 install yaml``
 
 ## Credits
 - [Highlighter](https://github.com/boatbomber/Highlighter)
@@ -12,11 +13,6 @@ Python compiler for Roblox.
 
 ## Guide
 ### #1 - Clone and start server
-In the terminal write the following (for python)
-```
-git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python .
-```
-and this for (python3)
 ```
 git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python3 .
 ```
