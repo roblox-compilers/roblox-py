@@ -98,7 +98,7 @@ def debug():
   print(num)
   return rep.diagnostics
 
-@app.route("/lib", methods=["GET", "POST"]) 
+@app.route("/lib", methods=["GET"]) 
 def library():
     return translator.getluainit()
 app.run(
