@@ -12,7 +12,7 @@ Python compiler for Roblox.
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes.
 
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
-## Guide
+## Plugin Guide
 ### #1 - Clone and start server
 ```
 git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python3 .
@@ -37,6 +37,8 @@ After installing the client open any place, make a new StringValue anywhere name
 
 ### #4 Open studio and test
 Open Roblox Studio, and select any location and click the roblox.py/Python icon in the plugins tab. A window for editing the plugin and a new script named "Script.py" should appear in the explorer.
+
+## CLI Coming soon
 
 ### Learn more
 Learn more in the devforum post.
