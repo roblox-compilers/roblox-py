@@ -1,16 +1,15 @@
 # roblox.py
 Python compiler for Roblox. 
 
-Heavily modified version of pythonlua.
 ## Dependencies
 - ``pip3 install --upgrade pyflakes``
 - ``pip3 install flask``
 - ``pip3 install pyyaml``
 
 ## Credits
-- [Highlighter](https://github.com/boatbomber/Highlighter)
-- [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus)
-- [pythonlua](https://github.com/dmitrii-eremin/python-lua)
+- [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python
+- [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus). uses a modified version with autocomplete
+- [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes.
 
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
 ## Guide
