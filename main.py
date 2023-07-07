@@ -87,7 +87,7 @@ def base_page():
 def debug():
   code = (request.data).decode()
   rep = Reporter()
-  num = str(api.check(code, "%s", rep))
+  num = str(api.check(code, "roblox.py", rep))
   print(num)
   return rep.diagnostics
 app.run(
