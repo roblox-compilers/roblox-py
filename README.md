@@ -4,7 +4,7 @@ Python compiler for Roblox.
 ## Dependencies
 - ``pip3 install --upgrade pyflakes``
 - ``pip3 install flask``
-- ``pip3 install yaml``
+- ``pip3 install pyyaml``
 
 ## Credits
 - [Highlighter](https://github.com/boatbomber/Highlighter)
