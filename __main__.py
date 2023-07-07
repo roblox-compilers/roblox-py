@@ -71,12 +71,12 @@ class Reporter:
         self.diagnostics.append('\n')
       
 app = Flask(__name__)
+translator = Translator()
 
 @app.route('/', methods=["GET", "POST"]) 
 def base_page():
   code = (request.data).decode()
 
-  translator = Translator()
   try:
     lua_code = '--// Compiled using Roblox.py \\--\n\n\n------------------------------------ BUILT IN -------------------------------\nlocal stringmeta, list, dict, staticmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map = unpack(require(game.ReplicatedStorage["Roblox.py"])(script))\n-----------------------------------------------------------------------------'+translator.translate(code)
   except Exception as e:
@@ -91,6 +91,10 @@ def debug():
   num = str(api.check(code, "roblox.py", rep))
   print(num)
   return rep.diagnostics
+
+@app.route("/lib", methods=["GET", "POST"]) 
+def library():
+    return translator.getluainit()
 app.run(
  host='0.0.0.0', 
  port=5555 
