@@ -1,9 +1,4 @@
 import os
-
-os.system("pip install --upgrade pyflakes")
-os.system("pip install flask")
-
-
 from flask import Flask, request
 from src.translator import Translator
 from pyflakes import api
