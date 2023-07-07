@@ -1,5 +1,5 @@
 # roblox.py
-Python compiler for roblox. 
+Python compiler for Roblox. 
 
 ## Dependencies
 - ``pip install --upgrade pyflakes``
@@ -17,18 +17,25 @@ In the terminal write the following
 git clone https://github.com/AsynchronousAI/roblox.py/edit/main/README.md; cd roblox.py; python .
 ```
 
-If any issues occur here report it in issues.
+> Note: This process will end whenever you restart your computer or close the terminal. We recommend using Replit instead.
+
+If any issues occur here report it in github issues.
 
 ### #2 - Download client
 A download link is in the devforum post and releases, download the file and place it in your plugins folder. 
 
 You can check where your plugins folder is by:
 - opening Roblox Studio
-- clicking the Plugins folder icon in the topbar
+- clicking the Plugins folder icon in the top bar
 - and clicking "Plugins Folder"
 
-### #3 Open studio and test
-Open roblox studio, and select any location and click the roblox.py/Python icon in the plugins tab. A window for editing the plugin and a new script named "Script.py" should appear in the explorer.
+### #3 Configuring the client
+After installing the client open any place, make a new StringValue anywhere named "ROBLOXPY_CONFIG" with its value being the url and then press the roblox.py/Python icon in the plugins tab.
+
+> Note: If you are hosting on a personal computer this step may not be needed because the url is defaulted to localhost:5555
+
+### #4 Open studio and test
+Open Roblox Studio, and select any location and click the roblox.py/Python icon in the plugins tab. A window for editing the plugin and a new script named "Script.py" should appear in the explorer.
 
 ### Learn more
 Learn more in the devforum post.
