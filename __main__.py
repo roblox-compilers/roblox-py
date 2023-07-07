@@ -76,9 +76,15 @@ translator = Translator()
 @app.route('/', methods=["GET", "POST"]) 
 def base_page():
   code = (request.data).decode()
-
+  script_name = os.path.realpath(__file__)
+  folder = os.path.dirname(script_name)
+  luainit_path = os.path.join(folder, "header.lua")
+  header = ""
+  with open(luainit_path) as file:
+    header = file.read()
+      
   try:
-    lua_code = '--// Compiled using Roblox.py \\--\n\n\n------------------------------------ BUILT IN -------------------------------\nlocal stringmeta, list, dict, staticmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map = unpack(require(game.ReplicatedStorage["Roblox.py"])(script))\n-----------------------------------------------------------------------------'+translator.translate(code)
+    lua_code = header+translator.translate(code)
   except Exception as e:
     return "CompileError!:"+str(e)
 
