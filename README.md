@@ -1,6 +1,7 @@
 # roblox.py
 Python compiler for Roblox. 
 
+Heavily modified version of pythonlua.
 ## Dependencies
 - ``pip3 install --upgrade pyflakes``
 - ``pip3 install flask``
