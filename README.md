@@ -12,7 +12,7 @@ Heavily modified version of pythonlua.
 - [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus)
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua)
 
-  (read licenses in [copyright.txt](/copyright.txt))
+  (read licenses in [copyright.txt](/COPYRIGHTS.txt))
 ## Guide
 ### #1 - Clone and start server
 ```
