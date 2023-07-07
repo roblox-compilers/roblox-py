@@ -3,6 +3,7 @@ from flask import Flask, request
 from src.translator import Translator
 from pyflakes import api
 import re
+import sys
 
 class Reporter:
     """
@@ -69,7 +70,8 @@ class Reporter:
         """
         self.diagnostics.append("2"+str(message))
         self.diagnostics.append('\n')
-      
+
+
 app = Flask(__name__)
 translator = Translator()
 
