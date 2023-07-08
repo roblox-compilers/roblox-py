@@ -10,13 +10,69 @@
 
 local module = {}
 local string_meta = {}
+local slicefun = function (sequence, start, stop, step) -- slice
+	local sliced = {}
+	local len = #sequence
+
+	-- Set default values for start, stop, and step
+	start = start or 1
+	stop = stop or len
+	step = step or 1
+
+	-- Handle negative indices
+	if start < 0 then
+		start = len + start + 1
+	end
+	if stop < 0 then
+		stop = len + stop + 1
+	end
+
+	-- Adjust start and stop values if they are out of bounds
+	if start < 1 then
+		start = 1
+	elseif start > len then
+		start = len + 1
+	end
+	if stop < 1 then
+		stop = 1
+	elseif stop > len then
+		stop = len + 1
+	end
+
+	-- Build the sliced table
+	for i = start, stop - 1, step do
+		table.insert(sliced, sequence[i])
+	end
+
+	-- Return the sliced table as a string if the input was a string
+	if typeof(sequence) == "string" then
+		return table.concat(sliced)
+	end
+
+	return sliced
+end
 setmetatable(string_meta, {
 	__add = function(v1, v2)
-		if type(v1) == "string" and type(v2) == "string" then
+		if typeof(v1) == "string" and typeof(v2) == "string" then
 			return v1 .. v2
 		end
 		return v1 + v2
-	end
+	end,
+	__index = function(self, index)
+		if typeof(index) == "string" then
+			-- if it start with SLICE! then it is a slice, get the start, stop, and step values. sometimes the 3rd value is not there, so we need to check for that
+			if string.sub(index, 1, 6) == "SLICE!" then
+				local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+				if not step then
+					start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+					step = 1
+				end
+				return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+			end
+			end
+		end
+	end,
+
 })
 local list = {}
 setmetatable(list, {
@@ -120,11 +176,22 @@ setmetatable(list, {
 
 		setmetatable(result, {
 			__index = function(self, index)
-				if type(index) == "number" then
+				if typeof(index) == "number" then
 					if index < 0 then
 						index = #result._data + index
 					end
 					return rawget(result._data, index + 1)
+				end
+				if typeof(index) == "string" then
+					-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+					if string.sub(index, 1, 6) == "SLICE!" then
+						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+						if not step then
+							start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+							step = 1
+						end
+						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+					end
 				end
 
 				return methods[index]
@@ -245,6 +312,17 @@ setmetatable(dict, {
 
 		setmetatable(result, {
 			__index = function(self, index)
+				if typeof(index) == "string" then
+					-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+					if string.sub(index, 1, 6) == "SLICE!" then
+						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+						if not step then
+							start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+							step = 1
+						end
+						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+					end
+				end
 				if result._data[index] ~= nil then
 					return result._data[index]
 				end
@@ -303,7 +381,7 @@ local module = function(self)
 				setmetatable(object, {
 					__index = function(tbl, idx)
 						local method = c[idx]
-						if type(method) == "function" then
+						if typeof(method) == "function" then
 							return function(...)
 								return c[idx](object, ...) 
 							end
@@ -313,7 +391,7 @@ local module = function(self)
 					end,
 				})
 
-				if type(object.__init__) == "function" then
+				if typeof(object.__init__) == "function" then
 					object.__init__(...)
 				end
 
@@ -458,7 +536,25 @@ local module = function(self)
 			end
 
 			return result
-		end
+		end,
+		function(x) -- bool
+			if x == false or x == nil or x == 0 then
+				return false
+			end
+		
+			if typeof(x) == "table" then
+				if x._is_list or x._is_dict then
+					return next(x._data) ~= nil
+				end
+			end
+		
+			return true
+		end,
+		function(a, b) -- divmod
+			local res = { math.floor(a / b), math.fmod(a, b) }
+			return unpack(res)
+		end,
+		slicefun,		
 	}
 end
 

@@ -97,6 +97,128 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit break"""
         self.emit("break")
 
+    def visit_Slice(self, node):
+        if node.step is None:
+            line = '"SLICE!({start}, {end})"'
+        else:
+            line = '"SLICE!({start}, {end}, {step})"'
+        values = {
+            "start": self.visit_all(node.lower, True),
+            "end": self.visit_all(node.upper, True),
+            "step": self.visit_all(node.step, True),
+        }
+        self.emit(line.format(**values))
+
+    def visit_JoinedStr(self, node):
+        """Visit joined string"""
+        values = [self.visit_all(value, True) for value in node.values]
+        self.emit('.'.join(values))
+    
+    def visit_Bytes(self, node):
+        """Visit bytes"""
+        #remove first letter from string
+        self.emit(str(node.s)[1:])
+    
+    def visit_Try(self, node):
+        """Visit try"""
+        self.emit("local success, result = pcall(function()")
+        self.visit_all(node.body)
+        self.emit("end)")
+    
+    def visit_ExceptHandler(self, node):
+        """Visit except handler"""
+        self.emit("if not success then")
+        self.emit("local "+node.name + " = result")
+        self.visit_all(node.body)
+        self.emit("end")
+
+    def visit_AsyncFunctionDef(self, node):
+        """Visit async function definition"""
+        line = "{local}{name} = function({arguments})spawn(function()"
+
+        last_ctx = self.context.last()
+
+        name = node.name
+        if last_ctx["class_name"]:
+            name = ".".join([last_ctx["class_name"], name])
+
+        arguments = [arg.arg for arg in node.args.args]
+
+        if node.args.vararg is not None:
+            arguments.append("...")
+
+        local_keyword = ""
+
+        if "." not in name and not last_ctx["locals"].exists(name):
+            local_keyword = "local "
+            last_ctx["locals"].add_symbol(name)
+
+        function_def = line.format(local=local_keyword,
+                                   name=name,
+                                   arguments=", ".join(arguments))
+
+        self.emit(function_def)
+
+        self.context.push({"class_name": ""})
+        self.visit_all(node.body)
+        self.context.pop()
+
+        body = self.output[-1]
+
+        if node.args.vararg is not None:
+            line = "local {name} = list {{...}}".format(name=node.args.vararg.arg)
+            body.insert(0, line)
+
+        arg_index = -1
+        for i in reversed(node.args.defaults):
+            line = "{name} = {name} or {value}"
+
+            arg = node.args.args[arg_index]
+            values = {
+                "name": arg.arg,
+                "value": self.visit_all(i, inline=True),
+            }
+            body.insert(0, line.format(**values))
+
+            arg_index -= 1
+
+        self.emit("end)end")
+
+        for decorator in reversed(node.decorator_list):
+            decorator_name = self.visit_all(decorator, inline=True)
+            values = {
+                "name": name,
+                "decorator": decorator_name,
+            }
+            line = "{name} = {decorator}({name})".format(**values)
+            self.emit(line)
+    def visit_AsyncFor(self, node):
+        """Visit async for"""
+        line = "spawn(function() for {target} in {iter} do"
+        values = {
+            "target": self.visit_all(node.target, True),
+            "iter": self.visit_all(node.iter, True),
+        }
+        self.emit(line.format(**values))
+        self.visit_all(node.body)
+        self.emit("end end)")
+
+    def visit_Raise(self, node):
+        """Visit raise"""
+        self.emit("error(" + self.visit_all(node.exc, True) + ")")
+
+    def visit_FormattedValue(self, node):
+        """Visit formatted value"""
+        if node.format_spec is None:
+            return self.visit_all(node.value, True)
+        else:
+            return self.visit_all(node.value, True) + ":" + self.visit_all(node.format_spec, True)
+        
+    def visit_Set(self, node):
+        """Visit set"""
+        values = [self.visit_all(value, True) for value in node.elts]
+        self.emit('{' + ', '.join(values) + '}')
+
     def visit_Call(self, node):
         """Visit function call"""
         line = "{name}({arguments})"
@@ -562,6 +684,8 @@ class NodeVisitor(ast.NodeVisitor):
 
     def generic_visit(self, node):
         """Unknown nodes handler"""
+        if node is None:
+            return
         raise RuntimeError("Unknown node: {}".format(node))
 
     def visit_all(self, nodes, inline=False):
