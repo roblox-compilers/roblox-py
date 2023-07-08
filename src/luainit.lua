@@ -848,9 +848,9 @@ local module = function(self)
 			return attributes
 		end,
 		
-		__import__ = require,
+		require,
 		
-		classes = ([[object
+		([[object
 		type
 		int
 		float
@@ -958,8 +958,6 @@ local module = function(self)
 		GeneratorWrapperType
 		AsyncGeneratorWrapperType
 		AsyncContextManagerWrapperType]]):split("\t")
-
-  
 	}
 end
 
