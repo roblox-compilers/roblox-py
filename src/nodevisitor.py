@@ -123,7 +123,7 @@ class NodeVisitor(ast.NodeVisitor):
         return self.visit_all(node.pattern, inline=True)
     
     ### END MATCH ###
-    def visit_AnnAssign(self, node): # NOTE: Add class support for Luau soon.
+    def visit_AnnAssign(self, node): 
         """Visit annassign"""
         target = self.visit_all(node.target, inline=True)
         value = self.visit_all(node.value, inline=True)
@@ -139,9 +139,10 @@ class NodeVisitor(ast.NodeVisitor):
             local_keyword = "local "
             last_ctx["locals"].add_symbol(target)
 
-        self.emit("{local}{target} = {value}".format(local=local_keyword,
+        self.emit("{local}{target}: {type} = {value}".format(local=local_keyword,
                                                      target=target,
-                                                     value=value))
+                                                     value=value,
+                                                     type=self.visit_all(node.annotation, inline=True)))
         # example input:
         # a: int = 1
         # example output:
@@ -255,6 +256,42 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("local success, result = pcall(function()")
         self.visit_all(node.body)
         self.emit("end)")
+    
+    def visit_TryStar(self, node):
+        """Visit try"""
+        self.emit("local success, result = pcall(function()")
+        self.visit_all(node.body)
+        self.emit("end)")
+
+    def visit_ImportFrom(self, node):
+        """Visit import from"""
+        module = node.module
+        if module is None:
+            module = ""
+        else:
+            module = module + "."
+
+        for name in node.names:
+            if name.asname is None:
+                self.emit("local {name} = require('{module}{name}')".format(
+                    name=name.name,
+                    module=module,
+                ))
+            else:
+                self.emit("local {name} = require('{module}{name}')".format(
+                    name=name.asname,
+                    module=module,
+                ))
+
+    def visit_Assert(self, node):
+        """Visit assert"""
+        self.emit("assert({})".format(self.visit_all(node.test, True)))
+
+    def visit_Nonlocal(self, node):
+        """Visit nonlocal"""
+        for name in node.names:
+            self.context.last()["nonlocals"].add_symbol(name)
+
     
     def visit_ExceptHandler(self, node):
         """Visit except handler"""
@@ -585,7 +622,6 @@ class NodeVisitor(ast.NodeVisitor):
         #self.output[-1].append("::{}::".format(continue_label))
 
         self.emit("end")
-
     def visit_Global(self, node):
         """Visit globals"""
         last_ctx = self.context.last()
