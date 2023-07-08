@@ -161,7 +161,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_AsyncFunctionDef(self, node):
         """Visit async function definition"""
-        line = "{local}{name} = function({arguments})asynchronousfunction(function()"
+        line = "{local}{name} = asynchronousfunction(function({arguments})"
 
         last_ctx = self.context.last()
 
@@ -209,7 +209,7 @@ class NodeVisitor(ast.NodeVisitor):
 
             arg_index -= 1
 
-        self.emit("end)end")
+        self.emit("end)")
 
         for decorator in reversed(node.decorator_list):
             decorator_name = self.visit_all(decorator, inline=True)
