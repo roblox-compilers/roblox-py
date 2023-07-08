@@ -404,7 +404,7 @@ local module = function(self)
 		end,
 		function(s, e) -- range()
 			local tb = {}
-			for i = if not e then 1 else s, if not e then s else e do
+			for i = (if not e then 1 else s), (if not e then s else e) do
 				tb[#tb+1] = i
 			end
 			return tb
@@ -643,18 +643,18 @@ local module = function(self)
 		-- oct()
 		function (num) --oct
 			return string.format("%o", num)
-		end
+		end,
 
 		-- open()
 		function (filename, mode) --open
 			if not io then error("io is not enabled") end
 			return io.open(filename, mode)
-		end
+		end,
 
 		-- ord()
 		function (c) --ord
 			return string.byte(c)
-		end
+		end,
 
 		-- pow()
 		function (base, exponent, modulo) --pow
@@ -663,17 +663,17 @@ local module = function(self)
 			else
 				return base ^ exponent
 			end
-		end
+		end,
 
 		-- eval()
 		function (expr, env)
 			return loadstring(expr)()
-		end
+		end,
 
 		-- exec()
 		function (code, env)
 			return loadstring(expr)()
-		end
+		end,
 
 		-- filter()
 		function (predicate, iterable)
@@ -684,7 +684,7 @@ local module = function(self)
 				end
 			end
 			return result
-		end
+		end,
 
 		-- frozenset()
 		function (...)
@@ -695,8 +695,165 @@ local module = function(self)
 			end
 			return frozenSet
 		end,
+		-- aiter()
+		function (iterable) -- aiter
+			return pairs(iterable)
+		end,
 		
+		-- bin()
+		function (number) -- bin
+			return string.format("%b", number)
+		end,
+		-- complex() 
+		function (real, imag) -- complex
+			return { real = real, imag = imag }
+		end,
+		
+		-- delattr()
+		function (object, attribute) -- delattr
+			object[attribute] = nil
+		end,	
+
+		-- enumerate()
+		function (iterable) -- enumerate
+			local i = 0
+			return function()
+			i = i + 1
+			local value = iterable[i]
+			if value ~= nil then
+				return i, value
+			end
+			end
+		end,
+
+		-- breakpoint()
+		function () -- breakpoint
+			-- This function can be left empty or you can add a debug hook to pause execution.
+			-- Here's an example using the debug library to pause execution:
+			debug.sethook(function()
+			io.write("Breakpoint hit! Press Enter to continue...")
+			io.read() -- Wait for user input to continue
+			end, "c")
+		end,
+		
+		-- bytearray()
+		function (arg) -- bytearray
+			if type(arg) == "string" then
+			local bytes = {}
+			for i = 1, #arg do
+				table.insert(bytes, string.byte(arg, i))
+			end
+			return bytes
+			elseif type(arg) == "number" then
+			local bytes = {}
+			while arg > 0 do
+				table.insert(bytes, 1, arg % 256)
+				arg = math.floor(arg / 256)
+			end
+			return bytes
+			elseif type(arg) == "table" then
+			return arg -- Assuming it's already a bytearray table
+			else
+			error("Invalid argument type for bytearray()")
+			end
+		end,
+		
+		-- bytes()
+		function (arg) -- bytes
+			if type(arg) == "string" then
+			local bytes = {}
+			for i = 1, #arg do
+				table.insert(bytes, string.byte(arg, i))
+			end
+			return bytes
+			elseif type(arg) == "table" then
+			return arg -- Assuming it's already a bytes table
+			else
+			error("Invalid argument type for bytes()")
+			end
+		end,
+		
+		-- compile()
+		function (source, filename, mode) -- compile
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of a simple compilation to execute Lua code directly:
+			local compiledFunction = loadstring(source, filename)
+			return compiledFunction
+		end,
+
+		
+		-- help()
+		function (object) -- help
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of displaying a help message for an object:
+			print("Help for object:", object)
+			print("Type:", type(object))
+			-- Add more information or documentation here
+		end,
+		
+		-- memoryview()
+		function (object) -- memoryview
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of creating a memory view object:
+			if type(object) == "table" then
+			local buffer = table.concat(object)
+			return { buffer = buffer, itemsize = 1 }
+			else
+			error("Invalid argument type for memoryview()")
+			end
+		end,
+		-- repr()
+		function (object) -- repr
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of generating a representation of an object:
+			return tostring(object)
+		end,
+		
+		-- sorted()
+		function (iterable, cmp, key, reverse) -- sorted
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of sorting an iterable table:
+			local sortedTable = {}
+			for key, value in pairs(iterable) do
+			table.insert(sortedTable, { key = key, value = value })
+			end
+			table.sort(sortedTable, function(a, b)
+			-- Compare logic based on cmp, key, reverse parameters
+			return a.key < b.key
+			end)
+			local i = 0
+			return function()
+			i = i + 1
+			local entry = sortedTable[i]
+			if entry then
+				return entry.key, entry.value
+			end
+			end
+		end,
+		
+		-- vars()
+		function (object) -- vars
+			-- This is a placeholder implementation and might not cover all possible use cases.
+			-- You would need to provide your own implementation based on your specific requirements.
+			-- Here's an example of getting the attributes of an object:
+			local attributes = {}
+			for key, value in pairs(object) do
+			attributes[key] = value
+			end
+			return attributes
+		end,
+		
+		__import__ = require
+		
+  
 	}
 end
+
+
 
 return module
