@@ -581,7 +581,121 @@ local module = function(self)
 			elseif values["default"] then
 				return values["default"]() 
 			end
+		end,
+		
+		function (iterator) -- anext
+			local status, value = pcall(iterator)
+			if status then
+				return value
+			end
+		end,
+
+		function (obj) -- ascii
+			return string.format("%q", tostring(obj))
+		end,
+		function (obj) -- dir
+			local result = {}
+			for key, _ in pairs(obj) do
+				table.insert(result, key)
+			end
+			return result
+		end,
+		function (obj, name, default) -- getattr
+			local value = obj[name]
+			if value == nil then
+				return default
+			end
+			return value
+		end,
+		function () -- globals
+			return _G
+		end,
+		function (obj, name) --hasattr
+			return obj[name] ~= nil
+		end,
+		function (prompt) -- input
+			if not io then error("io is not enabled") end
+			io.write(prompt)
+			return io.read()
+		end,
+		function (obj, class) -- isinstance
+			return type(obj) == class
+		end,
+		function (cls, classinfo) -- issubclass
+			local mt = getmetatable(cls)
+			while mt do
+				if mt.__index == classinfo then
+					return true
+				end
+				mt = getmetatable(mt.__index)
+			end
+			return false
+		end,
+		function (obj) -- iter
+			if type(obj) == "table" and obj.__iter__ ~= nil then
+				return obj.__iter__
+			end
+			return nil
+		end,
+		function () -- locals
+			return _G
+		end,
+		-- oct()
+		function (num) --oct
+			return string.format("%o", num)
 		end
+
+		-- open()
+		function (filename, mode) --open
+			if not io then error("io is not enabled") end
+			return io.open(filename, mode)
+		end
+
+		-- ord()
+		function (c) --ord
+			return string.byte(c)
+		end
+
+		-- pow()
+		function (base, exponent, modulo) --pow
+			if modulo ~= nil then
+				return math.pow(base, exponent) % modulo
+			else
+				return base ^ exponent
+			end
+		end
+
+		-- eval()
+		function (expr, env)
+			return loadstring(expr)()
+		end
+
+		-- exec()
+		function (code, env)
+			return loadstring(expr)()
+		end
+
+		-- filter()
+		function (predicate, iterable)
+			local result = {}
+			for _, value in ipairs(iterable) do
+				if predicate(value) then
+					table.insert(result, value)
+				end
+			end
+			return result
+		end
+
+		-- frozenset()
+		function (...)
+			local elements = {...}
+			local frozenSet = {}
+			for _, element in ipairs(elements) do
+				frozenSet[element] = true
+			end
+			return frozenSet
+		end,
+		
 	}
 end
 
