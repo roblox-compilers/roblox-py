@@ -554,7 +554,20 @@ local module = function(self)
 			local res = { math.floor(a / b), math.fmod(a, b) }
 			return unpack(res)
 		end,
-		slicefun,		
+		slicefun,	
+		function (item, items) -- operator_in()
+			if type(items) == "table" then
+				for v in items do
+					if v == item then
+						return true
+					end
+				end
+			elseif type(items) == "string" and type(item) == "string" then
+				return string.find(items, item, 1, true) ~= nil
+			end
+		
+			return false
+		end	
 	}
 end
 
