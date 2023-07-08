@@ -97,6 +97,33 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit break"""
         self.emit("break")
 
+    def visit_AsyncWith(self, node):
+        """Visit async with"""
+        """Visit with"""
+        self.emit("coroutine.wrap(function()")
+
+        self.visit_all(node.body)
+
+        body = self.output[-1]
+        lines = []
+        for i in node.items:
+            line = ""
+            if i.optional_vars is not None:
+                line = "local {} = "
+                line = line.format(self.visit_all(i.optional_vars,
+                                                  inline=True))
+            line += self.visit_all(i.context_expr, inline=True)
+            lines.append(line)
+
+        for line in lines:
+            body.insert(0, line)
+
+        self.emit("end)()")
+
+    def visit_Await(self, node):
+        """Visit await"""
+        self.emit("coroutine.yield({})".format(self.visit_all(node.value, True)))
+
     def visit_Slice(self, node):
         if node.step is None:
             line = '"SLICE!({start}, {end})"'
@@ -134,7 +161,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_AsyncFunctionDef(self, node):
         """Visit async function definition"""
-        line = "{local}{name} = function({arguments})spawn(function()"
+        line = "{local}{name} = function({arguments})asynchronousfunction(function()"
 
         last_ctx = self.context.last()
 
@@ -194,7 +221,7 @@ class NodeVisitor(ast.NodeVisitor):
             self.emit(line)
     def visit_AsyncFor(self, node):
         """Visit async for"""
-        line = "spawn(function() for {target} in {iter} do"
+        line = "asynchronousfunction(function() for {target} in {iter} do"
         values = {
             "target": self.visit_all(node.target, True),
             "iter": self.visit_all(node.iter, True),

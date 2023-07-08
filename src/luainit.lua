@@ -567,7 +567,14 @@ local module = function(self)
 			end
 		
 			return false
-		end	
+		end,
+		function(func) -- asynchronousfunction
+			return function(...)
+				coroutine.wrap(function()
+					func(...)
+				end)()
+			end
+		end
 	}
 end
 
