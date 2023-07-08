@@ -43,6 +43,110 @@ class NodeVisitor(ast.NodeVisitor):
                                                      target=target,
                                                      value=value))
 
+    ### MATCHES ###
+    def visit_Match(self, node):
+        """Visit match"""
+        self.emit("match({0}, ".format(self.visit_all(node.subject, inline=True))+"{")
+        for case in node.cases:
+            if hasattr(case.pattern, "value"):
+                self.emit("[{0}] = function()".format(case.pattern.value.s))
+                self.visit_all(case.body)
+                self.emit("end,")
+            else:
+                self.emit("[\"default\"] = function()")
+                self.visit_all(case.body)
+                self.emit("end,")
+        self.emit("})")
+        # example input:
+        # match x:
+        #     case "10":
+        #         print("x is 10")
+        #     case "20":
+        #         print("x is 20")
+        #     case _:
+        #         print("x is not 10 or 20")
+        # example output:
+        # match(x, {
+        #   ["10"] = function()
+        #     print("x is 10") 
+        #   end,
+        #   ["20"] = function()
+        #     print("x is 20")
+        #   end,
+        #   ["_"] = function()
+        #     print("x is not 10 or 20")
+        #   end
+        # })
+
+    def visit_MatchValue(self, node):
+        """Visit match value"""
+        return self.visit_all(node.value, inline=True)
+
+    def visit_MatchCase(self, node):
+        """Visit match case"""
+        return self.visit_all(node.body)
+    
+    def visit_MatchPattern(self, node):
+        """Visit match pattern"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchSingleton(self, node):
+        """Visit match singleton"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchSequence(self, node):
+        """Visit match sequence"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchMapping(self, node):
+        """Visit match mapping"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchClass(self, node):
+        """Visit match class"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchAs(self, node):
+        """Visit match as"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchKeyword(self, node):
+        """Visit match keyword"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchStar(self, node):
+        """Visit match star"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchOr(self, node):
+        """Visit match or"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    ### END MATCH ###
+    def visit_AnnAssign(self, node): # NOTE: Add class support for Luau soon.
+        """Visit annassign"""
+        target = self.visit_all(node.target, inline=True)
+        value = self.visit_all(node.value, inline=True)
+
+        local_keyword = ""
+
+        last_ctx = self.context.last()
+
+        if last_ctx["class_name"]:
+            target = ".".join([last_ctx["class_name"], target])
+
+        if "." not in target and not last_ctx["locals"].exists(target):
+            local_keyword = "local "
+            last_ctx["locals"].add_symbol(target)
+
+        self.emit("{local}{target} = {value}".format(local=local_keyword,
+                                                     target=target,
+                                                     value=value))
+        # example input:
+        # a: int = 1
+        # example output:
+        # local a = 1
+
     def visit_AugAssign(self, node):
         """Visit augassign"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]

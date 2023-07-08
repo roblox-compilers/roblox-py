@@ -574,6 +574,13 @@ local module = function(self)
 					func(...)
 				end)()
 			end
+		end,
+		function(value, values) -- match
+			if values[value] then
+				return values[value]()
+			elseif values["default"] then
+				return values["default"]() 
+			end
 		end
 	}
 end
