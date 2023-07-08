@@ -4,6 +4,7 @@ from src.translator import Translator
 from pyflakes import api
 import re
 import sys
+import typer 
 
 class Reporter:
     """
@@ -73,20 +74,16 @@ class Reporter:
 
 
 app = Flask(__name__)
+typerapp = typer.Typer()
 translator = Translator()
 
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
   return new.join(li)
 
-# Mode is either "cli" or "web". Get it from sys.argv if not then ask using input()
-mode = "plugin"
-if len(sys.argv) > 1:
-  mode = sys.argv[1]
-else:
-  mode = input("Mode (cli/plugin): ")
-
-if mode == "plugin":
+@typerapp.command()
+def plugin():
+  print("The plugin is decreapted. Please use the CLI alongside a Studio+VSCode sync plugin.")
   @app.route('/', methods=["GET", "POST"]) 
   def base_page():
     code = (request.data).decode()
@@ -119,10 +116,12 @@ if mode == "plugin":
   host='0.0.0.0', 
   port=5555 
   )
-elif mode == "cli":
+
+@typerapp.command()
+def cli():
   print("WARNING: AT THE MOMENT, THIS ONLY WORKS WITH THE TEST FOLDER.")
   print("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test"), "...\n Type 'exit' to exit, Press enter to compile.")
-  def cli():
+  def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
     # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
@@ -158,8 +157,8 @@ elif mode == "cli":
     if action == "exit":
       exit(0)
     else:
-      cli()
-  cli()
-else:
-  print("Invalid mode! (cli/plugin)")
-  exit(1)
+      incli()
+  incli()
+
+if __name__ == "__main__":
+  typerapp()

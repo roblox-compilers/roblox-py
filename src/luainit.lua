@@ -69,7 +69,6 @@ setmetatable(string_meta, {
 				end
 				return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
 			end
-			end
 		end
 	end,
 
@@ -358,7 +357,13 @@ local module = function(self)
 
 			return wrapper
 		end,
+		function(old_fun) -- classmethod
+			local wrapper = function(first, ...)
+				return old_fun(first, ...)
+			end
 
+			return wrapper
+		end,
 		function(class_init, bases) -- class
 			bases = bases or {}
 
@@ -404,7 +409,11 @@ local module = function(self)
 		end,
 		function(s, e) -- range()
 			local tb = {}
-			for i = (if not e then 1 else s), (if not e then s else e) do
+			local a = 0
+			local b = 0
+			if not e then a=1 else a=s end
+			if not e then b=s else b=e end
+			for i = a, b do
 				tb[#tb+1] = i
 			end
 			return tb
@@ -414,6 +423,7 @@ local module = function(self)
 		math.abs, -- abs()
 		tostring, -- str()
 		tonumber, -- int()
+
 		function(tbl) --sum()
 			local total = 0
 			for _, v in ipairs(tbl) do
@@ -957,7 +967,11 @@ local module = function(self)
 		AbstractEventLoop
 		GeneratorWrapperType
 		AsyncGeneratorWrapperType
-		AsyncContextManagerWrapperType]]):split("\t")
+		AsyncContextManagerWrapperType]]):split("\t"),
+
+		{ -- PY library, built in
+			services = game,
+		}
 	}
 end
 
