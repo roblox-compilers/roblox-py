@@ -75,36 +75,91 @@ class Reporter:
 app = Flask(__name__)
 translator = Translator()
 
-@app.route('/', methods=["GET", "POST"]) 
-def base_page():
-  code = (request.data).decode()
-  script_name = os.path.realpath(__file__)
-  folder = os.path.dirname(script_name)
-  luainit_path = os.path.join(folder, "header.lua")
-  header = ""
-  with open(luainit_path) as file:
-    header = file.read()
-      
-  try:
-    lua_code = header+translator.translate(code)
-  except Exception as e:
-    return "CompileError!:"+str(e)
+def backwordreplace(s, old, new, occurrence):
+  li = s.rsplit(old, occurrence)
+  return new.join(li)
 
-  return lua_code
+# Mode is either "cli" or "web". Get it from sys.argv if not then ask using input()
+mode = "plugin"
+if len(sys.argv) > 1:
+  mode = sys.argv[1]
+else:
+  mode = input("Mode (cli/plugin): ")
 
-@app.route('/err', methods=["GET", "POST"]) 
-def debug():
-  code = (request.data).decode()
-  rep = Reporter()
-  num = str(api.check(code, "roblox.py", rep))
-  print(num)
-  return rep.diagnostics
+if mode == "plugin":
+  @app.route('/', methods=["GET", "POST"]) 
+  def base_page():
+    code = (request.data).decode()
+    script_name = os.path.realpath(__file__)
+    folder = os.path.dirname(script_name)
+    luainit_path = os.path.join(folder, "src/header.lua")
+    header = ""
+    with open(luainit_path) as file:
+      header = file.read()
+        
+    try:
+      lua_code = header+translator.translate(code)
+    except Exception as e:
+      return "CompileError!:"+str(e)
 
-@app.route("/lib", methods=["GET"]) 
-def library():
-    return translator.getluainit()
-app.run(
- host='0.0.0.0', 
- port=5555 
-)
+    return lua_code
 
+  @app.route('/err', methods=["GET", "POST"]) 
+  def debug():
+    code = (request.data).decode()
+    rep = Reporter()
+    num = str(api.check(code, "roblox.py", rep))
+    print(num)
+    return rep.diagnostics
+
+  @app.route("/lib", methods=["GET"]) 
+  def library():
+      return translator.getluainit()
+  app.run(
+  host='0.0.0.0', 
+  port=5555 
+  )
+elif mode == "cli":
+  print("WARNING: AT THE MOMENT, THIS ONLY WORKS WITH THE TEST FOLDER.")
+  print("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test"), "...\n Type 'exit' to exit, Press enter to compile.")
+  def cli():
+    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+
+    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")
+
+    for r, d, f in os.walk(path):
+      for file in f:
+          if '.py' in file:
+            # compile the file to a file with the same name and path but .lua
+            contents = ""
+            script_name = os.path.realpath(__file__)
+            folder = os.path.dirname(script_name)
+            luainit_path = os.path.join(folder, "src/header.lua")
+            header = ""
+            with open(luainit_path) as hfile:
+              header = hfile.read()
+            with open(os.path.join(r, file)) as rf:
+              contents = rf.read()
+            try:
+              lua_code = header+translator.translate(contents)
+              print("roblox-py: Compiled "+os.path.join(r, file))
+              # get the relative path of the file and replace .py with .lua
+              relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
+              if not os.path.exists(relative_path):
+                open(relative_path, "x").close()
+              with open(relative_path, "w") as f:
+                f.write(lua_code)
+            except Exception as e:
+              print("CompileError"+str(e))
+            
+
+    action = input("")
+    if action == "exit":
+      exit(0)
+    else:
+      cli()
+  cli()
+else:
+  print("Invalid mode! (cli/plugin)")
+  exit(1)

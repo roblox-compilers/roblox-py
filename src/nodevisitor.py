@@ -13,7 +13,7 @@ from .tokenendmode import TokenEndMode
 
 
 class NodeVisitor(ast.NodeVisitor):
-    LUACODE = "[[luacode]]"
+    LUACODE = "[[lua]]"
 
     """Node visitor"""
     def __init__(self, context=None, config=None):
@@ -491,7 +491,7 @@ class NodeVisitor(ast.NodeVisitor):
         elif self.context.last()["docstring"]:
             self.emit('--[[ {} ]]'.format(node.s))
         else:
-            self.emit('"{}"'.format(node.s))
+            self.emit('stringmeta "{}"'.format(node.s))
 
     def visit_Subscript(self, node):
         """Visit subscript"""
