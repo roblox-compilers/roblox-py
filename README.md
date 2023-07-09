@@ -8,7 +8,7 @@ Python 3.13 (dev), C23, C++20 -> Lua(u)
 ## Why did the name get changed to roblox.pyc?
 2 reasons:
 - It's a python compiler, so it should be named .py**c**
-- Eventually I am planning on adding C support, so it would be confusing to have a compiler named roblox.py that supports C.
+- C, and C++ support.
 
 
 ## Credits
