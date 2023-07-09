@@ -6,5 +6,5 @@
 - open setup.cfg
 - change version
 
-# upload to pypi
-- i fogor :skull:
+# upload
+- ```twine upload dist/*```
