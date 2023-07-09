@@ -5,6 +5,16 @@ Python, C, C++ Compiler for Roblox.
 
 Python 3.13 (dev), C23, C++20 -> Lua(u)
 
+## Changelog:
+- Added C, C++ AST (abstract syntax tree), use the cli and it will output AST
+- Added automatic variable checking, check which builtin variables are needed
+- Added automatic function checking, check which builtin functions are needed
+- Reorganized code
+- Added more tests
+- Cleaned up code
+- Did this changelog
+
+
 ## Why did the name get changed to roblox.pyc?
 2 reasons:
 - It's a python compiler, so it should be named .py**c**

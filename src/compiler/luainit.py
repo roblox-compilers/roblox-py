@@ -1,6 +1,6 @@
 initcode = """
 
-								--// AsynchronousAI @Dev98799 \\--
+							--// AsynchronousAI @Dev98799 \\--
 				-------------------------------------------------------------------------------
 				-- this script was added by roblox-pyc plugin to give you the full experience.-- 
 				-- below you will find lua equivelents of built in python functions, it is   --         
@@ -371,24 +371,29 @@ setmetatable(dict, {
 
 
 local module = function(self)
-	return {
-		string_meta, list, dict, -- class meta
+	return { 
+	py = {
+		{ -- python library
+
+		},
+		{ -- built in
+		string_meta = string_meta, list = list, dict = dict, -- class meta
 		
-		function(old_fun) -- staticmethod
+		staticmethod = function(old_fun) -- staticmethod
 			local wrapper = function(first, ...)
 				return old_fun(...)
 			end
 
 			return wrapper
 		end,
-		function(old_fun) -- classmethod
+		classmethod = function(old_fun) -- classmethod
 			local wrapper = function(first, ...)
 				return old_fun(first, ...)
 			end
 
 			return wrapper
 		end,
-		function(class_init, bases) -- class
+		class = function(class_init, bases) -- class
 			bases = bases or {}
 
 			local c = {}
@@ -431,7 +436,7 @@ local module = function(self)
 
 			return c
 		end,
-		function(s, e) -- range()
+		range = function(s, e) -- range()
 			local tb = {}
 			local a = 0
 			local b = 0
@@ -442,13 +447,13 @@ local module = function(self)
 			end
 			return tb
 		end,
-		self.Name:sub(1,#self.Name-3), -- __name__ 
-		function(x) return #x end, -- len()
-		math.abs, -- abs()
-		tostring, -- str()
-		tonumber, -- int()
+		__name__ = self.Name:sub(1,#self.Name-3), -- __name__ 
+		len = function(x) return #x end, -- len()
+		abs = math.abs, -- abs()
+		str = tostring, -- str()
+		int = tonumber, -- int()
 
-		function(tbl) --sum()
+		sum = function(tbl) --sum()
 			local total = 0
 			for _, v in ipairs(tbl) do
 				total = total + v
@@ -457,7 +462,7 @@ local module = function(self)
 		end,
 
 		-- Maximum value in a table
-		function(tbl) --max()
+		max = function(tbl) --max()
 			local maxValue = -math.huge
 			for _, v in ipairs(tbl) do
 				if v > maxValue then
@@ -468,7 +473,7 @@ local module = function(self)
 		end,
 
 		-- Minimum value in a table
-		function(tbl) --min()
+		min = function(tbl) --min()
 			local minValue = math.huge
 			for _, v in ipairs(tbl) do
 				if v < minValue then
@@ -479,7 +484,7 @@ local module = function(self)
 		end,
 
 		-- Reversed version of a table or string
-		function(seq) -- reversed()
+		reversed = function(seq) -- reversed()
 			local reversedSeq = {}
 			local length = #seq
 			for i = length, 1, -1 do
@@ -489,7 +494,7 @@ local module = function(self)
 		end,
 
 		-- Splitting a string into a table of substrings
-		function(str, sep) -- split
+		split = function(str, sep) -- split
 			local substrings = {}
 			local pattern = string.format("([^%s]+)",sep or "%s")
 			for substring in string.gmatch(str, pattern) do
@@ -498,32 +503,31 @@ local module = function(self)
 			return substrings
 		end,
 
-		math.round, -- round()
+		round = math.round, -- round()
 
-		function (iter) -- all()
+		all = function (iter) -- all()
 			for i, v in iter do if not v then return false end end
 
 			return true
 		end,
 
-		function (iter) -- any()
+		any = function (iter) -- any()
 			for i, v in iter do
 				if v then return true end
 			end
 			return false
 		end,
 
-		string.byte, -- ord
-		string.char, -- chr
+		ord = string.byte, -- ord
+		chr = string.char, -- chr
 
-		function(fun) -- callable()
+		callable = function(fun) -- callable()
 			if rawget(fun) ~= fun then warn("At the momement Roblox.py's function callable() does not fully support metatables.") end
 			return typeof(rawget(fun))	== "function"
 		end,
-
-		tonumber,
+		float = tonumber, -- float()
 		
-		function(format, ...) -- format
+		format = function(format, ...) -- format
 			local args = {...}
 			local num_args = select("#", ...)
 
@@ -539,14 +543,14 @@ local module = function(self)
 			return formatted_string
 		end,
 		
-		function (value) -- hex
+		hex = function (value) -- hex
 			return string.format("%x", value)
 		end,
 		
-		function (obj) -- id
+		id = function (obj) -- id
 			return print(tostring({obj}):gsub("table: ", ""):split(" ")[1])
 		end,
-		function (func, ...) --map
+		map = function (func, ...) --map
 			local args = {...}
 			local result = {}
 			local num_args = select("#", ...)
@@ -571,7 +575,7 @@ local module = function(self)
 
 			return result
 		end,
-		function(x) -- bool
+		bool = function(x) -- bool
 			if x == false or x == nil or x == 0 then
 				return false
 			end
@@ -584,12 +588,12 @@ local module = function(self)
 		
 			return true
 		end,
-		function(a, b) -- divmod
+		divmod = function(a, b) -- divmod
 			local res = { math.floor(a / b), math.fmod(a, b) }
 			return unpack(res)
 		end,
-		slicefun,	
-		function (item, items) -- operator_in()
+		slice = slicefun,	
+		operator_in = function (item, items) -- operator_in()
 			if type(items) == "table" then
 				for v in items do
 					if v == item then
@@ -602,7 +606,7 @@ local module = function(self)
 		
 			return false
 		end,
-		function(func) -- asynchronousfunction
+		asynchronousfunction = function(func) -- asynchronousfunction
 			return function(...)
 				local all = {...}
 				coroutine.wrap(function()
@@ -610,7 +614,7 @@ local module = function(self)
 				end)()
 			end
 		end,
-		function(value, values) -- match
+		match = function(value, values) -- match
 			if values[value] then
 				return values[value]()
 			elseif values["default"] then
@@ -618,45 +622,45 @@ local module = function(self)
 			end
 		end,
 		
-		function (iterator) -- anext
+		anext = function (iterator) -- anext
 			local status, value = pcall(iterator)
 			if status then
 				return value
 			end
 		end,
 
-		function (obj) -- ascii
+		ascii = function (obj) -- ascii
 			return string.format("%q", tostring(obj))
 		end,
-		function (obj) -- dir
+		dir = function (obj) -- dir
 			local result = {}
 			for key, _ in pairs(obj) do
 				table.insert(result, key)
 			end
 			return result
 		end,
-		function (obj, name, default) -- getattr
+		getattr = function (obj, name, default) -- getattr
 			local value = obj[name]
 			if value == nil then
 				return default
 			end
 			return value
 		end,
-		function () -- globals
+		globals = function () -- globals
 			return _G
 		end,
-		function (obj, name) --hasattr
+		hasattr = function (obj, name) --hasattr
 			return obj[name] ~= nil
 		end,
-		function (prompt) -- input
+		input = function (prompt) -- input
 			if not io then error("io is not enabled") end
 			io.write(prompt)
 			return io.read()
 		end,
-		function (obj, class) -- isinstance
+		isinstance = function (obj, class) -- isinstance
 			return type(obj) == class
 		end,
-		function (cls, classinfo) -- issubclass
+		issubclass = function (cls, classinfo) -- issubclass
 			local mt = getmetatable(cls)
 			while mt do
 				if mt.__index == classinfo then
@@ -666,33 +670,33 @@ local module = function(self)
 			end
 			return false
 		end,
-		function (obj) -- iter
+		iter = function (obj) -- iter
 			if type(obj) == "table" and obj.__iter__ ~= nil then
 				return obj.__iter__
 			end
 			return nil
 		end,
-		function () -- locals
+		locals = function () -- locals
 			return _G
 		end,
 		-- oct()
-		function (num) --oct
+		oct = function (num) --oct
 			return string.format("%o", num)
 		end,
 
 		-- open()
-		function (filename, mode) --open
+		open = function (filename, mode) --open
 			if not io then error("io is not enabled") end
 			return io.open(filename, mode)
 		end,
 
 		-- ord()
-		function (c) --ord
+		ord = function (c) --ord
 			return string.byte(c)
 		end,
 
 		-- pow()
-		function (base, exponent, modulo) --pow
+		pow = function (base, exponent, modulo) --pow
 			if modulo ~= nil then
 				return math.pow(base, exponent) % modulo
 			else
@@ -701,17 +705,17 @@ local module = function(self)
 		end,
 
 		-- eval()
-		function (expr, env)
+		eval = function (expr, env)
 			return loadstring(expr)()
 		end,
 
 		-- exec()
-		function (code, env)
+		exec = function (code, env)
 			return loadstring(expr)()
 		end,
 
 		-- filter()
-		function (predicate, iterable)
+		filter = function (predicate, iterable)
 			local result = {}
 			for _, value in ipairs(iterable) do
 				if predicate(value) then
@@ -722,7 +726,7 @@ local module = function(self)
 		end,
 
 		-- frozenset()
-		function (...)
+		frozenset = function (...)
 			local elements = {...}
 			local frozenSet = {}
 			for _, element in ipairs(elements) do
@@ -731,26 +735,26 @@ local module = function(self)
 			return frozenSet
 		end,
 		-- aiter()
-		function (iterable) -- aiter
+		aiter = function (iterable) -- aiter
 			return pairs(iterable)
 		end,
 		
 		-- bin()
-		function (number) -- bin
+		bin = function (number) -- bin
 			return string.format("%b", number)
 		end,
 		-- complex() 
-		function (real, imag) -- complex
+		complex = function (real, imag) -- complex
 			return { real = real, imag = imag }
 		end,
 		
 		-- delattr()
-		function (object, attribute) -- delattr
+		deltaattr = function (object, attribute) -- delattr
 			object[attribute] = nil
 		end,	
 
 		-- enumerate()
-		function (iterable) -- enumerate
+		enumerate = function (iterable) -- enumerate
 			local i = 0
 			return function()
 			i = i + 1
@@ -762,17 +766,17 @@ local module = function(self)
 		end,
 
 		-- breakpoint()
-		function () -- breakpoint
+		breakpoint = function () -- breakpoint
 			-- This function can be left empty or you can add a debug hook to pause execution.
 			-- Here's an example using the debug library to pause execution:
 			debug.sethook(function()
-			io.write("Breakpoint hit! Press Enter to continue...")
-			io.read() -- Wait for user input to continue
+			print("Breakpoint hit!")
+			--io.read() -- Wait for user input to continue
 			end, "c")
 		end,
 		
 		-- bytearray()
-		function (arg) -- bytearray
+		bytearray = function (arg) -- bytearray
 			if type(arg) == "string" then
 			local bytes = {}
 			for i = 1, #arg do
@@ -794,7 +798,7 @@ local module = function(self)
 		end,
 		
 		-- bytes()
-		function (arg) -- bytes
+		bytes = function (arg) -- bytes
 			if type(arg) == "string" then
 			local bytes = {}
 			for i = 1, #arg do
@@ -809,7 +813,7 @@ local module = function(self)
 		end,
 		
 		-- compile()
-		function (source, filename, mode) -- compile
+		compile = function (source, filename, mode) -- compile
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of a simple compilation to execute Lua code directly:
@@ -819,7 +823,7 @@ local module = function(self)
 
 		
 		-- help()
-		function (object) -- help
+		help = function (object) -- help
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of displaying a help message for an object:
@@ -829,7 +833,7 @@ local module = function(self)
 		end,
 		
 		-- memoryview()
-		function (object) -- memoryview
+		memoryview = function (object) -- memoryview
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of creating a memory view object:
@@ -841,7 +845,7 @@ local module = function(self)
 			end
 		end,
 		-- repr()
-		function (object) -- repr
+		repr = function (object) -- repr
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of generating a representation of an object:
@@ -849,7 +853,7 @@ local module = function(self)
 		end,
 		
 		-- sorted()
-		function (iterable, cmp, key, reverse) -- sorted
+		sorted = function (iterable, cmp, key, reverse) -- sorted
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of sorting an iterable table:
@@ -872,7 +876,7 @@ local module = function(self)
 		end,
 		
 		-- vars()
-		function (object) -- vars
+		vars = function (object) -- vars
 			-- This is a placeholder implementation and might not cover all possible use cases.
 			-- You would need to provide your own implementation based on your specific requirements.
 			-- Here's an example of getting the attributes of an object:
@@ -883,120 +887,10 @@ local module = function(self)
 			return attributes
 		end,
 		
-		require,
+		__import__ = require,
+	}
 		
-		([[object
-		type
-		int
-		float
-		complex
-		bool
-		str
-		bytes
-		bytearray
-		memoryview
-		list
-		tuple
-		range
-		set
-		frozenset
-		dict
-		slice
-		property
-		bool
-		ellipsis
-		NotImplemented
-		super
-		file
-		IOError
-		OSError
-		EnvironmentError
-		EOFError
-		ImportError
-		IndexError
-		KeyError
-		StopIteration
-		GeneratorExit
-		KeyboardInterrupt
-		SystemExit
-		Exception
-		BaseException
-		ArithmeticError
-		AssertionError
-		AttributeError
-		BufferError
-		EOFError
-		ImportError
-		LookupError
-		MemoryError
-		NameError
-		OSError
-		OverflowError
-		ReferenceError
-		RuntimeError
-		SyntaxError
-		IndentationError
-		TabError
-		SystemError
-		TypeError
-		ValueError
-		UnicodeError
-		UnicodeDecodeError
-		UnicodeEncodeError
-		UnicodeTranslateError
-		Warning
-		UserWarning
-		DeprecationWarning
-		PendingDeprecationWarning
-		SyntaxWarning
-		RuntimeWarning
-		FutureWarning
-		ImportWarning
-		UnicodeWarning
-		BytesWarning
-		ResourceWarning
-		Generator
-		AsyncGenerator
-		Iterator
-		Coroutine
-		AsyncIterator
-		ContextManager
-		AsyncContextManager
-		CallableIterator
-		CallableGenerator
-		Reversible
-		Sized
-		Container
-		Collection
-		MutableSequence
-		Sequence
-		MutableSet
-		Set
-		MutableMapping
-		Mapping
-		MutableSequence
-		ByteString
-		MutableByteString
-		SupportsAbs
-		SupportsFloat
-		SupportsInt
-		SupportsRound
-		SupportsComplex
-		SupportsBytes
-		SupportsComplex
-		SupportsBytes
-		SupportsComplex
-		SupportsRound
-		CoroutineWrapperType
-		ContextManagerWrapperType
-		AbstractEventLoop
-		GeneratorWrapperType
-		AsyncGeneratorWrapperType
-		AsyncContextManagerWrapperType]]):split("\t"),
-
-		{ -- PY library, built in
-			services = game,
-		}
+	}
 	}
 end
 
@@ -1004,3 +898,7 @@ end
 
 return module
 """
+
+allfunctions = "stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import__"
+
+allfunctions = allfunctions.split(", ")

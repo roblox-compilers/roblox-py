@@ -6,7 +6,7 @@ from .config import Config
 from .nodevisitor import NodeVisitor
 
 from .header import header
-from .luainit import initcode
+from .luainit import initcode, allfunctions
 
 class Translator:
     """Python to lua main class translator"""
@@ -28,8 +28,20 @@ class Translator:
         visitor.visit(py_ast_tree)
 
         self.output = visitor.output
-
-        return self.to_code()
+        # check every single line for function calls
+        functions = []
+        for i in range(len(self.to_code().split("\n"))):
+            # check if a function is being called, like print()
+            
+            for function in allfunctions:
+                if function in self.to_code().split("\n")[i] and function not in functions:
+                    functions.append(function)
+                    
+                    
+        # create header for function calls
+        newheader = header(functions)
+    
+        return newheader+self.to_code()
 
     def to_code(self, code=None, indent=0):
         """Create a lua code from the compiler output"""
@@ -58,8 +70,3 @@ class Translator:
     def get_luainit(filename="luainit.lua"):
         
         return initcode
-    
-    @staticmethod
-    def get_luahead(filename="header.txt"):
-        
-        return header

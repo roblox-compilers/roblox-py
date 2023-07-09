@@ -6,7 +6,9 @@ import sys
 import typer 
 
 
-from . import colortext, pytranslator, ctranslator
+import compiler.colortext as colortext
+import compiler.pytranslator as pytranslator
+import compiler.ctranslator as ctranslator
 
 class Reporter:
     """
@@ -85,21 +87,13 @@ def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
   return new.join(li)
 
-@typerapp.command("p", help="Starts a server on port 5555 for the plugin (decreapted).")
 def p():
   print("The plugin is decreapted. Please use the CLI alongside a Studio+VSCode sync plugin.")
   @app.route('/', methods=["GET", "POST"]) 
   def base_page():
     code = (request.data).decode()
-    script_name = os.path.realpath(__file__)
-    folder = os.path.dirname(script_name)
-    luainit_path = os.path.join(folder, "src/header.lua")
-    header = ""
-    with open(luainit_path) as file:
-      header = file.read()
-        
     try:
-      lua_code = header+translator.translate(code)
+      lua_code = translator.translate(code)
     except Exception as e:
       return "CompileError!:"+str(e)
 
@@ -121,7 +115,6 @@ def p():
   port=5555 
   )
 
-@typerapp.command("w", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def w():
   print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
@@ -135,7 +128,6 @@ def w():
           if '.py' in file:
             # compile the file to a file with the same name and path but .lua
             contents = ""
-            header = translator.get_luahead()
             
             try:
               with open(os.path.join(r, file)) as rf:
@@ -146,7 +138,7 @@ def w():
               continue
             
             try:
-              lua_code = header+translator.translate(contents)
+              lua_code = translator.translate(contents)
               print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
               # get the relative path of the file and replace .py with .lua
               relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
@@ -165,7 +157,6 @@ def w():
       incli()
   incli()
 
-@typerapp2.command("cw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def cw():
   print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
@@ -192,7 +183,6 @@ def cw():
       incli()
   incli()
   
-@typerapp3.command("cpw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def cpw():
   print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
@@ -225,8 +215,8 @@ if __name__ == "__main__":
   mode = input("Select which app to run (1, 2, 3): ")
   
   if mode == "1":
-    typerapp()
+    w()
   elif mode == "2":
-    typerapp2()
+    cw()
   elif mode == "3":
-    typerapp3()
+    cpw()

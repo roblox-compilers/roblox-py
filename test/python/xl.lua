@@ -1,14 +1,29 @@
 
---// Compiled using Roblox.py \--
+--// Compiled using roblox-pyc \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import__, classlist, py  = unpack(require(game.ReplicatedStorage["Roblox.py"])(script))
+local py, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+
+local all = builtin.all
+local compile = builtin.compile
+local range = builtin.range
+local int = builtin.int
+local stringmeta = builtin.stringmeta
+local str = builtin.str
+local open = builtin.open
+local id = builtin.id
+local asynchronousfunction = builtin.asynchronousfunction
+local dict = builtin.dict
+local class = builtin.class
+local staticmethod = builtin.staticmethod
+local operator_in = builtin.operator_in
+
 -----------------------------------------------------------------------------
 --[[ 
 XL.py (Stands for Extralarge)
 
-A test script for the Roblox.py compiler that uses all of the python 3.13 features.
+A test script for the roblox-pyc compiler that uses all of the python 3.13 features.
  ]]
 local y = require "x"
 local SSS = py.services.ServerScriptService
