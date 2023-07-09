@@ -22,11 +22,13 @@ Python 3.13 (dev) -> Lua(u)
 
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
 ## Plugin Guide
-### #1 - Clone and start server
+### #1 - Download and start server
 ```
-git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python3 .
+pip install roblox-pyc
 ```
-
+```
+roblox-py p
+```
 > Note: This process will end whenever you restart your computer or close the terminal. We recommend using Replit instead.
 
 If any issues occur here report it in github issues.
