@@ -1,21 +1,20 @@
 # roblox.pyc
 
 ## [Docs](https://robloxpydocs.vercel.app) | [Docs (github)](https://github.com/AsynchronousAI/robloxpydocs/tree/main) | [Devforum](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) | [Github](https://github.com/AsynchronousAI/roblox.py) | [Tests/Examples](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
-Python compiler for Roblox. 
+Python, C, C++ Compiler for Roblox. 
 
-Python 3.13 (dev) -> Lua(u)
+Python 3.13 (dev), C23, C++20 -> Lua(u)
 
 ## Why did the name get changed to roblox.pyc?
 2 reasons:
 - It's a python compiler, so it should be named .py**c**
-- Eventually I am planning on adding C support, so it would be confusing to have a compiler named roblox.py that supports C.
+- C, and C++ support.
 
 
 ## Credits
 - [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python
 - [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus). uses a modified version with autocomplete
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes.
-- [pycparser](https://github.com/eliben/pycparser/). used for c support
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
   
 # Python:
