@@ -5,10 +5,7 @@ import re
 import sys
 import typer 
 
-
-import compiler.colortext as colortext
-import compiler.pytranslator as pytranslator
-import compiler.ctranslator as ctranslator
+from . import pytranslator, colortext, ctranslator
 
 class Reporter:
     """
