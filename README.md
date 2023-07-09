@@ -15,7 +15,6 @@ Python 3.13 (dev), C23, C++20 -> Lua(u)
 - [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python
 - [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus). uses a modified version with autocomplete
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes.
-- [pycparser](https://github.com/eliben/pycparser/). used for c support
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
   
 # Python:
