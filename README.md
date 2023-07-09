@@ -10,10 +10,6 @@ Python 3.13 (dev) -> Lua(u)
 - It's a python compiler, so it should be named .py**c**
 - Eventually I am planning on adding C support, so it would be confusing to have a compiler named roblox.py that supports C.
 
-## Dependencies
-- ``pip3 install --upgrade pyflakes``
-- ``pip3 install flask``
-- ``pip3 install pyyaml``
 
 ## Credits
 - [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python
@@ -24,7 +20,7 @@ Python 3.13 (dev) -> Lua(u)
 ## Plugin Guide
 ### #1 - Download and start server
 ```
-pip install roblox-pyc
+pip3 install roblox-pyc
 ```
 ```
 roblox-py p
