@@ -76,6 +76,8 @@ class Reporter:
 
 app = Flask(__name__)
 typerapp = typer.Typer()
+typerapp2 = typer.Typer()
+typerapp3 = typer.Typer()
 translator = Translator()
 
 def backwordreplace(s, old, new, occurrence):
@@ -165,4 +167,12 @@ def w():
 
   
 if __name__ == "__main__":
-  typerapp()
+  print(blue("Test mode"))
+  mode = input("Select which app to run (1, 2, 3): ")
+  
+  if mode == "1":
+    typerapp()
+  elif mode == "2":
+    typerapp2()
+  elif mode == "3":
+    typerapp3()
