@@ -75,9 +75,9 @@ class Reporter:
 
 
 app = Flask(__name__)
-typerapp = typer.Typer()
-typerapp2 = typer.Typer()
-typerapp3 = typer.Typer()
+typerapp = typer.Typer() #py
+typerapp2 = typer.Typer() #c
+typerapp3 = typer.Typer() #cpp
 translator = Translator()
 
 def backwordreplace(s, old, new, occurrence):
@@ -164,7 +164,14 @@ def w():
       incli()
   incli()
 
-
+@typerapp2.command("cw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
+def cw():
+  print(red("Version does not support roblox-c"))
+  
+@typerapp3.command("cpw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
+def cpw():
+  print(red("Version does not support roblox-cpp"))
+  
   
 if __name__ == "__main__":
   print(blue("Test mode"))
