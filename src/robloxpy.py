@@ -1,10 +1,11 @@
 import os
 from flask import Flask, request
-from src.translator import Translator
+from .translator import Translator
 from pyflakes import api
 import re
 import sys
 import typer 
+from .colortext import red, green, yellow, blue, magenta, cyan, white, color
 
 class Reporter:
     """
@@ -81,8 +82,8 @@ def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
   return new.join(li)
 
-@typerapp.command()
-def plugin():
+@typerapp.command("p", help="Starts a server on port 5555 for the plugin (decreapted).")
+def p():
   print("The plugin is decreapted. Please use the CLI alongside a Studio+VSCode sync plugin.")
   @app.route('/', methods=["GET", "POST"]) 
   def base_page():
@@ -117,32 +118,33 @@ def plugin():
   port=5555 
   )
 
-@typerapp.command()
-def cli():
-  print("WARNING: AT THE MOMENT, THIS ONLY WORKS WITH THE TEST FOLDER.")
-  print("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test"), "...\n Type 'exit' to exit, Press enter to compile.")
+@typerapp.command("w", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
+def w():
+  print(magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
     # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")
+    path = os.getcwd()
 
     for r, d, f in os.walk(path):
       for file in f:
           if '.py' in file:
             # compile the file to a file with the same name and path but .lua
             contents = ""
-            script_name = os.path.realpath(__file__)
-            folder = os.path.dirname(script_name)
-            luainit_path = os.path.join(folder, "src/header.lua")
-            header = ""
-            with open(luainit_path) as hfile:
-              header = hfile.read()
-            with open(os.path.join(r, file)) as rf:
-              contents = rf.read()
+            header = translator.get_luahead()
+            
+            try:
+              with open(os.path.join(r, file)) as rf:
+                contents = rf.read()  
+            except Exception as e:
+              print(red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+              # do not compile the file if it cannot be read
+              continue
+            
             try:
               lua_code = header+translator.translate(contents)
-              print("roblox-py: Compiled "+os.path.join(r, file))
+              print(green("roblox-py: Compiled "+os.path.join(r, file)))
               # get the relative path of the file and replace .py with .lua
               relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
               if not os.path.exists(relative_path):
@@ -150,7 +152,7 @@ def cli():
               with open(relative_path, "w") as f:
                 f.write(lua_code)
             except Exception as e:
-              print("CompileError"+str(e))
+              print(red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
             
 
     action = input("")
@@ -160,5 +162,7 @@ def cli():
       incli()
   incli()
 
+
+  
 if __name__ == "__main__":
   typerapp()

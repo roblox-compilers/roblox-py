@@ -8,4 +8,4 @@ class LoopCounter:
     def get_next():
         """Return next loop continue label name"""
         LoopCounter.COUNTER += 1
-        return "loop_label_{}".format(LoopCounter.COUNTER)
+        return "continue {}".format(LoopCounter.COUNTER)

@@ -463,7 +463,7 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_Continue(self, node):
         """Visit continue"""
         last_ctx = self.context.last()
-        line = "goto {}".format(last_ctx["loop_label_name"])
+        line = "{}".format(last_ctx["loop_label_name"])
         self.emit(line)
 
     def visit_Delete(self, node):

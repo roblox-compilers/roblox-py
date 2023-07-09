@@ -1,3 +1,5 @@
+initcode = """
+
 								--// AsynchronousAI @Dev98799 \\--
 				-------------------------------------------------------------------------------
 				-- this script was added by Roblox.py plugin to give you the full experience.-- 
@@ -51,6 +53,28 @@ local slicefun = function (sequence, start, stop, step) -- slice
 
 	return sliced
 end
+
+local gtype 
+if not typeof then
+	gtype = function(obj)
+		local type = typeof(obj)
+		if type == "table" then
+			if obj._is_list then
+				return "list"
+			end
+			if obj._is_dict then
+				return "dict"
+			end
+		end
+		return type
+	end
+else 
+	gtype = typeof
+end
+local typeof = gtype
+
+
+
 setmetatable(string_meta, {
 	__add = function(v1, v2)
 		if typeof(v1) == "string" and typeof(v2) == "string" then
@@ -580,8 +604,9 @@ local module = function(self)
 		end,
 		function(func) -- asynchronousfunction
 			return function(...)
+				local all = {...}
 				coroutine.wrap(function()
-					func(...)
+					func(unpack(all))
 				end)()
 			end
 		end,
@@ -978,3 +1003,4 @@ end
 
 
 return module
+"""

@@ -5,6 +5,8 @@ import os
 from .config import Config
 from .nodevisitor import NodeVisitor
 
+from .header import header
+from .luainit import initcode
 
 class Translator:
     """Python to lua main class translator"""
@@ -54,11 +56,10 @@ class Translator:
 
     @staticmethod
     def get_luainit(filename="luainit.lua"):
-        """Get lua initialization code."""
-        script_name = os.path.realpath(__file__)
-        folder = os.path.dirname(script_name)
-        luainit_path = os.path.join(folder, filename)
-
-        with open(luainit_path) as file:
-            return file.read()
-        return ""
+        
+        return initcode
+    
+    @staticmethod
+    def get_luahead(filename="header.txt"):
+        
+        return header
