@@ -10,10 +10,6 @@ Python 3.13 (dev) -> Lua(u)
 - It's a python compiler, so it should be named .py**c**
 - Eventually I am planning on adding C support, so it would be confusing to have a compiler named roblox.py that supports C.
 
-## Dependencies
-- ``pip3 install --upgrade pyflakes``
-- ``pip3 install flask``
-- ``pip3 install pyyaml``
 
 ## Credits
 - [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python
@@ -21,12 +17,16 @@ Python 3.13 (dev) -> Lua(u)
 - [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes.
 - [pycparser](https://github.com/eliben/pycparser/). used for c support
   (read licenses in [copyright.txt](/COPYRIGHTS.txt))
+  
+# Python:
 ## Plugin Guide
-### #1 - Clone and start server
+### #1 - Download and start server
 ```
-git clone https://github.com/AsynchronousAI/roblox.py/; cd roblox.py; python3 .
+pip3 install roblox-pyc
 ```
-
+```
+roblox-py p
+```
 > Note: This process will end whenever you restart your computer or close the terminal. We recommend using Replit instead.
 
 If any issues occur here report it in github issues.
@@ -47,7 +47,24 @@ After installing the client open any place, make a new StringValue anywhere name
 ### #4 Open studio and test
 Open Roblox Studio, and select any location and click the roblox.py/Python icon in the plugins tab. A window for editing the plugin and a new script named "Script.py" should appear in the explorer.
 
-## CLI Coming soon
+## CLI
+### #1 - Download
+```
+pip3 install roblox-pyc
+```
+### #2 - cd to target directory
+```
+cd Desktop/mygame
+```
+When called, for every python script roblox-pyc finds it will make a duplicate in the same path with the same name but a .lua ending and with the python code.
 
-### Learn more
-Learn more in the devforum post.
+### #2 - start
+```
+roblox-py w
+```
+
+# C:
+coming soon
+# C++:
+coming soon
+
