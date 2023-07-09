@@ -1,4 +1,5 @@
 from .cpAST import get_ast, print_ast
+from .cnodevisitor import NodeVisitor
 
 def readast(node, depth, calc):
     calc(node, depth)
@@ -8,7 +9,8 @@ def readast(node, depth, calc):
 def translate(file_path):
     ast = get_ast(file_path)
     print_ast(ast)
-    if file_path.endswith('.c'):
-        print("C code AST calculated")
-    elif file_path.endswith('.cpp'):
-        print("C++ code AST calculated")
+
+    newNodeVisitor = NodeVisitor()
+    newNodeVisitor.visit_node(ast)
+    
+    print(newNodeVisitor.get_lua_code())

@@ -190,7 +190,7 @@ def cpw():
 
     for r, d, f in os.walk(path):
       for file in f:
-          if '.c' in file:
+          if '.cpp' in file:
             # compile the file to a file with the same name and path but .lua
             try:
               ctranslator.translate(os.path.join(r, file))
