@@ -1,7 +1,7 @@
 """
 XL.py (Stands for Extralarge)
 
-A test script for the Roblox.py compiler that uses all of the python 3.13 features.
+A test script for the roblox-pyc compiler that uses all of the python 3.13 features.
 """
 
 # Imports

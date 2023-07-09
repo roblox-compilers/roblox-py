@@ -2,7 +2,7 @@ initcode = """
 
 								--// AsynchronousAI @Dev98799 \\--
 				-------------------------------------------------------------------------------
-				-- this script was added by Roblox.py plugin to give you the full experience.-- 
+				-- this script was added by roblox-pyc plugin to give you the full experience.-- 
 				-- below you will find lua equivelents of built in python functions, it is   --         
 				-- free to use for your personal needs and feel free to edit it, if needed to--
 				-- reset it or update it simply delete it and use the plugin again to do so  --
