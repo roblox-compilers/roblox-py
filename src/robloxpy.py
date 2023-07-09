@@ -1,11 +1,12 @@
 import os
 from flask import Flask, request
-from .translator import Translator
 from pyflakes import api
 import re
 import sys
 import typer 
-from .colortext import red, green, yellow, blue, magenta, cyan, white, color
+
+
+from . import colortext, pytranslator, ctranslator
 
 class Reporter:
     """
@@ -78,7 +79,7 @@ app = Flask(__name__)
 typerapp = typer.Typer() #py
 typerapp2 = typer.Typer() #c
 typerapp3 = typer.Typer() #cpp
-translator = Translator()
+translator = pytranslator.Translator()
 
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -122,7 +123,7 @@ def p():
 
 @typerapp.command("w", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def w():
-  print(magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
+  print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -140,13 +141,13 @@ def w():
               with open(os.path.join(r, file)) as rf:
                 contents = rf.read()  
             except Exception as e:
-              print(red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+              print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
               # do not compile the file if it cannot be read
               continue
             
             try:
               lua_code = header+translator.translate(contents)
-              print(green("roblox-py: Compiled "+os.path.join(r, file)))
+              print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
               # get the relative path of the file and replace .py with .lua
               relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
               if not os.path.exists(relative_path):
@@ -154,7 +155,7 @@ def w():
               with open(relative_path, "w") as f:
                 f.write(lua_code)
             except Exception as e:
-              print(red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
             
 
     action = input("")
@@ -166,15 +167,61 @@ def w():
 
 @typerapp2.command("cw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def cw():
-  print(red("Version does not support roblox-c"))
+  print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
+  def incli():
+    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+
+    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+    path = os.getcwd()
+
+    for r, d, f in os.walk(path):
+      for file in f:
+          if '.c' in file:
+            # compile the file to a file with the same name and path but .lua
+            try:
+              ctranslator.translate(os.path.join(r, file))
+              print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+            except Exception as e:
+              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+            
+
+    action = input("")
+    if action == "exit":
+      exit(0)
+    else:
+      incli()
+  incli()
   
 @typerapp3.command("cpw", help="Whenever enter is clicked in the terminal, compile all files, if exit is typed, exit the program.")
 def cpw():
-  print(red("Version does not support roblox-cpp"))
+  print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
+  def incli():
+    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+
+    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+    path = os.getcwd()
+
+    for r, d, f in os.walk(path):
+      for file in f:
+          if '.c' in file:
+            # compile the file to a file with the same name and path but .lua
+            try:
+              ctranslator.translate(os.path.join(r, file))
+              print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+            except Exception as e:
+              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+            
+
+    action = input("")
+    if action == "exit":
+      exit(0)
+    else:
+      incli()
+  incli()
   
   
 if __name__ == "__main__":
-  print(blue("Test mode"))
+  print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
   
   if mode == "1":
