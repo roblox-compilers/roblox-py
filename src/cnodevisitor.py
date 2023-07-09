@@ -24,7 +24,8 @@ class NodeVisitor:
     def visit_compound_stmt(self, node):
         # Process compound statements (e.g., function bodies, loops, etc.)
         self.lua_code += "{\n"
-        for child in node:
+        
+        for child in node.get_children():
             self.visit_node(child)
         self.lua_code += "}\n"
 
