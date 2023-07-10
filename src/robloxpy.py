@@ -156,7 +156,24 @@ def w():
     if sys.argv[1] == "p":
       p()
     elif sys.argv[1] == "lib":
-      pass
+      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+      if sys.argv[2] is not None:
+        open(sys.argv[2], "x").close()
+        with open(sys.argv[2], "w") as f:
+          f.write(translator.getluainit())
+      else:
+        print(colortext.red("roblox-py: No path specified!"))
+    elif sys.argv[1] == "c":
+      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
+      if confirm == "yes":   
+        path = os.getcwd()
+        
+        for r, d, f in os.walk(path):
+          for file in f:
+            if '.lua' in file:
+              os.remove(os.path.join(r, file))
+              print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)))
     else:
       incli()
   else:
@@ -186,7 +203,32 @@ def cw():
       exit(0)
     else:
       incli()
-  incli()
+  if sys.argv[1] is not None:
+    if sys.argv[1] == "p":
+      p()
+    elif sys.argv[1] == "lib":
+      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+      if sys.argv[2] is not None:
+        open(sys.argv[2], "x").close()
+        with open(sys.argv[2], "w") as f:
+          f.write(translator.getluainit())
+      else:
+        print(colortext.red("roblox-c: No path specified!"))
+    elif sys.argv[1] == "c":
+      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
+      if confirm == "yes":   
+        path = os.getcwd()
+        
+        for r, d, f in os.walk(path):
+          for file in f:
+            if '.lua' in file:
+              os.remove(os.path.join(r, file))
+              print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)))
+    else:
+      incli()
+  else:
+    incli()
   
 def cpw():
   print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
@@ -212,7 +254,32 @@ def cpw():
       exit(0)
     else:
       incli()
-  incli()
+  if sys.argv[1] is not None:
+    if sys.argv[1] == "p":
+      p()
+    elif sys.argv[1] == "lib":
+      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+      if sys.argv[2] is not None:
+        open(sys.argv[2], "x").close()
+        with open(sys.argv[2], "w") as f:
+          f.write(translator.getluainit())
+      else:
+        print(colortext.red("roblox-cpp: No path specified!"))
+    elif sys.argv[1] == "c":
+      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
+      if confirm == "yes":   
+        path = os.getcwd()
+        
+        for r, d, f in os.walk(path):
+          for file in f:
+            if '.lua' in file:
+              os.remove(os.path.join(r, file))
+              print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)))
+    else:
+      incli()
+  else:
+    incli()
   
   
 if __name__ == "__main__":
