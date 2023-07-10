@@ -1,4 +1,4 @@
 # Table of contents
 
-* [README](README.md)
+* [Introduction](README.md)
 * [Build Guide](build.md)
