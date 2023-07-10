@@ -152,7 +152,15 @@ def w():
       exit(0)
     else:
       incli()
-  incli()
+  if sys.argv[1] is not None:
+    if sys.argv[1] == "p":
+      p()
+    elif sys.argv[1] == "lib":
+      pass
+    else:
+      incli()
+  else:
+    incli()
 
 def cw():
   print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
