@@ -138,8 +138,8 @@ def w():
               print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
               # get the relative path of the file and replace .py with .lua
               relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
-              if not os.path.exists(relative_path):
-                open(relative_path, "x").close()
+              
+              open(relative_path, "x").close()
               with open(relative_path, "w") as f:
                 f.write(lua_code)
             except Exception as e:
@@ -185,7 +185,7 @@ def w():
               open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
               # write the old file contents as a py comment
               open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
-              print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)))
+              print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
     else:
       print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
@@ -249,7 +249,7 @@ def cw():
               open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
               # write the old file contents as a C comment
               open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
-              print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)))
+              print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
     else:
       print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
@@ -313,7 +313,7 @@ def cpw():
               # write the old file contents as a C++ comment
               open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
               
-              print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)))
+              print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
     else:
       print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
