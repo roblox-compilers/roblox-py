@@ -121,17 +121,17 @@ Simply click enter after running one of the following commands and it will recom
 #### Python:
 
 ```
-roblox-py
+roblox-py w
 ```
 
 #### C:
 
 ```
-roblox-c
+roblox-c w
 ```
 
 #### C++
 
 ```
-roblox-cpp
+roblox-cpp w
 ```
