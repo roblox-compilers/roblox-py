@@ -1,6 +1,6 @@
 # roblox.pyc
 
-##### [Docs](https://robloxpydocs.vercel.app) | [Docs (github)](https://github.com/AsynchronousAI/robloxpydocs/tree/main) | [Devforum](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) | [Github](https://github.com/AsynchronousAI/roblox.py) | [Tests/Examples](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
+##### [Docs](https://robloxpyc.gitbook.io/roblox-pyc) | [Devforum](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) | [Github](https://github.com/AsynchronousAI/roblox.py) | [Tests/Examples](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
 Python, C, C++ Compiler for Roblox. 
 
 Python 3.13 (dev), C23, C++20 -> Lua(u)
