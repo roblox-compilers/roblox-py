@@ -151,12 +151,12 @@ def w():
       exit(0)
     else:
       incli()
-  if len(sys.argv) >= 1:
+  if sys.argv.__len__() >= 1:
     if sys.argv[1] == "p":
       p()
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if len(sys.argv) >= 2:
+      if sys.argv.__len__() >= 2:
         cwd = os.getcwd()
         # cwd+sys.argv[2]
         dir = os.path.join(cwd, sys.argv[2])
@@ -216,12 +216,12 @@ def cw():
       exit(0)
     else:
       incli()
-  if len(sys.argv) >= 1:
+  if sys.argv.__len__() >= 1:
     if sys.argv[1] == "p":
       print(colortext.red("roblox-c: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if len(sys.argv) >= 2:
+      if sys.argv.__len__() >= 2:
         cwd = os.getcwd()
         # cwd+sys.argv[2]
         dir = os.path.join(cwd, sys.argv[2])
@@ -280,12 +280,12 @@ def cpw():
       exit(0)
     else:
       incli()
-  if len(sys.argv) >= 1:
+  if sys.argv.__len__() >= 1:
     if sys.argv[1] == "p":
       print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if len(sys.argv) >= 2:
+      if sys.argv.__len__() >= 2:
         cwd = os.getcwd()
         dir = os.path.join(cwd, sys.argv[2])
         open(sys.argv[2], "x").close()
