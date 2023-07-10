@@ -110,9 +110,9 @@ roblox-c c
 roblox-cpp c
 ```
 
-to find all code in the desired language, delete it and add a file with the same name but of the desired language&#x20;
+to find all code in lua, delete it and add a file with the same name but of the desired language&#x20;
 
-> This does not compile code, it will return a empty file.
+> This does not compile code, it will return a empty file with the old script as a comment, this is used to convert default Rojo worlds into your desired language.
 
 #### Start
 
