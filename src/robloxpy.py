@@ -3,7 +3,7 @@ from flask import Flask, request
 from pyflakes import api
 import re
 import sys
-import typer 
+#import typer 
 
 from . import pytranslator, colortext, ctranslator
 
@@ -75,9 +75,9 @@ class Reporter:
 
 
 app = Flask(__name__)
-typerapp = typer.Typer() #py
-typerapp2 = typer.Typer() #c
-typerapp3 = typer.Typer() #cpp
+#typerapp = typer.Typer() #py
+#typerapp2 = typer.Typer() #c
+#typerapp3 = typer.Typer() #cpp
 translator = pytranslator.Translator()
 
 def backwordreplace(s, old, new, occurrence):
@@ -151,7 +151,7 @@ def w():
       exit(0)
     else:
       incli()
-  if sys.argv[1] is not None:
+  if len(sys.argv) == 1:
     if sys.argv[1] == "p":
       p()
     elif sys.argv[1] == "lib":
@@ -216,7 +216,7 @@ def cw():
       exit(0)
     else:
       incli()
-  if sys.argv[1] is not None:
+  if len(sys.argv) > 1:
     if sys.argv[1] == "p":
       print(colortext.red("roblox-c: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
@@ -280,7 +280,7 @@ def cpw():
       exit(0)
     else:
       incli()
-  if sys.argv[1] is not None:
+  if len(sys.argv) >= 1:
     if sys.argv[1] == "p":
       print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
