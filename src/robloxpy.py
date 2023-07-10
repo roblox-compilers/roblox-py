@@ -113,7 +113,6 @@ def p():
   )
 
 def w():
-  print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -158,8 +157,12 @@ def w():
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
       if sys.argv[2] is not None:
-        open(sys.argv[2], "x").close()
-        with open(sys.argv[2], "w") as f:
+        cwd = os.getcwd()
+        # cwd+sys.argv[2]
+        dir = os.path.join(cwd, sys.argv[2])
+        
+        open(dir, "x").close()
+        with open(dir, "w") as f:
           f.write(translator.getluainit())
       else:
         print(colortext.red("roblox-py: No path specified!"))
@@ -172,15 +175,25 @@ def w():
         for r, d, f in os.walk(path):
           for file in f:
             if '.lua' in file:
+              luafilecontents = ""
+              with open(os.path.join(r, file), "r") as f:
+                luafilecontents = f.read()
+                
               os.remove(os.path.join(r, file))
+              
+              # create new file with same name but  .py and write the lua file contents to it
+              open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
+              # write the old file contents as a py comment
+              open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
               print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)))
     else:
+      print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   else:
+    print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
     incli()
 
 def cw():
-  print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -205,12 +218,15 @@ def cw():
       incli()
   if sys.argv[1] is not None:
     if sys.argv[1] == "p":
-      p()
+      print(colortext.red("roblox-c: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
       if sys.argv[2] is not None:
-        open(sys.argv[2], "x").close()
-        with open(sys.argv[2], "w") as f:
+        cwd = os.getcwd()
+        # cwd+sys.argv[2]
+        dir = os.path.join(cwd, sys.argv[2])
+        open(dir, "x").close()
+        with open(dir, "w") as f:
           f.write(translator.getluainit())
       else:
         print(colortext.red("roblox-c: No path specified!"))
@@ -223,15 +239,25 @@ def cw():
         for r, d, f in os.walk(path):
           for file in f:
             if '.lua' in file:
+              luafilecontents = ""
+              with open(os.path.join(r, file), "r") as f:
+                luafilecontents = f.read()
+                
               os.remove(os.path.join(r, file))
+              
+              # create new file with same name but  .py and write the lua file contents to it
+              open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
+              # write the old file contents as a C comment
+              open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
               print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)))
     else:
+      print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   else:
+    print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
     incli()
   
 def cpw():
-  print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)), "test")+" ...\n Type 'exit' to exit, Press enter to compile."))
   def incli():
     # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -256,10 +282,12 @@ def cpw():
       incli()
   if sys.argv[1] is not None:
     if sys.argv[1] == "p":
-      p()
+      print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
       if sys.argv[2] is not None:
+        cwd = os.getcwd()
+        dir = os.path.join(cwd, sys.argv[2])
         open(sys.argv[2], "x").close()
         with open(sys.argv[2], "w") as f:
           f.write(translator.getluainit())
@@ -274,11 +302,23 @@ def cpw():
         for r, d, f in os.walk(path):
           for file in f:
             if '.lua' in file:
+              luafilecontents = ""
+              with open(os.path.join(r, file), "r") as f:
+                luafilecontents = f.read()
+                
               os.remove(os.path.join(r, file))
+              
+              # create new file with same name but  .py and write the lua file contents to it
+              open(os.path.join(r, file.replace(".lua", ".cpp")), "x").close()
+              # write the old file contents as a C++ comment
+              open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
+              
               print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)))
     else:
+      print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   else:
+    print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
     incli()
   
   
