@@ -1,8 +1,8 @@
 ---
-description: For personal usage mainly.
+description: For personal usage so I can remember what commands to use.
 ---
 
-# Build Guide
+# Technical Guide
 
 ## Local build
 
