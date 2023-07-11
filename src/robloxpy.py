@@ -139,7 +139,8 @@ def w():
               # get the relative path of the file and replace .py with .lua
               relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
               
-              open(relative_path, "x").close()
+              if not os.path.exists(os.path.dirname(relative_path)):
+                open(os.path.dirname(relative_path), "x").close()
               with open(relative_path, "w") as f:
                 f.write(lua_code)
             except Exception as e:

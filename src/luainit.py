@@ -373,13 +373,41 @@ setmetatable(dict, {
 	end,
 })
 
+local pylib = {object = game or nil}
+if not game then warn("pylib is not supported outside of roblox") else
+	local meta = {
+		__index = function(_, index)
+			new = {}
+			if .object:FindFirstChild(index) then
+				new.object = _.object:FindFirstChild("index")
+			elseif .object[index] then
+				-- TODO: wrap it for events so you u can use : rather than .
+				return _.object[index]
+			end
+			setmetatable(new, meta)
+			return new
+		end,
+		__newindex = function(_, index, value)
+			if  _.object[index] then
+				_.object[index] = value
+			end
+		end,
+		__call = function(_, index, ...)
+			if typeof(_.object[index]) == "RBXScriptSignal" then
+				return _.object[index]:Connect(...)
+			elseif typeof(_.object[index]) == "function" then
+				return _.object[index](...)
+			end
+		end,
+  	}
+ 	setmetatable(pylib, meta)
+			
+end
 
 local module = function(self)
 	return { 
 	py = {
-		{ -- python library
-
-		},
+		pylib,
 		{ -- pip library
 			{libs}
 		},
