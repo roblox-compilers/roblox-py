@@ -4,15 +4,16 @@ import sys
 
 initcode = """
 
-							--// AsynchronousAI @Dev98799 \\--
-				-------------------------------------------------------------------------------
-				-- this script was added by roblox-pyc plugin to give you the full experience.-- 
-				-- below you will find lua equivelents of built in python functions, it is   --         
-				-- free to use for your personal needs and feel free to edit it, if needed to--
-				-- reset it or update it simply delete it and use the plugin again to do so  --
-				-------------------------------------------------------------------------------
 
-									-- Version 1.0.0 --
+--// AsynchronousAI @Dev98799 \\--
+-------------------------------------------------------------------------------
+-- this script was added by roblox-pyc plugin to give you the full experience.-- 
+-- below you will find lua equivelents of built in python functions, it is   --         
+-- free to use for your personal needs and feel free to edit it, if needed to--
+-- reset it or update it simply delete it and use the plugin again to do so  --
+-------------------------------------------------------------------------------
+
+-- Version 1.0.0 --
 
 local module = { }
 local string_meta = { }
@@ -61,7 +62,7 @@ end
 local gtype 
 if not typeof then
 	gtype = function(obj)
-		local type = typeof(obj)
+		local type = type(obj)
 		if type == "table" then
 			if obj._is_list then
 				return "list"
@@ -375,556 +376,553 @@ setmetatable(dict, {
 
 local pylib = {object = game or nil}
 if not game then warn("pylib is not supported outside of roblox") else
-	local meta = {
-		__index = function(_, index)
-			new = {}
-			if .object:FindFirstChild(index) then
-				new.object = _.object:FindFirstChild("index")
-			elseif .object[index] then
+	local meta
+	meta = {
+		__index = function(self, index)
+			local new = {}
+			if self.object:FindFirstChild(index) then
+				new.object = self.object:FindFirstChild("index")
+			elseif self.object[index] then
 				-- TODO: wrap it for events so you u can use : rather than .
-				return _.object[index]
+				return self.object[index]
 			end
 			setmetatable(new, meta)
 			return new
 		end,
-		__newindex = function(_, index, value)
-			if  _.object[index] then
-				_.object[index] = value
+		__newindex = function(self, index, value)
+			if  self.object[index] then
+				self.object[index] = value
 			end
 		end,
-		__call = function(_, index, ...)
-			if typeof(_.object[index]) == "RBXScriptSignal" then
-				return _.object[index]:Connect(...)
-			elseif typeof(_.object[index]) == "function" then
-				return _.object[index](...)
+		__call = function(self, index, ...)
+			if typeof(self.object[index]) == "RBXScriptSignal" then
+				return self.object[index]:Connect(...)
+			elseif typeof(self.object[index]) == "function" then
+				return self.object[index](...)
 			end
 		end,
-  	}
- 	setmetatable(pylib, meta)
-			
+	}
+	setmetatable(pylib, meta)
+
 end
 
 local module = function(self)
 	return { 
-	py = {
-		pylib,
-		{ -- pip library
-		},
-		{ -- built in
-		string_meta = string_meta, list = list, dict = dict, -- class meta
-		
-		staticmethod = function(old_fun) -- staticmethod
-			local wrapper = function(first, ...)
-				return old_fun(...)
-			end
+		py = {
+			pylib,
+			{ -- pip library
+			},
+			{ -- built in
+				string_meta = string_meta, list = list, dict = dict, -- class meta
 
-			return wrapper
-		end,
-		classmethod = function(old_fun) -- classmethod
-			local wrapper = function(first, ...)
-				return old_fun(first, ...)
-			end
+				staticmethod = function(old_fun) -- staticmethod
+					local wrapper = function(first, ...)
+						return old_fun(...)
+					end
 
-			return wrapper
-		end,
-		class = function(class_init, bases) -- class
-			bases = bases or {}
+					return wrapper
+				end,
+				classmethod = function(old_fun) -- classmethod
+					local wrapper = function(first, ...)
+						return old_fun(first, ...)
+					end
 
-			local c = {}
+					return wrapper
+				end,
+				class = function(class_init, bases) -- class
+					bases = bases or {}
 
-			for _, base in ipairs(bases) do
-				for k, v in pairs(base) do
-					c[k] = v
-				end
-			end
+					local c = {}
 
-			c._bases = bases
+					for _, base in ipairs(bases) do
+						for k, v in pairs(base) do
+							c[k] = v
+						end
+					end
 
-			c = class_init(c)
+					c._bases = bases
 
-			local mt = getmetatable(c) or {}
-			mt.__call = function(_, ...)
-				local object = {}
+					c = class_init(c)
 
-				setmetatable(object, {
-					__index = function(tbl, idx)
-						local method = c[idx]
-						if typeof(method) == "function" then
-							return function(...)
-								return c[idx](object, ...) 
-							end
+					local mt = getmetatable(c) or {}
+					mt.__call = function(_, ...)
+						local object = {}
+
+						setmetatable(object, {
+							__index = function(tbl, idx)
+								local method = c[idx]
+								if typeof(method) == "function" then
+									return function(...)
+										return c[idx](object, ...) 
+									end
+								end
+
+								return method
+							end,
+						})
+
+						if typeof(object.__init__) == "function" then
+							object.__init__(...)
 						end
 
-						return method
-					end,
-				})
-
-				if typeof(object.__init__) == "function" then
-					object.__init__(...)
-				end
-
-				return object
-			end
-
-			setmetatable(c, mt)
-
-			return c
-		end,
-		range = function(s, e) -- range()
-			local tb = {}
-			local a = 0
-			local b = 0
-			if not e then a=1 else a=s end
-			if not e then b=s else b=e end
-			for i = a, b do
-				tb[#tb+1] = i
-			end
-			return tb
-		end,
-		__name__ = self.Name:sub(1,#self.Name-3), -- __name__ 
-		len = function(x) return #x end, -- len()
-		abs = math.abs, -- abs()
-		str = tostring, -- str()
-		int = tonumber, -- int()
-
-		sum = function(tbl) --sum()
-			local total = 0
-			for _, v in ipairs(tbl) do
-				total = total + v
-			end
-			return total
-		end,
-
-		-- Maximum value in a table
-		max = function(tbl) --max()
-			local maxValue = -math.huge
-			for _, v in ipairs(tbl) do
-				if v > maxValue then
-					maxValue = v
-				end
-			end
-			return maxValue
-		end,
-
-		-- Minimum value in a table
-		min = function(tbl) --min()
-			local minValue = math.huge
-			for _, v in ipairs(tbl) do
-				if v < minValue then
-					minValue = v
-				end
-			end
-			return minValue
-		end,
-
-		-- Reversed version of a table or string
-		reversed = function(seq) -- reversed()
-			local reversedSeq = {}
-			local length = #seq
-			for i = length, 1, -1 do
-				reversedSeq[length - i + 1] = seq[i]
-			end
-			return reversedSeq
-		end,
-
-		-- Splitting a string into a table of substrings
-		split = function(str, sep) -- split
-			local substrings = {}
-			local pattern = string.format("([^%s]+)",sep or "%s")
-			for substring in string.gmatch(str, pattern) do
-				table.insert(substrings, substring)
-			end
-			return substrings
-		end,
-
-		round = math.round, -- round()
-
-		all = function (iter) -- all()
-			for i, v in iter do if not v then return false end end
-
-			return true
-		end,
-
-		any = function (iter) -- any()
-			for i, v in iter do
-				if v then return true end
-			end
-			return false
-		end,
-
-		ord = string.byte, -- ord
-		chr = string.char, -- chr
-
-		callable = function(fun) -- callable()
-			if rawget(fun) ~= fun then warn("At the momement Roblox.py's function callable() does not fully support metatables.") end
-			return typeof(rawget(fun))	== "function"
-		end,
-		float = tonumber, -- float()
-		
-		format = function(format, ...) -- format
-			local args = {...}
-			local num_args = select("#", ...)
-
-			local formatted_string = string.gsub(format, "{(%d+)}", function(index)
-				index = tonumber(index)
-				if index >= 1 and index <= num_args then
-					return tostring(args[index])
-				else
-					return "{" .. index .. "}"
-				end
-			end)
-
-			return formatted_string
-		end,
-		
-		hex = function (value) -- hex
-			return string.format("%x", value)
-		end,
-		
-		id = function (obj) -- id
-			return print(tostring({obj}):gsub("table: ", ""):split(" ")[1])
-		end,
-		map = function (func, ...) --map
-			local args = {...}
-			local result = {}
-			local num_args = select("#", ...)
-
-			local shortest_length = math.huge
-			for i = 1, num_args do
-				local arg = args[i]
-				local arg_length = #arg
-				if arg_length < shortest_length then
-					shortest_length = arg_length
-				end
-			end
-
-			for i = 1, shortest_length do
-				local mapped_args = {}
-				for j = 1, num_args do
-					local arg = args[j]
-					table.insert(mapped_args, arg[i])
-				end
-				table.insert(result, func(unpack(mapped_args)))
-			end
-
-			return result
-		end,
-		bool = function(x) -- bool
-			if x == false or x == nil or x == 0 then
-				return false
-			end
-		
-			if typeof(x) == "table" then
-				if x._is_list or x._is_dict then
-					return next(x._data) ~= nil
-				end
-			end
-		
-			return true
-		end,
-		divmod = function(a, b) -- divmod
-			local res = { math.floor(a / b), math.fmod(a, b) }
-			return unpack(res)
-		end,
-		slice = slicefun,	
-		operator_in = function (item, items) -- operator_in()
-			if type(items) == "table" then
-				for v in items do
-					if v == item then
-						return true
+						return object
 					end
-				end
-			elseif type(items) == "string" and type(item) == "string" then
-				return string.find(items, item, 1, true) ~= nil
-			end
-		
-			return false
-		end,
-		asynchronousfunction = function(func) -- asynchronousfunction
-			return function(...)
-				local all = {...}
-				coroutine.wrap(function()
-					func(unpack(all))
-				end)()
-			end
-		end,
-		match = function(value, values) -- match
-			if values[value] then
-				return values[value]()
-			elseif values["default"] then
-				return values["default"]() 
-			end
-		end,
-		
-		anext = function (iterator) -- anext
-			local status, value = pcall(iterator)
-			if status then
-				return value
-			end
-		end,
 
-		ascii = function (obj) -- ascii
-			return string.format("%q", tostring(obj))
-		end,
-		dir = function (obj) -- dir
-			local result = {}
-			for key, _ in pairs(obj) do
-				table.insert(result, key)
-			end
-			return result
-		end,
-		getattr = function (obj, name, default) -- getattr
-			local value = obj[name]
-			if value == nil then
-				return default
-			end
-			return value
-		end,
-		globals = function () -- globals
-			return _G
-		end,
-		hasattr = function (obj, name) --hasattr
-			return obj[name] ~= nil
-		end,
-		input = function (prompt) -- input
-			if not io then error("io is not enabled") end
-			io.write(prompt)
-			return io.read()
-		end,
-		isinstance = function (obj, class) -- isinstance
-			return type(obj) == class
-		end,
-		issubclass = function (cls, classinfo) -- issubclass
-			local mt = getmetatable(cls)
-			while mt do
-				if mt.__index == classinfo then
+					setmetatable(c, mt)
+
+					return c
+				end,
+				range = function(s, e) -- range()
+					local tb = {}
+					local a = 0
+					local b = 0
+					if not e then a=1 else a=s end
+					if not e then b=s else b=e end
+					for i = a, b do
+						tb[#tb+1] = i
+					end
+					return tb
+				end,
+				__name__ = self.Name:sub(1,#self.Name-3), -- __name__ 
+				len = function(x) return #x end, -- len()
+				abs = math.abs, -- abs()
+				str = tostring, -- str()
+				int = tonumber, -- int()
+
+				sum = function(tbl) --sum()
+					local total = 0
+					for _, v in ipairs(tbl) do
+						total = total + v
+					end
+					return total
+				end,
+
+				-- Maximum value in a table
+				max = function(tbl) --max()
+					local maxValue = -math.huge
+					for _, v in ipairs(tbl) do
+						if v > maxValue then
+							maxValue = v
+						end
+					end
+					return maxValue
+				end,
+
+				-- Minimum value in a table
+				min = function(tbl) --min()
+					local minValue = math.huge
+					for _, v in ipairs(tbl) do
+						if v < minValue then
+							minValue = v
+						end
+					end
+					return minValue
+				end,
+
+				-- Reversed version of a table or string
+				reversed = function(seq) -- reversed()
+					local reversedSeq = {}
+					local length = #seq
+					for i = length, 1, -1 do
+						reversedSeq[length - i + 1] = seq[i]
+					end
+					return reversedSeq
+				end,
+
+				-- Splitting a string into a table of substrings
+				split = function(str, sep) -- split
+					local substrings = {}
+					local pattern = string.format("([^%s]+)",sep or "%s")
+					for substring in string.gmatch(str, pattern) do
+						table.insert(substrings, substring)
+					end
+					return substrings
+				end,
+
+				round = math.round, -- round()
+
+				all = function (iter) -- all()
+					for i, v in iter do if not v then return false end end
+
 					return true
-				end
-				mt = getmetatable(mt.__index)
-			end
-			return false
-		end,
-		iter = function (obj) -- iter
-			if type(obj) == "table" and obj.__iter__ ~= nil then
-				return obj.__iter__
-			end
-			return nil
-		end,
-		locals = function () -- locals
-			return _G
-		end,
-		-- oct()
-		oct = function (num) --oct
-			return string.format("%o", num)
-		end,
+				end,
 
-		-- open()
-		open = function (filename, mode) --open
-			if not io then error("io is not enabled") end
-			return io.open(filename, mode)
-		end,
+				any = function (iter) -- any()
+					for i, v in iter do
+						if v then return true end
+					end
+					return false
+				end,
 
-		-- ord()
-		ord = function (c) --ord
-			return string.byte(c)
-		end,
+				ord = string.byte, -- ord
+				chr = string.char, -- chr
 
-		-- pow()
-		pow = function (base, exponent, modulo) --pow
-			if modulo ~= nil then
-				return math.pow(base, exponent) % modulo
-			else
-				return base ^ exponent
-			end
-		end,
+				callable = function(fun) -- callable()
+					if rawget(fun) ~= fun then warn("At the momement Roblox.py's function callable() does not fully support metatables.") end
+					return typeof(rawget(fun))	== "function"
+				end,
+				float = tonumber, -- float()
 
-		-- eval()
-		eval = function (expr, env)
-			return loadstring(expr)()
-		end,
+				format = function(format, ...) -- format
+					local args = {...}
+					local num_args = select("#", ...)
 
-		-- exec()
-		exec = function (code, env)
-			return loadstring(expr)()
-		end,
+					local formatted_string = string.gsub(format, "{(%d+)}", function(index)
+						index = tonumber(index)
+						if index >= 1 and index <= num_args then
+							return tostring(args[index])
+						else
+							return "{" .. index .. "}"
+						end
+					end)
 
-		-- filter()
-		filter = function (predicate, iterable)
-			local result = {}
-			for _, value in ipairs(iterable) do
-				if predicate(value) then
-					table.insert(result, value)
-				end
-			end
-			return result
-		end,
+					return formatted_string
+				end,
 
-		-- frozenset()
-		frozenset = function (...)
-			local elements = {...}
-			local frozenSet = {}
-			for _, element in ipairs(elements) do
-				frozenSet[element] = true
-			end
-			return frozenSet
-		end,
-		-- aiter()
-		aiter = function (iterable) -- aiter
-			return pairs(iterable)
-		end,
-		
-		-- bin()
-		bin = function (number) -- bin
-			return string.format("%b", number)
-		end,
-		-- complex() 
-		complex = function (real, imag) -- complex
-			return { real = real, imag = imag }
-		end,
-		
-		-- delattr()
-		deltaattr = function (object, attribute) -- delattr
-			object[attribute] = nil
-		end,	
+				hex = function (value) -- hex
+					return string.format("%x", value)
+				end,
 
-		-- enumerate()
-		enumerate = function (iterable) -- enumerate
-			local i = 0
-			return function()
-			i = i + 1
-			local value = iterable[i]
-			if value ~= nil then
-				return i, value
-			end
-			end
-		end,
+				id = function (obj) -- id
+					return print(tostring({obj}):gsub("table: ", ""):split(" ")[1])
+				end,
+				map = function (func, ...) --map
+					local args = {...}
+					local result = {}
+					local num_args = select("#", ...)
 
-		-- breakpoint()
-		breakpoint = function () -- breakpoint
-			-- This function can be left empty or you can add a debug hook to pause execution.
-			-- Here's an example using the debug library to pause execution:
-			debug.sethook(function()
-			print("Breakpoint hit!")
-			--io.read() -- Wait for user input to continue
-			end, "c")
-		end,
-		
-		-- bytearray()
-		bytearray = function (arg) -- bytearray
-			if type(arg) == "string" then
-			local bytes = {}
-			for i = 1, #arg do
-				table.insert(bytes, string.byte(arg, i))
-			end
-			return bytes
-			elseif type(arg) == "number" then
-			local bytes = {}
-			while arg > 0 do
-				table.insert(bytes, 1, arg % 256)
-				arg = math.floor(arg / 256)
-			end
-			return bytes
-			elseif type(arg) == "table" then
-			return arg -- Assuming it's already a bytearray table
-			else
-			error("Invalid argument type for bytearray()")
-			end
-		end,
-		
-		-- bytes()
-		bytes = function (arg) -- bytes
-			if type(arg) == "string" then
-			local bytes = {}
-			for i = 1, #arg do
-				table.insert(bytes, string.byte(arg, i))
-			end
-			return bytes
-			elseif type(arg) == "table" then
-			return arg -- Assuming it's already a bytes table
-			else
-			error("Invalid argument type for bytes()")
-			end
-		end,
-		
-		-- compile()
-		compile = function (source, filename, mode) -- compile
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of a simple compilation to execute Lua code directly:
-			local compiledFunction = loadstring(source, filename)
-			return compiledFunction
-		end,
+					local shortest_length = math.huge
+					for i = 1, num_args do
+						local arg = args[i]
+						local arg_length = #arg
+						if arg_length < shortest_length then
+							shortest_length = arg_length
+						end
+					end
 
-		
-		-- help()
-		help = function (object) -- help
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of displaying a help message for an object:
-			print("Help for object:", object)
-			print("Type:", type(object))
-			-- Add more information or documentation here
-		end,
-		
-		-- memoryview()
-		memoryview = function (object) -- memoryview
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of creating a memory view object:
-			if type(object) == "table" then
-			local buffer = table.concat(object)
-			return { buffer = buffer, itemsize = 1 }
-			else
-			error("Invalid argument type for memoryview()")
-			end
-		end,
-		-- repr()
-		repr = function (object) -- repr
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of generating a representation of an object:
-			return tostring(object)
-		end,
-		
-		-- sorted()
-		sorted = function (iterable, cmp, key, reverse) -- sorted
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of sorting an iterable table:
-			local sortedTable = {}
-			for key, value in pairs(iterable) do
-			table.insert(sortedTable, { key = key, value = value })
-			end
-			table.sort(sortedTable, function(a, b)
-			-- Compare logic based on cmp, key, reverse parameters
-			return a.key < b.key
-			end)
-			local i = 0
-			return function()
-			i = i + 1
-			local entry = sortedTable[i]
-			if entry then
-				return entry.key, entry.value
-			end
-			end
-		end,
-		
-		-- vars()
-		vars = function (object) -- vars
-			-- This is a placeholder implementation and might not cover all possible use cases.
-			-- You would need to provide your own implementation based on your specific requirements.
-			-- Here's an example of getting the attributes of an object:
-			local attributes = {}
-			for key, value in pairs(object) do
-			attributes[key] = value
-			end
-			return attributes
-		end,
-		
-		__import__ = require,
-	}
-		
-	}
+					for i = 1, shortest_length do
+						local mapped_args = {}
+						for j = 1, num_args do
+							local arg = args[j]
+							table.insert(mapped_args, arg[i])
+						end
+						table.insert(result, func(unpack(mapped_args)))
+					end
+
+					return result
+				end,
+				bool = function(x) -- bool
+					if x == false or x == nil or x == 0 then
+						return false
+					end
+
+					if typeof(x) == "table" then
+						if x._is_list or x._is_dict then
+							return next(x._data) ~= nil
+						end
+					end
+
+					return true
+				end,
+				divmod = function(a, b) -- divmod
+					local res = { math.floor(a / b), math.fmod(a, b) }
+					return unpack(res)
+				end,
+				slice = slicefun,	
+				operator_in = function (item, items) -- operator_in()
+					if type(items) == "table" then
+						for v in items do
+							if v == item then
+								return true
+							end
+						end
+					elseif type(items) == "string" and type(item) == "string" then
+						return string.find(items, item, 1, true) ~= nil
+					end
+
+					return false
+				end,
+				asynchronousfunction = function(func) -- asynchronousfunction
+					return function(...)
+						local all = {...}
+						coroutine.wrap(function()
+							func(unpack(all))
+						end)()
+					end
+				end,
+				match = function(value, values) -- match
+					if values[value] then
+						return values[value]()
+					elseif values["default"] then
+						return values["default"]() 
+					end
+				end,
+
+				anext = function (iterator) -- anext
+					local status, value = pcall(iterator)
+					if status then
+						return value
+					end
+				end,
+
+				ascii = function (obj) -- ascii
+					return string.format("%q", tostring(obj))
+				end,
+				dir = function (obj) -- dir
+					local result = {}
+					for key, _ in pairs(obj) do
+						table.insert(result, key)
+					end
+					return result
+				end,
+				getattr = function (obj, name, default) -- getattr
+					local value = obj[name]
+					if value == nil then
+						return default
+					end
+					return value
+				end,
+				globals = function () -- globals
+					return _G
+				end,
+				hasattr = function (obj, name) --hasattr
+					return obj[name] ~= nil
+				end,
+				input = function (prompt) -- input
+					if not io then error("io is not enabled") end
+					io.write(prompt)
+					return io.read()
+				end,
+				isinstance = function (obj, class) -- isinstance
+					return type(obj) == class
+				end,
+				issubclass = function (cls, classinfo) -- issubclass
+					local mt = getmetatable(cls)
+					while mt do
+						if mt.__index == classinfo then
+							return true
+						end
+						mt = getmetatable(mt.__index)
+					end
+					return false
+				end,
+				iter = function (obj) -- iter
+					if type(obj) == "table" and obj.__iter__ ~= nil then
+						return obj.__iter__
+					end
+					return nil
+				end,
+				locals = function () -- locals
+					return _G
+				end,
+				-- oct()
+				oct = function (num) --oct
+					return string.format("%o", num)
+				end,
+
+				-- open()
+				open = function (filename, mode) --open
+					if not io then error("io is not enabled") end
+					return io.open(filename, mode)
+				end,
+
+
+				-- pow()
+				pow = function (base, exponent, modulo) --pow
+					if modulo ~= nil then
+						return math.pow(base, exponent) % modulo
+					else
+						return base ^ exponent
+					end
+				end,
+
+				-- eval()
+				eval = function (expr, env)
+					return loadstring(expr)
+				end,
+
+				-- exec()
+				exec = function (code, env)
+					return loadstring(expr)
+				end,
+
+				-- filter()
+				filter = function (predicate, iterable)
+					local result = {}
+					for _, value in ipairs(iterable) do
+						if predicate(value) then
+							table.insert(result, value)
+						end
+					end
+					return result
+				end,
+
+				-- frozenset()
+				frozenset = function (...)
+					local elements = {...}
+					local frozenSet = {}
+					for _, element in ipairs(elements) do
+						frozenSet[element] = true
+					end
+					return frozenSet
+				end,
+				-- aiter()
+				aiter = function (iterable) -- aiter
+					return pairs(iterable)
+				end,
+
+				-- bin()
+				bin = function (number) -- bin
+					return string.format("%b", number)
+				end,
+				-- complex() 
+				complex = function (real, imag) -- complex
+					return { real = real, imag = imag }
+				end,
+
+				-- delattr()
+				deltaattr = function (object, attribute) -- delattr
+					object[attribute] = nil
+				end,	
+
+				-- enumerate()
+				enumerate = function (iterable) -- enumerate
+					local i = 0
+					return function()
+						i = i + 1
+						local value = iterable[i]
+						if value ~= nil then
+							return i, value
+						end
+					end
+				end,
+
+				-- breakpoint()
+				breakpoint = function () -- breakpoint
+					-- This function can be left empty or you can add a debug hook to pause execution.
+					-- Here's an example using the debug library to pause execution:
+					
+					print("Breakpoint hit!")
+					--io.read() -- Wait for user input to continue
+					
+				end,
+
+				-- bytearray()
+				bytearray = function (arg) -- bytearray
+					if type(arg) == "string" then
+						local bytes = {}
+						for i = 1, #arg do
+							table.insert(bytes, string.byte(arg, i))
+						end
+						return bytes
+					elseif type(arg) == "number" then
+						local bytes = {}
+						while arg > 0 do
+							table.insert(bytes, 1, arg % 256)
+							arg = math.floor(arg / 256)
+						end
+						return bytes
+					elseif type(arg) == "table" then
+						return arg -- Assuming it's already a bytearray table
+					else
+						error("Invalid argument type for bytearray()")
+					end
+				end,
+
+				-- bytes()
+				bytes = function (arg) -- bytes
+					if type(arg) == "string" then
+						local bytes = {}
+						for i = 1, #arg do
+							table.insert(bytes, string.byte(arg, i))
+						end
+						return bytes
+					elseif type(arg) == "table" then
+						return arg -- Assuming it's already a bytes table
+					else
+						error("Invalid argument type for bytes()")
+					end
+				end,
+
+				-- compile()
+				compile = function (source, filename, mode) -- compile
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of a simple compilation to execute Lua code directly:
+					local compiledFunction = loadstring(source, filename)
+					return compiledFunction
+				end,
+
+
+				-- help()
+				help = function (object) -- help
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of displaying a help message for an object:
+					print("Help for object:", object)
+					print("Type:", type(object))
+					-- Add more information or documentation here
+				end,
+
+				-- memoryview()
+				memoryview = function (object) -- memoryview
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of creating a memory view object:
+					if type(object) == "table" then
+						local buffer = table.concat(object)
+						return { buffer = buffer, itemsize = 1 }
+					else
+						error("Invalid argument type for memoryview()")
+					end
+				end,
+				-- repr()
+				repr = function (object) -- repr
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of generating a representation of an object:
+					return tostring(object)
+				end,
+
+				-- sorted()
+				sorted = function (iterable, cmp, key, reverse) -- sorted
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of sorting an iterable table:
+					local sortedTable = {}
+					for key, value in pairs(iterable) do
+						table.insert(sortedTable, { key = key, value = value })
+					end
+					table.sort(sortedTable, function(a, b)
+						-- Compare logic based on cmp, key, reverse parameters
+						return a.key < b.key
+					end)
+					local i = 0
+					return function()
+						i = i + 1
+						local entry = sortedTable[i]
+						if entry then
+							return entry.key, entry.value
+						end
+					end
+				end,
+
+				-- vars()
+				vars = function (object) -- vars
+					-- This is a placeholder implementation and might not cover all possible use cases.
+					-- You would need to provide your own implementation based on your specific requirements.
+					-- Here's an example of getting the attributes of an object:
+					local attributes = {}
+					for key, value in pairs(object) do
+						attributes[key] = value
+					end
+					return attributes
+				end,
+
+				__import__ = require,
+			}
+
+		}
 	}
 end
 
