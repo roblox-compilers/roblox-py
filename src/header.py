@@ -2,7 +2,7 @@ headertemplate = """--// Compiled using roblox-pyc \\--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script))
+local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 {}
 -----------------------------------------------------------------------------
