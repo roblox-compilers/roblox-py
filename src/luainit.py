@@ -3,8 +3,6 @@ import pip
 import sys
 
 initcode = """
-
-
 --// AsynchronousAI @Dev98799 \\--
 -------------------------------------------------------------------------------
 -- this script was added by roblox-pyc plugin to give you the full experience.-- 
@@ -406,7 +404,7 @@ if not game then warn("pylib is not supported outside of roblox") else
 
 end
 
-local module = function(self)
+local module = function(scriptname)
 	return { 
 		py = {
 			pylib,
@@ -483,7 +481,7 @@ local module = function(self)
 					end
 					return tb
 				end,
-				__name__ = self.Name:sub(1,#self.Name-3), -- __name__ 
+				__name__ = script.Name:sub(1,#script.Name-3), -- __name__ 
 				len = function(x) return #x end, -- len()
 				abs = math.abs, -- abs()
 				str = tostring, -- str()
@@ -801,10 +799,10 @@ local module = function(self)
 				breakpoint = function () -- breakpoint
 					-- This function can be left empty or you can add a debug hook to pause execution.
 					-- Here's an example using the debug library to pause execution:
-					
+
 					print("Breakpoint hit!")
 					--io.read() -- Wait for user input to continue
-					
+
 				end,
 
 				-- bytearray()
@@ -928,8 +926,7 @@ end
 
 
 
-return module
-"""
+return module"""
 
 allfunctions = "stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import__"
 
