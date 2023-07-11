@@ -1,3 +1,7 @@
+import os
+import pip
+import sys
+
 initcode = """
 
 							--// AsynchronousAI @Dev98799 \\--
@@ -375,6 +379,9 @@ local module = function(self)
 	py = {
 		{ -- python library
 
+		},
+		{ -- pip library
+			{libs}
 		},
 		{ -- built in
 		string_meta = string_meta, list = list, dict = dict, -- class meta
@@ -902,3 +909,30 @@ return module
 allfunctions = "stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import__"
 
 allfunctions = allfunctions.split(", ")
+
+def generatewithlibraries ():
+	libraries = "{"
+	files = ""
+    
+    # add it so it would be organized like so:
+    # {x = {y = {z = {contents = "contents", name = "name"}}}}
+    # using os.walk, check where the pip libraries are stored
+    
+	pipfolder = os.path.join(os.path.dirname(sys.executable), "Lib", "site-packages")
+    
+	for root, dirs, files in os.walk(pipfolder):
+		newline = "[\"{}\"] = {".format(root)
+		for file in files:
+			newline += "[\"{}\"] = {{contents = [[{}]], name = \"{}\"}},".format(file, open(os.path.join(root, file)).read(), file)
+		newline += "},"
+  
+	files = newline
+    
+    # check all libraries that pip has installed
+	for lib in pip.get_installed_distributions():
+		libraries += "{}, ".format(lib.key)
+    
+	libraries += "}"
+    
+	print(libraries, files)
+	#return initcode.format(libs = libraries)

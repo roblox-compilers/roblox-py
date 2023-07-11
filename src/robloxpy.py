@@ -5,7 +5,7 @@ import re
 import sys
 #import typer 
 
-from . import pytranslator, colortext, ctranslator
+from . import pytranslator, colortext, ctranslator, luainit
 
 class Reporter:
     """
@@ -189,6 +189,8 @@ def w():
     elif sys.argv[1] == "w":
       print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
+    elif sys.argv[1] == "t":
+      luainit.generatewithlibraries()
     else:
       print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
