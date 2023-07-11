@@ -233,7 +233,7 @@ def cw():
         dir = os.path.join(cwd, sys.argv[2])
         open(dir, "x").close()
         with open(dir, "w") as f:
-          f.write(translator.getluainit())
+          f.write(translator.get_luainit())
       else:
         print(colortext.red("roblox-c: No path specified!"))
     elif sys.argv[1] == "c":

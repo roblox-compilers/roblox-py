@@ -1,5 +1,4 @@
-headertemplate = """
---// Compiled using roblox-pyc \\--
+headertemplate = """--// Compiled using roblox-pyc \\--
 		
 		
 ------------------------------------ BUILT IN -------------------------------

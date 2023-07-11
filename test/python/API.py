@@ -1,6 +1,6 @@
 @py.Workspace.ChildAdded
 def childAdded():
-    print("Child added")\
+    print("Child added")
 
 @py.Workspace.ChildRemoved  
 def childRemoved():

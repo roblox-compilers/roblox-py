@@ -14,10 +14,10 @@ initcode = """
 
 									-- Version 1.0.0 --
 
-local module = {}
-local string_meta = {}
+local module = { }
+local string_meta = { }
 local slicefun = function (sequence, start, stop, step) -- slice
-	local sliced = {}
+	local sliced = { }
 	local len = #sequence
 
 	-- Set default values for start, stop, and step
@@ -409,7 +409,6 @@ local module = function(self)
 	py = {
 		pylib,
 		{ -- pip library
-			{libs}
 		},
 		{ -- built in
 		string_meta = string_meta, list = list, dict = dict, -- class meta
