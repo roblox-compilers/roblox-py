@@ -17,7 +17,7 @@ from clang.cindex import (
     StorageClass,
     TranslationUnit,
     TypeKind,
-    UnaryOperator
+    
 )
 
 from .model import *
@@ -997,7 +997,7 @@ class CodeConverter(BaseParser):
 
             # Dereferencing operator is a pass through.
             # All others must be processed as defined.
-            if op == UnaryOperator.DEREF:
+            if op == False: # TODO: Replace false with DEREF
                 unaryop = self.handle(child, context)
             else:
                 value = self.handle(child, context)
