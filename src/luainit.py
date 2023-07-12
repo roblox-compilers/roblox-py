@@ -3,6 +3,7 @@ import pip
 import sys
 
 initcode = """
+
 --// AsynchronousAI @Dev98799 \\--
 -------------------------------------------------------------------------------
 -- this script was added by roblox-pyc plugin to give you the full experience.-- 
@@ -14,7 +15,6 @@ initcode = """
 -- Version 1.0.0 --
 
 local module = { }
-local string_meta = { }
 local slicefun = function (sequence, start, stop, step) -- slice
 	local sliced = { }
 	local len = #sequence
@@ -77,139 +77,20 @@ end
 local typeof = gtype
 
 
+function string_meta(input)
+	if type(input) == "userdata" then
+		local fake = newproxy(true)
 
-setmetatable(string_meta, {
-	__add = function(v1, v2)
-		if typeof(v1) == "string" and typeof(v2) == "string" then
-			return v1 .. v2
-		end
-		return v1 + v2
-	end,
-	__index = function(self, index)
-		if typeof(index) == "string" then
-			-- if it start with SLICE! then it is a slice, get the start, stop, and step values. sometimes the 3rd value is not there, so we need to check for that
-			if string.sub(index, 1, 6) == "SLICE!" then
-				local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-				if not step then
-					start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
-					step = 1
+		setmetatable(fake, {
+			__add = function(v1, v2)
+				if typeof(v1) == "string" and typeof(v2) == "string" then
+					return v1 .. v2
 				end
-				return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
-			end
-		end
-	end,
-
-})
-local list = {}
-setmetatable(list, {
-	__call = function(_, t)
-		local result = {}
-
-		result._is_list = true
-
-		result._data = {}
-		for _, v in ipairs(t) do
-			table.insert(result._data, v)
-		end
-
-		local methods = {}
-
-		methods.append = function(value)
-			table.insert(result._data, value)
-		end
-
-		methods.extend = function(iterable)
-			for value in iterable do
-				table.insert(result._data, value)
-			end
-		end
-
-		methods.insert = function(index, value)
-			table.insert(result._data, index, value)
-		end
-
-		methods.remove = function(value)
-			for i, v in ipairs(result._data) do
-				if value == v then
-					table.remove(result._data, i)
-					break
-				end
-			end
-		end
-
-		methods.pop = function(index)
-			index = index or #result._data
-			local value = result._data[index]
-			table.remove(result._data, index)
-			return value
-		end
-
-		methods.clear = function()
-			result._data = {}
-		end
-
-		methods.index = function(value, start, end_)
-			start = start or 1
-			end_ = end_ or #result._data
-
-			for i = start, end_, 1 do
-				if result._data[i] == value then
-					return i
-				end
-			end
-
-			return nil
-		end
-
-		methods.count = function(value)
-			local cnt = 0
-			for _, v in ipairs(result._data) do
-				if v == value then
-					cnt = cnt + 1
-				end
-			end
-
-			return cnt
-		end
-
-		methods.sort = function(key, reverse)
-			key = key or nil
-			reverse = reverse or false
-
-			table.sort(result._data, function(a, b)
-				if reverse then
-					return a < b
-				end
-
-				return a > b
-			end)
-		end
-
-		methods.reverse = function()
-			local new_data = {}
-			for i = #result._data, 1, -1 do
-				table.insert(new_data, result._data[i])
-			end
-
-			result._data = new_data
-		end
-
-		methods.copy = function()
-			return list(result._data)
-		end
-
-		local iterator_index = nil
-
-		setmetatable(result, {
+				return v1 + v2
+			end,
 			__index = function(self, index)
-				if typeof(index) == "number" then
-					if index < 0 then
-						index = #result._data + index
-					end
-					return rawget(result._data, index + 1)
-				end
 				if typeof(index) == "string" then
-					-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+					-- if it start with SLICE! then it is a slice, get the start, stop, and step values. sometimes the 3rd value is not there, so we need to check for that
 					if string.sub(index, 1, 6) == "SLICE!" then
 						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
 						if not step then
@@ -219,190 +100,377 @@ setmetatable(list, {
 						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
 					end
 				end
+			end,
 
-				return methods[index]
-			end,
-			__newindex = function(self, index, value)
-				result._data[index] = value
-			end,
-			__call = function(self, _, idx)
-				if idx == nil and iterator_index ~= nil then
-					iterator_index = nil
+		})
+	else
+		return input
+	end
+end
+function list(input)
+	if type(input) == "userdata" then
+		local fake = newproxy(true)
+
+		setmetatable(fake, {
+			__call = function(_, t)
+				local result = {}
+
+				result._is_list = true
+
+				result._data = {}
+				for _, v in ipairs(t) do
+					table.insert(result._data, v)
 				end
 
-				local v = nil
-				iterator_index, v = next(result._data, iterator_index)
+				local methods = {}
 
-				return v
+				methods.append = function(value)
+					table.insert(result._data, value)
+				end
+
+				methods.extend = function(iterable)
+					for value in iterable do
+						table.insert(result._data, value)
+					end
+				end
+
+				methods.insert = function(index, value)
+					table.insert(result._data, index, value)
+				end
+
+				methods.remove = function(value)
+					for i, v in ipairs(result._data) do
+						if value == v then
+							table.remove(result._data, i)
+							break
+						end
+					end
+				end
+
+				methods.pop = function(index)
+					index = index or #result._data
+					local value = result._data[index]
+					table.remove(result._data, index)
+					return value
+				end
+
+				methods.clear = function()
+					result._data = {}
+				end
+
+				methods.index = function(value, start, end_)
+					start = start or 1
+					end_ = end_ or #result._data
+
+					for i = start, end_, 1 do
+						if result._data[i] == value then
+							return i
+						end
+					end
+
+					return nil
+				end
+
+				methods.count = function(value)
+					local cnt = 0
+					for _, v in ipairs(result._data) do
+						if v == value then
+							cnt = cnt + 1
+						end
+					end
+
+					return cnt
+				end
+
+				methods.sort = function(key, reverse)
+					key = key or nil
+					reverse = reverse or false
+
+					table.sort(result._data, function(a, b)
+						if reverse then
+							return a < b
+						end
+
+						return a > b
+					end)
+				end
+
+				methods.reverse = function()
+					local new_data = {}
+					for i = #result._data, 1, -1 do
+						table.insert(new_data, result._data[i])
+					end
+
+					result._data = new_data
+				end
+
+				methods.copy = function()
+					return list(result._data)
+				end
+
+				local iterator_index = nil
+
+				setmetatable(result, {
+					__index = function(self, index)
+						if typeof(index) == "number" then
+							if index < 0 then
+								index = #result._data + index
+							end
+							return rawget(result._data, index + 1)
+						end
+						if typeof(index) == "string" then
+							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+							if string.sub(index, 1, 6) == "SLICE!" then
+								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+								if not step then
+									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+									step = 1
+								end
+								return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+							end
+						end
+
+						return methods[index]
+					end,
+					__newindex = function(self, index, value)
+						result._data[index] = value
+					end,
+					__call = function(self, _, idx)
+						if idx == nil and iterator_index ~= nil then
+							iterator_index = nil
+						end
+
+						local v = nil
+						iterator_index, v = next(result._data, iterator_index)
+
+						return v
+					end,
+				})
+
+				return result
 			end,
 		})
+	else
+		return input
+	end
+end
+function dict(input)
+	if type(input) == "userdata" then
+		local fake = newproxy(true)
 
-		return result
-	end,
-})
+		setmetatable(fake, {
+			__call = function(_, t)
+				local result = {}
 
-local dict = {}
-setmetatable(dict, {
-	__call = function(_, t)
-		local result = {}
+				result._is_dict = true
 
-		result._is_dict = true
-
-		result._data = {}
-		for k, v in pairs(t) do
-			result._data[k] = v
-		end
-
-		local methods = {}
-
-		local key_index = nil
-
-		methods.clear = function()
-			result._data = {}
-		end
-
-		methods.copy = function()
-			return dict(result._data)
-		end
-
-		methods.get = function(key, default)
-			default = default or nil
-			if result._data[key] == nil then
-				return default
-			end
-
-			return result._data[key]
-		end
-
-		methods.items = function()
-			return pairs(result._data)
-		end
-
-		methods.keys = function()
-			return function(self, idx, _) 
-				if idx == nil and key_index ~= nil then
-					key_index = nil
+				result._data = {}
+				for k, v in pairs(t) do
+					result._data[k] = v
 				end
 
-				key_index, _ = next(result._data, key_index)
-				return key_index
-			end
-		end
+				local methods = {}
 
-		methods.pop = function(key, default)
-			default = default or nil
-			if result._data[key] ~= nil then
-				local value = result._data[key]
-				result._data[key] = nil 
-				return key, value
-			end
+				local key_index = nil
 
-			return key, default
-		end
-
-		methods.popitem = function()
-			local key, value = next(result._data)
-			if key ~= nil then
-				result._data[key] = nil
-			end
-
-			return key, value
-		end
-
-		methods.setdefault = function(key, default)
-			if result._data[key] == nil then
-				result._data[key] = default
-			end
-
-			return result._data[key]
-		end
-
-		methods.update = function(t)
-			assert(t._is_dict)
-
-			for k, v in t.items() do
-				result._data[k] = v
-			end
-		end
-
-		methods.values = function()
-			return function(self, idx, _) 
-				if idx == nil and key_index ~= nil then
-					key_index = nil
+				methods.clear = function()
+					result._data = {}
 				end
 
-				key_index, value = next(result._data, key_index)
+				methods.copy = function()
+					return dict(result._data)
+				end
+
+				methods.get = function(key, default)
+					default = default or nil
+					if result._data[key] == nil then
+						return default
+					end
+
+					return result._data[key]
+				end
+
+				methods.items = function()
+					return pairs(result._data)
+				end
+
+				methods.keys = function()
+					return function(self, idx, _) 
+						if idx == nil and key_index ~= nil then
+							key_index = nil
+						end
+
+						key_index, _ = next(result._data, key_index)
+						return key_index
+					end
+				end
+
+				methods.pop = function(key, default)
+					default = default or nil
+					if result._data[key] ~= nil then
+						local value = result._data[key]
+						result._data[key] = nil 
+						return key, value
+					end
+
+					return key, default
+				end
+
+				methods.popitem = function()
+					local key, value = next(result._data)
+					if key ~= nil then
+						result._data[key] = nil
+					end
+
+					return key, value
+				end
+
+				methods.setdefault = function(key, default)
+					if result._data[key] == nil then
+						result._data[key] = default
+					end
+
+					return result._data[key]
+				end
+
+				methods.update = function(t)
+					assert(t._is_dict)
+
+					for k, v in t.items() do
+						result._data[k] = v
+					end
+				end
+
+				methods.values = function()
+					return function(self, idx, _) 
+						if idx == nil and key_index ~= nil then
+							key_index = nil
+						end
+
+						key_index, value = next(result._data, key_index)
+						return value
+					end
+				end
+
+				setmetatable(result, {
+					__index = function(self, index)
+						if typeof(index) == "string" then
+							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+							if string.sub(index, 1, 6) == "SLICE!" then
+								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+								if not step then
+									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+									step = 1
+								end
+								return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+							end
+						end
+						if result._data[index] ~= nil then
+							return result._data[index]
+						end
+						return methods[index]
+					end,
+					__newindex = function(self, index, value)
+						result._data[index] = value
+					end,
+					__call = function(self, _, idx)
+						if idx == nil and key_index ~= nil then
+							key_index = nil
+						end
+
+						key_index, _ = next(result._data, key_index)
+
+						return key_index            
+					end,
+				})
+
+				return result
+			end,
+		})
+	else
+		return input
+	end
+end
+local proxyMetaTable = {
+	-- Metamethod called when accessing an index
+	__index = function(proxy, key)
+		-- Get the wrapped instance
+		local instance = proxy.instance
+
+		-- Check if the key exists in the instance
+		if instance[key] ~= nil then
+			-- If the key is a function, return a wrapped function
+			local value = instance[key]
+			if type(value) == "function" then
+				--print(function(_, ...)end, "5")
+				return function(_, ...)
+					--print(value(instance, ...), "6")
+					return value(instance, ...)
+				end
+			else
+				if typeof(value) == "RBXScriptSignal" then
+					local event = {}
+					local eventmeta = {
+						__call = function(proxy, ...)
+							proxy.Instance:Connect(...)
+						end,
+					}
+
+					event.Instance = value
+					setmetatable(event, eventmeta)
+
+					return event
+				end
 				return value
 			end
 		end
 
-		setmetatable(result, {
-			__index = function(self, index)
-				if typeof(index) == "string" then
-					-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
-					if string.sub(index, 1, 6) == "SLICE!" then
-						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-						if not step then
-							start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
-							step = 1
-						end
-						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
-					end
-				end
-				if result._data[index] ~= nil then
-					return result._data[index]
-				end
-				return methods[index]
-			end,
-			__newindex = function(self, index, value)
-				result._data[index] = value
-			end,
-			__call = function(self, _, idx)
-				if idx == nil and key_index ~= nil then
-					key_index = nil
-				end
+		-- Check if the key exists in the parent
+		local parent = instance.Parent
+		while parent do
+			if parent[key] ~= nil then
+				--print(parent[key], "4")
+				return parent[key]
+			end
+			parent = parent.Parent
+		end
 
-				key_index, _ = next(result._data, key_index)
-
-				return key_index            
-			end,
-		})
-
-		return result
+		-- Key not found, return nil
+		--print(nil, "3")
+		return nil
 	end,
-})
 
-local pylib = {object = game or nil}
-if not game then warn("pylib is not supported outside of roblox") else
-	local meta
-	meta = {
-		__index = function(self, index)
-			local new = {}
-			if self.object:FindFirstChild(index) then
-				new.object = self.object:FindFirstChild("index")
-			elseif self.object[index] then
-				-- TODO: wrap it for events so you u can use : rather than .
-				return self.object[index]
-			end
-			setmetatable(new, meta)
-			return new
-		end,
-		__newindex = function(self, index, value)
-			if  self.object[index] then
-				self.object[index] = value
-			end
-		end,
-		__call = function(self, index, ...)
-			if typeof(self.object[index]) == "RBXScriptSignal" then
-				return self.object[index]:Connect(...)
-			elseif typeof(self.object[index]) == "function" then
-				return self.object[index](...)
-			end
-		end,
-	}
-	setmetatable(pylib, meta)
+	-- Metamethod called when calling the proxy itself
+	__call = function(proxy, ...)
+		-- Forward the call to the wrapped instance
+		--print(proxy.instance(...), "2")
+		return proxy.instance(...)
+	end
+}
 
+-- Function to recursively create proxy objects
+local function createProxy(instance)
+	-- Create a proxy object
+	local proxy = {}
+
+	-- Set the instance as a property of the proxy
+	proxy.instance = instance
+
+	-- Set the metatable for the proxy
+	setmetatable(proxy, proxyMetaTable)
+
+	-- Recursively create proxies for children
+	for _, child in ipairs(instance:GetChildren()) do
+		pcall(function()
+			proxy[child.Name] = createProxy(child)
+		end)
+	end
+	--print(proxy, "1")
+	return proxy
 end
+
+-- Create a proxy for the Roblox game directory
+local pylib = createProxy(game)
 
 local module = function(scriptname)
 	return { 
@@ -411,7 +479,7 @@ local module = function(scriptname)
 			{ -- pip library
 			},
 			{ -- built in
-				string_meta = string_meta, list = list, dict = dict, -- class meta
+				stringmeta = string_meta, list = list, dict = dict, -- class meta
 
 				staticmethod = function(old_fun) -- staticmethod
 					local wrapper = function(first, ...)
@@ -918,6 +986,22 @@ local module = function(scriptname)
 				end,
 
 				__import__ = require,
+    
+				formatmod = function (left, right)
+					if type(left) == "string" then
+						return string.format(left, right)
+					elseif type(left) == "table" then
+						local result = {}
+						for i, v in ipairs(left) do
+							result[i] = string.format(v, right)
+						end
+						return result
+					elseif type(left) == "number" then
+						return math.fmod(left, right)
+					else
+						error("Invalid argument type for %")
+					end
+				end
 			}
 
 		}
@@ -928,7 +1012,7 @@ end
 
 return module"""
 
-allfunctions = "stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import__"
+allfunctions = "stringmeta, list, dict, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import_, formatmod"
 
 allfunctions = allfunctions.split(", ")
 

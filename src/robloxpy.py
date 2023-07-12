@@ -5,7 +5,7 @@ import re
 import sys
 #import typer 
 
-from . import pytranslator, colortext, ctranslator, luainit
+from . import pytranslator, colortext, luainit, parser, ctranslator
 
 class Reporter:
     """
@@ -79,6 +79,7 @@ app = Flask(__name__)
 #typerapp2 = typer.Typer() #c
 #typerapp3 = typer.Typer() #cpp
 translator = pytranslator.Translator()
+newctranslator = parser.CodeConverter()
 
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -107,233 +108,285 @@ def p():
   @app.route("/lib", methods=["GET"]) 
   def library():
       return translator.getluainit()
+    
   app.run(
   host='0.0.0.0', 
   port=5555 
   )
 
 def w():
-  def incli():
-    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+  try:
+    def incli():
+      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
-    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-    path = os.getcwd()
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
 
-    for r, d, f in os.walk(path):
-      for file in f:
-          if '.py' in file:
-            # compile the file to a file with the same name and path but .lua
-            contents = ""
-            
-            try:
-              with open(os.path.join(r, file)) as rf:
-                contents = rf.read()  
-            except Exception as e:
-              print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
-              # do not compile the file if it cannot be read
-              continue
-            
-            try:
-              lua_code = translator.translate(contents)
-              print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
-              # get the relative path of the file and replace .py with .lua
-              relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
+      for r, d, f in os.walk(path):
+        for file in f:
+            if '.py' in file:
+              # compile the file to a file with the same name and path but .lua
+              contents = ""
               
-              if not os.path.exists(os.path.dirname(relative_path)):
-                open(os.path.dirname(relative_path), "x").close()
-              with open(relative_path, "w") as f:
-                f.write(lua_code)
-            except Exception as e:
-              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-            
-
-    action = input("")
-    if action == "exit":
-      exit(0)
-    else:
-      incli()
-  if sys.argv.__len__() >= 1:
-    if sys.argv[1] == "p":
-      p()
-    elif sys.argv[1] == "lib":
-      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if sys.argv.__len__() >= 2:
-        cwd = os.getcwd()
-        # cwd+sys.argv[2]
-        dir = os.path.join(cwd, sys.argv[2])
-        
-        open(dir, "x").close()
-        with open(dir, "w") as f:
-          f.write(translator.getluainit())
-      else:
-        print(colortext.red("roblox-py: No path specified!"))
-    elif sys.argv[1] == "c":
-      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
-      if confirm == "yes":   
-        path = os.getcwd()
-        
-        for r, d, f in os.walk(path):
-          for file in f:
-            if '.lua' in file:
-              luafilecontents = ""
-              with open(os.path.join(r, file), "r") as f:
-                luafilecontents = f.read()
+              try:
+                with open(os.path.join(r, file)) as rf:
+                  contents = rf.read()  
+              except Exception as e:
+                print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+                # do not compile the file if it cannot be read
+                continue
+              
+              try:
+                lua_code = translator.translate(contents)
+                print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
+                # get the relative path of the file and replace .py with .lua
+                relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
                 
-              os.remove(os.path.join(r, file))
+                if not os.path.exists(os.path.dirname(relative_path)):
+                  open(os.path.dirname(relative_path), "x").close()
+                with open(relative_path, "w") as f:
+                  f.write(lua_code)
+              except Exception as e:
+                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
-              # create new file with same name but  .py and write the lua file contents to it
-              open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
-              # write the old file contents as a py comment
-              open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
-              print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
-    elif sys.argv[1] == "w":
-      print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
-    elif sys.argv[1] == "t":
-      luainit.generatewithlibraries()
+
+      action = input("")
+      if action == "exit":
+        exit(0)
+      else:
+        incli()
+    
+    if sys.argv.__len__() >= 1:
+      if sys.argv[1] == "p":
+        p()
+      elif sys.argv[1] == "lib":
+        # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+        if sys.argv.__len__() >= 2:
+          cwd = os.getcwd()
+          # cwd+sys.argv[2]
+          dir = os.path.join(cwd, sys.argv[2])
+          
+          open(dir, "x").close()
+          with open(dir, "w") as f:
+            f.write(translator.getluainit())
+        else:
+          print(colortext.red("roblox-py: No path specified!"))
+      elif sys.argv[1] == "c":
+        # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
+        if confirm == "yes":   
+          path = os.getcwd()
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
+                # write the old file contents as a py comment
+                open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
+                print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
+      elif sys.argv[1] == "w":
+        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
+      elif sys.argv[1] == "t":
+        luainit.generatewithlibraries()
+      else:
+        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
     else:
       print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
-  else:
-    print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-    incli()
-
+  except IndexError:
+    print(colortext.red("roblox-py: Invalid amount of arguments!"))
+    
 def cw():
-  def incli():
-    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+  try:
+    def incli():
+      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
-    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-    path = os.getcwd()
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
 
-    for r, d, f in os.walk(path):
-      for file in f:
-          if '.c' in file:
-            # compile the file to a file with the same name and path but .lua
-            try:
-              ctranslator.translate(os.path.join(r, file))
-              print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
-            except Exception as e:
-              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-            
-
-    action = input("")
-    if action == "exit":
-      exit(0)
-    else:
-      incli()
-  if sys.argv.__len__() >= 1:
-    if sys.argv[1] == "p":
-      print(colortext.red("roblox-c: Plugins are only supported for python!"))
-    elif sys.argv[1] == "lib":
-      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if sys.argv.__len__() >= 2:
-        cwd = os.getcwd()
-        # cwd+sys.argv[2]
-        dir = os.path.join(cwd, sys.argv[2])
-        open(dir, "x").close()
-        with open(dir, "w") as f:
-          f.write(translator.get_luainit())
-      else:
-        print(colortext.red("roblox-c: No path specified!"))
-    elif sys.argv[1] == "c":
-      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
-      if confirm == "yes":   
-        path = os.getcwd()
-        
-        for r, d, f in os.walk(path):
-          for file in f:
-            if '.lua' in file:
-              luafilecontents = ""
-              with open(os.path.join(r, file), "r") as f:
-                luafilecontents = f.read()
+      for r, d, f in os.walk(path):
+        for file in f:
+            if '.c' in file:
+              # compile the file to a file with the same name and path but .lua
+              try:
+                newctranslator.parse(
+                  os.path.join(r, file),
+                  # C not C++
+                  flags=[
+                      '-I%s' % inc for inc in []
+                  ] + [
+                      '-D%s' % define for define in []
+                  ] + [
+                      '-std=%s' % "c23"
+                  ] + [
+                      '-stdlib=%s' % "libc"
+                  ]
+                )
                 
-              os.remove(os.path.join(r, file))
+                newctranslator.diagnostics(sys.stderr)
+                relative_path = backwordreplace(os.path.join(r, file),".c", ".lua", 1)
+                with open(relative_path, 'w') as out:
+                  newctranslator.output(relative_path, out)
+                  
+                print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+              except Exception as e:
+                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
-              # create new file with same name but  .py and write the lua file contents to it
-              open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
-              # write the old file contents as a C comment
-              open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
-              print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
-    elif sys.argv[1] == "w":
-      print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+
+      action = input("")
+      if action == "exit":
+        exit(0)
+      else:
+        incli()
+    
+    if sys.argv.__len__() >= 1:
+      if sys.argv[1] == "p":
+        print(colortext.red("roblox-c: Plugins are only supported for python!"))
+      elif sys.argv[1] == "lib":
+        # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+        if sys.argv.__len__() >= 2:
+          cwd = os.getcwd()
+          # cwd+sys.argv[2]
+          dir = os.path.join(cwd, sys.argv[2])
+          open(dir, "x").close()
+          with open(dir, "w") as f:
+            f.write(translator.get_luainit())
+        else:
+          print(colortext.red("roblox-c: No path specified!"))
+      elif sys.argv[1] == "c":
+        # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
+        if confirm == "yes":   
+          path = os.getcwd()
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
+                # write the old file contents as a C comment
+                open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
+                print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
+      elif sys.argv[1] == "w":
+        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
+      else:
+        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
     else:
       print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
-  else:
-    print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-    incli()
+  except IndexError:
+    print(colortext.red("roblox-c: Invalid amount of arguments!"))
+    
+    
   
 def cpw():
-  def incli():
-    # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
+  try:
+    print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
+    def incli():
+      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
-    # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-    path = os.getcwd()
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
 
-    for r, d, f in os.walk(path):
-      for file in f:
-          if '.cpp' in file:
-            # compile the file to a file with the same name and path but .lua
-            try:
-              ctranslator.translate(os.path.join(r, file))
-              print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
-            except Exception as e:
-              print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-            
-
-    action = input("")
-    if action == "exit":
-      exit(0)
-    else:
-      incli()
-  if sys.argv.__len__() >= 1:
-    if sys.argv[1] == "p":
-      print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
-    elif sys.argv[1] == "lib":
-      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-      if sys.argv.__len__() >= 2:
-        cwd = os.getcwd()
-        dir = os.path.join(cwd, sys.argv[2])
-        open(sys.argv[2], "x").close()
-        with open(sys.argv[2], "w") as f:
-          f.write(translator.getluainit())
-      else:
-        print(colortext.red("roblox-cpp: No path specified!"))
-    elif sys.argv[1] == "c":
-      # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-      confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
-      if confirm == "yes":   
-        path = os.getcwd()
-        
-        for r, d, f in os.walk(path):
-          for file in f:
-            if '.lua' in file:
-              luafilecontents = ""
-              with open(os.path.join(r, file), "r") as f:
-                luafilecontents = f.read()
+      for r, d, f in os.walk(path):
+        for file in f:
+            if '.cpp' in file:
+              # compile the file to a file with the same name and path but .lua
+              try:
+                newctranslator.parse(
+                  os.path.join(r, file),
+                  flags=[
+                      '-I%s' % inc for inc in []
+                  ] + [
+                      '-D%s' % define for define in []
+                  ] + [
+                      '-std=%s' % "c++20"
+                  ] + [
+                      '-stdlib=%s' % "libstdc++"
+                  ]
+                )
                 
-              os.remove(os.path.join(r, file))
+                newctranslator.diagnostics(sys.stderr)
+                relative_path = backwordreplace(os.path.join(r, file),".cpp", ".lua", 1)
+                with open(relative_path, 'w') as out:
+                  newctranslator.output(relative_path, out)
+                  
+                print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+              except Exception as e:
+                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
-              # create new file with same name but  .py and write the lua file contents to it
-              open(os.path.join(r, file.replace(".lua", ".cpp")), "x").close()
-              # write the old file contents as a C++ comment
-              open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
-              
-              print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
-    elif sys.argv[1] == "w":
-      print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+
+      action = input("")
+      if action == "exit":
+        exit(0)
+      else:
+        incli()
+    
+    if sys.argv.__len__() >= 1:
+      if sys.argv[1] == "p":
+        print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
+      elif sys.argv[1] == "lib":
+        # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+        if sys.argv.__len__() >= 2:
+          cwd = os.getcwd()
+          dir = os.path.join(cwd, sys.argv[2])
+          open(sys.argv[2], "x").close()
+          with open(sys.argv[2], "w") as f:
+            f.write(translator.getluainit())
+        else:
+          print(colortext.red("roblox-cpp: No path specified!"))
+      elif sys.argv[1] == "c":
+        # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
+        if confirm == "yes":   
+          path = os.getcwd()
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".cpp")), "x").close()
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
+                
+                print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
+      elif sys.argv[1] == "w":
+        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
+      else:
+        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
     else:
       print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
-  else:
-    print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-    incli()
-  
-  
+  except IndexError:
+    print(colortext.red("roblox-cpp: Invalid amount of arguments!"))
+    
+
+        
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
