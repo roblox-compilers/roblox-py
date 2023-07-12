@@ -79,7 +79,7 @@ app = Flask(__name__)
 #typerapp2 = typer.Typer() #c
 #typerapp3 = typer.Typer() #cpp
 translator = pytranslator.Translator()
-newctranslator = parser.CodeConverter()
+
 
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -218,6 +218,7 @@ def cw():
             if '.c' in file:
               # compile the file to a file with the same name and path but .lua
               try:
+                newctranslator = parser.CodeConverter("name.c")
                 newctranslator.parse(
                   os.path.join(r, file),
                   # C not C++
@@ -310,6 +311,7 @@ def cpw():
             if '.cpp' in file:
               # compile the file to a file with the same name and path but .lua
               try:
+                newctranslator = parser.CodeConverter("name.cpp")
                 newctranslator.parse(
                   os.path.join(r, file),
                   flags=[
