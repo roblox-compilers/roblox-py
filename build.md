@@ -7,7 +7,7 @@ description: For personal usage so I can remember what commands to use.
 ## Local build
 
 * `python3 -m build`
-* `pip install dist/roblox.py-{version}-py3-none-any.whl --force-reinstall`
+* `pip install dist/roblox_pyc-{version}-py3-none-any.whl --force-reinstall`
 
 ## Config
 

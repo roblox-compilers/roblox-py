@@ -1,4 +1,3 @@
-
 --// Compiled using roblox-pyc \--
 		
 		
@@ -10,6 +9,6 @@ local range = builtin.range
 -----------------------------------------------------------------------------
 for i in range(10) do
     if (i == 5) then
-        continue 8
+        continue 17
     end
 end

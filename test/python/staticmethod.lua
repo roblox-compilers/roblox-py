@@ -1,4 +1,3 @@
-
 --// Compiled using roblox-pyc \--
 		
 		
@@ -8,13 +7,15 @@ local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(s
 local stringmeta = builtin.stringmeta
 local str = builtin.str
 local int = builtin.int
+local format = builtin.format
 local exec = builtin.exec
+local formatmod = builtin.formatmod
 local staticmethod = builtin.staticmethod
 local class = builtin.class
 
 -----------------------------------------------------------------------------
 local function foo(x)
-    print((math.fmod(stringmeta "executing foo(%s)", x)))
+    print((formatmod(stringmeta "executing foo(%s)", x)))
 end
 foo = staticmethod(foo)
 local A = class(function(A)

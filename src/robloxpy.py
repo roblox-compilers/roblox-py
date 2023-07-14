@@ -207,6 +207,7 @@ def w():
     
 def cw():
   try:
+    print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
       # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -294,9 +295,7 @@ def cw():
       incli()
   except IndexError:
     print(colortext.red("roblox-c: Invalid amount of arguments!"))
-    
-    
-  
+     
 def cpw():
   try:
     print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
@@ -387,8 +386,115 @@ def cpw():
   except IndexError:
     print(colortext.red("roblox-cpp: Invalid amount of arguments!"))
     
+def lunar():
+  try:
+    print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
+    def incli():
+      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
+
+      for r, d, f in os.walk(path):
+        for file in f:
+            if '.cpp' in file:
+              # compile the file to a file with the same name and path but .lua
+              try:
+                
+                  
+                print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
+              except Exception as e:
+                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+              
+
+      action = input("")
+      if action == "exit":
+        exit(0)
+      else:
+        incli()
+    
+    if sys.argv.__len__() >= 1:
+      if sys.argv[1] == "p":
+        print(colortext.red("roblox-lunar: Plugins are only supported for python!"))
+      elif sys.argv[1] == "lib":
+        # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+        if sys.argv.__len__() >= 2:
+          cwd = os.getcwd()
+          dir = os.path.join(cwd, sys.argv[2])
+          open(sys.argv[2], "x").close()
+          with open(sys.argv[2], "w") as f:
+            f.write(translator.getluainit())
+        else:
+          print(colortext.red("roblox-lunar: No path specified!"))
+      elif sys.argv[1] == "c":
+        # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
+        if confirm == "yes":   
+          path = os.getcwd()
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".moon")), "x").close()
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".moon")), "w").write("--[[\n"+luafilecontents+"\n]]")
+                
+                print(colortext.green("roblox-lunar: Converted to lunar "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
+      elif sys.argv[1] == "w":
+        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
+      else:
+        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli()
+    else:
+      print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      incli()
+  except IndexError:
+    print(colortext.red("roblox-lunar: Invalid amount of arguments!"))
         
+
+def pyc():
+  title = colortext.magenta("roblox-pyc")
+  py = colortext.blue("roblox-py")
+  c = colortext.blue("roblox-c")
+  cpp = colortext.blue("roblox-cpp")
+  lunar = colortext.blue("roblox-lunar")
+  border = colortext.white("--------------------")
+  blank = colortext.blue("roblox-")+colortext.magenta("<lang>")
+  blankpath = colortext.magenta("<path>")
+  print(f"""
+    {title}
+{border}
+CLIs:
+- {py} - Python to Lua | Best for a functional
+- {c} - C to Lua | Best for learning a more complicated language
+- {cpp} - C++ to Lua | Best for learning a more complicated OOP language
+- {lunar} - Lunar to Lua | Best for learning a more complicated OOP language
+{border}
+NOTES:
+- {py} is the only one that supports plugins, and it supports full python 3.13, which is a dev build of python
+- {c} and {cpp} are only capable of light conversions, and are not capable of converting complex code.
+- {lunar} is based off MoonScript, and is completed and reccomended if you want a really nice language with good syntax sugar.
+{border}
+CLI DOCS:
+- {blank} w - Click enter in the terminal to compile all scripts
+- {blank} p - Start the plugin server (only for {py})
+- {blank} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
+- {blank} c - Convert all .lua files to targeted language files, it will comment the existing lua code
+{border}
+MORE HELP:
+- Devforum
+- Discord
+- Github Issues
+
+        """)
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
@@ -399,3 +505,7 @@ if __name__ == "__main__":
     cw()
   elif mode == "3":
     cpw()
+  elif mode == "4":
+    lunar()
+  else:
+    pyc()

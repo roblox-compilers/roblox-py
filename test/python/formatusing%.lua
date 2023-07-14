@@ -1,4 +1,3 @@
-
 --// Compiled using roblox-pyc \--
 		
 		
@@ -10,5 +9,5 @@ local str = builtin.str
 local int = builtin.int
 
 -----------------------------------------------------------------------------
-local text = (math.fmod(stringmeta "%s is my name", stringmeta "John"))
+local text = stringmeta "%s is my nameJohn"
 print(text)
