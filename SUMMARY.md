@@ -3,18 +3,18 @@
 * [Introduction](README.md)
 * [Technical Guide](build.md)
 
-## Group 1
+## ⏹ CLI
 
-* [Introduction](group-1/introduction.md)
+* [Introduction](cli/introduction.md)
 
-## Group 2
+## 🐍 Python
 
-* [Introduction](group-2/introduction.md)
+* [Introduction](python/introduction.md)
 
-## Group 3
+## 🔵 C and C++ <a href="#c-c++" id="c-c++"></a>
 
-* [Introduction](group-3/introduction.md)
+* [Introduction](c-c++/introduction.md)
 
-## Group 4
+## 🌙 Lunar
 
-* [Introduction](group-4/introduction.md)
+* [Introduction](lunar/introduction.md)
