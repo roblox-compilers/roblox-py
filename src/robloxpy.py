@@ -3,9 +3,13 @@ from flask import Flask, request
 from pyflakes import api
 import re
 import sys
-#import typer 
+import webbrowser
+import pickle
 
 from . import pytranslator, colortext, luainit, parser, ctranslator
+import subprocess
+import shutil
+import sys
 
 class Reporter:
     """
@@ -80,11 +84,60 @@ app = Flask(__name__)
 #typerapp3 = typer.Typer() #cpp
 translator = pytranslator.Translator()
 
+# INSTALL MOONSCRIPT
+def check_luarocks():
+    try:
+        subprocess.call(["luarocks", "--version"])
+        return True
+    except FileNotFoundError:
+        return False
 
+def check_moonscript():
+    try:
+        subprocess.call(["moonc", "--version"])
+        return True
+    except FileNotFoundError:
+        return False
+      
+def install_luarocks():
+    print("Installing LuaRocks...")
+    subprocess.call(["apt-get", "install", "-y", "luarocks"])
+
+def install_moonscript():
+    print("Installing MoonScript...")
+    subprocess.call(["luarocks", "install", "moonscript"])
+
+def checkboth():
+    if check_luarocks() == False:
+        print(colortext.yellow("LuaRocks is not installed, installing..."))
+        install_luarocks()
+    if check_moonscript() == False:
+        print(colortext.yellow("MoonScript is not installed, installing..."))
+        install_moonscript()
+        
+# CONFIG
+def get(lang, key):
+  script_dir = os.path.dirname(os.path.realpath(__file__))
+  with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+    return pickle.load(file)[lang][key]
+
+def setconfig(lang, key, value):
+  script_dir = os.path.dirname(os.path.realpath(__file__))
+  with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+    cfg = pickle.load(file)
+    if not lang in cfg:
+      cfg[lang] = {}
+    cfg[lang][key] = value
+    with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
+      pickle.dump(cfg, file)
+
+# UTIL
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
   return new.join(li)
 
+
+# INTERFACE
 def p():
   print("The plugin is decreapted. Please use the CLI alongside a Studio+VSCode sync plugin.")
   @app.route('/', methods=["GET", "POST"]) 
@@ -388,7 +441,7 @@ def cpw():
     
 def lunar():
   try:
-    print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
+    checkboth() # install luarocks and moonscript if not installed
     def incli():
       # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
 
@@ -397,7 +450,7 @@ def lunar():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.cpp' in file:
+            if '.moon' in file:
               # compile the file to a file with the same name and path but .lua
               try:
                 
@@ -469,32 +522,106 @@ def pyc():
   border = colortext.white("--------------------")
   blank = colortext.blue("roblox-")+colortext.magenta("<lang>")
   blankpath = colortext.magenta("<path>")
-  print(f"""
-    {title}
+  selftool = colortext.blue("roblox-pyc")
+  
+  try:
+    if sys.argv[1] == "config":
+      # Open config menu
+      print(f"""
+Config menu
+{border} 
+1 - {py}
+2 - {c}
+3 - {cpp}
+4 - {lunar}         
+      """)
+      returnval = input("Select which config to open: ")
+      
+      if returnval == "1":
+        print(f"{py} doesnt need to be configured!")
+      elif returnval == "2":
+        print(f"""
+Configuring {c}
 {border}
-CLIs:
-- {py} - Python to Lua | Best for a functional
-- {c} - C to Lua | Best for learning a more complicated language
-- {cpp} - C++ to Lua | Best for learning a more complicated OOP language
-- {lunar} - Lunar to Lua | Best for learning a more complicated OOP language
+1 - Change std 
+2 - Change stdlib
+3 - Change dynamic library path
+              """)
+        
+        inputval = input("Select which config to open: ")
+        if inputval == "1":
+          returned = input("Enter the std: ")
+          setconfig("c", "std", returned)
+        elif inputval == "2":
+          returned = input("Enter the stdlib: ")
+          setconfig("c", "stdlib", returned)
+        elif inputval == "3":
+          returned = input("Enter the dynamic library path: ")
+          setconfig("c", "dynamiclibpath", returned)
+      elif returnval == "3":
+        print(f"""
+Configuring {cpp}
 {border}
-NOTES:
-- {py} is the only one that supports plugins, and it supports full python 3.13, which is a dev build of python
-- {c} and {cpp} are only capable of light conversions, and are not capable of converting complex code.
-- {lunar} is based off MoonScript, and is completed and reccomended if you want a really nice language with good syntax sugar.
+1 - Change std 
+2 - Change stdlib
+3 - Change dynamic library path
+              """)
+        
+        inputval = input("Select which config to open: ")
+        if inputval == "1":
+          returned = input("Enter the std: ")
+          setconfig("cpp", "std", returned)
+        elif inputval == "2":
+          returned = input("Enter the stdlib: ")
+          setconfig("cpp", "stdlib", returned)
+        elif inputval == "3":
+          returned = input("Enter the dynamic library path: ")
+          setconfig("cpp", "dynamiclibpath", returned)
+      elif returnval == "4":
+        print(f"{lunar} doesnt need to be configured!")
+      else:
+        print(colortext.red("Invalid option!"))
+    elif sys.argv[1] == "devforum":
+      webbrowser.open("https://devforum.com")
+    elif sys.argv[1] == "discord":
+      webbrowser.open("https://discord.gg/jbMFyBcBC2")
+    elif sys.argv[1] == "github":
+      webbrowser.open("https://github.com/AsynchronousAI/roblox-pyc")
+    else:
+      raise IndexError
+  except IndexError:
+    print(f"""
+{title}
 {border}
-CLI DOCS:
-- {blank} w - Click enter in the terminal to compile all scripts
-- {blank} p - Start the plugin server (only for {py})
-- {blank} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
-- {blank} c - Convert all .lua files to targeted language files, it will comment the existing lua code
-{border}
-MORE HELP:
-- Devforum
-- Discord
-- Github Issues
+  CLIs:
+  - {py} - Python to Lua | Best for a functional and simple language
+  - {c} - C to Lua | Best for learning a more complicated language for fun and educational purposes
+  - {cpp} - C++ to Lua | Best for learning a more complicated OOP language for fun and educational purposes
+  - {lunar} - Lunar to Lua | Best for learning a language with some great syntax sugar
+  {border}
+  NOTES:
+  - {py} is the only one that supports plugins, and it supports full python 3.13, which is a dev build of python
+  - {c} and {cpp} are only capable of light conversions, and are not capable of converting complex code at the time of writing.
+  - {lunar} is based off MoonScript, and is completed and reccomended if you want a really nice language with good syntax sugar.
+  - I would highly reccomend {py} and {lunar} for production use over ideal lua, as they are much more powerful and easier to use.
+  {border}
+  CLI DOCS:
+  - {blank} w - Click enter in the terminal to compile all scripts
+  - {blank} p - Start the plugin server (only for {py})
+  - {blank} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
+  - {blank} c - Convert all .lua files to targeted language files, it will comment the existing lua code
+  - {selftool} config - Open the config menu
+  - {selftool} devforum - Open the devforum page in a browser
+  - {selftool} discord - Open the discord server in a browser
+  - {selftool} github - Open the github page in a browser
+  
+  {border}
+  MORE HELP:
+  - Devforum
+  - Discord
+  - Github Issues
 
-        """)
+          """)
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
