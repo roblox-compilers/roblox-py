@@ -453,8 +453,7 @@ def lunar():
             if '.moon' in file:
               # compile the file to a file with the same name and path but .lua
               try:
-                
-                  
+                subprocess.call(["moonc", os.path.join(r, file)])
                 print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
               except Exception as e:
                 print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
@@ -604,6 +603,7 @@ Configuring {cpp}
   - {c} and {cpp} are only capable of light conversions, and are not capable of converting complex code at the time of writing.
   - {lunar} is based off MoonScript, and is completed and reccomended if you want a really nice language with good syntax sugar.
   - I would highly reccomend {py} and {lunar} for production use over ideal lua, as they are much more powerful and easier to use.
+  - At the moment lunar is the exact same as moonscript, but adding roblox specific features is planned.
   {border}
   CLI DOCS:
   - {blank} w - Click enter in the terminal to compile all scripts
@@ -614,7 +614,6 @@ Configuring {cpp}
   - {selftool} devforum - Open the devforum page in a browser
   - {selftool} discord - Open the discord server in a browser
   - {selftool} github - Open the github page in a browser
-  
   {border}
   MORE HELP:
   - Devforum
