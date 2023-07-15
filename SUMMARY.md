@@ -5,16 +5,16 @@
 
 ## ⏹ CLI
 
-* [Introduction](cli/introduction.md)
+* [Introduction](group-4/introduction.md)
 
 ## 🐍 Python
 
-* [Introduction](python/introduction.md)
-
-## 🔵 C and C++ <a href="#c-c++" id="c-c++"></a>
-
-* [Introduction](c-c++/introduction.md)
+* [Introduction](group-1/introduction.md)
 
 ## 🌙 Lunar
 
-* [Introduction](lunar/introduction.md)
+* [Introduction](group-3/introduction.md)
+
+## 🔵 C and C++ <a href="#c-c++" id="c-c++"></a>
+
+* [Introduction](group-2/introduction.md)
