@@ -10,7 +10,7 @@ setup(install_requires=[
       ],
       name = 'roblox-pyc',
       description='A Python, C, C++ to Roblox Lua compiler',
-      url="https://github.com/AsynchronousAI/roblox-pyc",
+      url="https://github.com/AsynchronousAI/roblox.pyc",
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
       include_package_data=True,
