@@ -6,7 +6,7 @@
 
 </div>
 
-## roblox.pyc
+## roblox-pyc
 
 [**Docs**](https://robloxpyc.gitbook.io/roblox-pyc) **|** [**Devforum**](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Tests/Examples**](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
 
@@ -15,6 +15,8 @@
 Python, Lunar, C, C++ Compiler for Roblox.
 
 Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
+
+> This has NO RELATION with .pyc files or roblox-py
 
 > C/C++ is still in progress.
 
