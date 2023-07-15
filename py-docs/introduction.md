@@ -1,5 +1,7 @@
 # Introduction
 
+> This language is best for a very functional and easy language.
+
 ```
 roblox-py c
 ```
@@ -23,3 +25,5 @@ roblox-py lib <path/to/replicatedstorage/roblox-pyc.lua>
 ```
 
 Download the library, Recommended to install in the VsCode equivalent of ReplicatedStorage with the filename, for example, it is src/shared in Rojo.
+
+> The official docs page for python will redirect you to the Python 3.13 docs
