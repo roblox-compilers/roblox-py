@@ -12,11 +12,15 @@
 
 ***
 
-Python, C, C++ Compiler for Roblox.
+Python, Lunar, C, C++ Compiler for Roblox.
 
-Python 3.13 (dev), C23, C++20 -> Lua(u)
+Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 
-5/103 C/C++ Statements have been implemented python 3.13 is fully implemented.
+> C/C++ is still in progress.
+
+> Lunar is a language based on MoonScript made for Roblox, at the moment they are identical.
+
+> Python is fully implemented, all code should work because it supports the dev build of Python 3.13.
 
 ***
 
