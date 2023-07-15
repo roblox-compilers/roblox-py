@@ -5,15 +5,22 @@
 local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 local stringmeta = builtin.stringmeta
+local list = builtin.list
 local str = builtin.str
+local id = builtin.id
 local int = builtin.int
+local operator_in = builtin.operator_in
+local min = builtin.min
 
 -----------------------------------------------------------------------------
-local function childAdded()
-    print(stringmeta "Child added")
+local ValidPlayers = list {stringmeta "builderman"}
+local function onTouch(touch)
+    print(stringmeta "Spawn has been touched by", touch.Name)
 end
-childAdded = py.Workspace.ChildAdded(childAdded)
-local function childRemoved()
-    print(stringmeta "Child removed")
+onTouch = py.Workspace.Spawn.Touched(onTouch)
+local function onPlrAdd(plr)
+    if (operator_in(plr.Name, ValidPlayers)) then
+        print(stringmeta "Admin", plr.Name, stringmeta "has joined the game!!")
+    end
 end
-childRemoved = py.Workspace.ChildRemoved(childRemoved)
+onPlrAdd = py.Players.PlayerAdded(onPlrAdd)

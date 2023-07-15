@@ -6,8 +6,10 @@ local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(s
 
 local stringmeta = builtin.stringmeta
 local str = builtin.str
+local format = builtin.format
+local formatmod = builtin.formatmod
 local int = builtin.int
 
 -----------------------------------------------------------------------------
-local text = stringmeta "%s is my nameJohn"
+local text = (formatmod(stringmeta "%s is my name", stringmeta "John"))
 print(text)
