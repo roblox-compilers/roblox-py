@@ -36,12 +36,10 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 
 - ⚠️ Easy error checking </br>
   Your code can easily be checked for errors because of the precompiler error system.
-- 📕 All CodeEditors and OS supported </br>
-  Since roblox-pyc is a terminal tool based on python it supports all Code Editors and OS, even notepad in windows!
 - 🧩 Cross-language module support </br>
   roblox-pyc allows you to require/import modules from other languages.
-- 🛠️ Supports all VsCode sync plugins </br>
-  Regardless if you use Rojo, Argon, or anything else roblox-pyc is highly customizable and allows you to use any of them
+- 🛠️ Supports all VsCode sync plugins, OS, and Code Editors </br>
+  Regardless if you use Rojo, Argon, in Mac, Windows with any code editors or anything else roblox-pyc is highly customizable and allows you to use any of them
 - ↗️ Customizable </br>
   You can customize roblox-pyc to change your C/C++ version or dynamic library or any QoL features, not only that roblox-pyc and all of its dependencies are open-source so you can mod it and change anything to your liking
 - 💻 Languages </br>
@@ -50,12 +48,9 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
   Using a VScode sync plugin you can upload your code to the world with GitHub, GitLab, whatever.
 - 📲  In-roblox plugin </br>
   If you dont what to use VScode, python supports a roblox plugin which can be hosted in the terminal with all the features listed above!
-- ❎ Lambda </br>
-  Lambda in python is fully supported so you can write full functions in one line
 - 🌙 Lunar </br>
   roblox-pyc comes with a custom language called lunar with amazing syntax features which is a modified version of MoonScript for roblox
-- 🤖 Use VsCode features </br>
-  VsCode has many features including better autofill, linting, and Github Copilot. If you choose to use it roblox-pyc will support it.
+
   
 ***
 #### Todo:
