@@ -257,7 +257,8 @@ def w():
       incli()
   except IndexError:
     print(colortext.red("roblox-py: Invalid amount of arguments!"))
-    
+  except KeyboardInterrupt:
+    print(colortext.red("roblox-py: Aborted!"))
 def cw():
   try:
     print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
@@ -348,6 +349,8 @@ def cw():
       incli()
   except IndexError:
     print(colortext.red("roblox-c: Invalid amount of arguments!"))
+  except KeyboardInterrupt:
+    print(colortext.red("roblox-c: Aborted!"))
      
 def cpw():
   try:
@@ -438,6 +441,8 @@ def cpw():
       incli()
   except IndexError:
     print(colortext.red("roblox-cpp: Invalid amount of arguments!"))
+  except KeyboardInterrupt:
+    print(colortext.red("roblox-cpp: Aborted!"))
     
 def lunar():
   try:
@@ -510,6 +515,8 @@ def lunar():
       incli()
   except IndexError:
     print(colortext.red("roblox-lunar: Invalid amount of arguments!"))
+  except KeyboardInterrupt:
+    print(colortext.red("roblox-lunar: Aborted!"))
         
 
 def pyc():
@@ -621,6 +628,8 @@ Configuring {cpp}
   - Github Issues
 
           """)
+  except KeyboardInterrupt:
+    print(colortext.red("roblox-pyc: Aborted!"))  
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
