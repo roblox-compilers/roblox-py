@@ -116,7 +116,7 @@ def checkboth():
         install_moonscript()
         
 # CONFIG
-def get(lang, key):
+def getconfig(lang, key):
   script_dir = os.path.dirname(os.path.realpath(__file__))
   with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
     return pickle.load(file)[lang][key]
@@ -281,9 +281,9 @@ def cw():
                   ] + [
                       '-D%s' % define for define in []
                   ] + [
-                      '-std=%s' % "c23"
+                      '-std=%s' % getconfig("c", "std")
                   ] + [
-                      '-stdlib=%s' % "libc"
+                      '-stdlib=%s' % getconfig("c", "stdlib")
                   ]
                 )
                 
@@ -371,9 +371,9 @@ def cpw():
                   ] + [
                       '-D%s' % define for define in []
                   ] + [
-                      '-std=%s' % "c++20"
+                      '-std=%s' % getconfig("cpp", "std")
                   ] + [
-                      '-stdlib=%s' % "libstdc++"
+                      '-stdlib=%s' % getconfig("cpp", "stdlib")
                   ]
                 )
                 
