@@ -214,7 +214,7 @@ def w():
         p()
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        if sys.argv.__len__() >= 2:
+        try:
           cwd = os.getcwd()
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
@@ -222,8 +222,17 @@ def w():
           open(dir, "x").close()
           with open(dir, "w") as f:
             f.write(translator.getluainit())
-        else:
-          print(colortext.red("roblox-py: No path specified!"))
+        except IndexError:
+          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
+            print(colortext.red("roblox-py: No path specified!"))
+          else:
+             cwd = os.getcwd()
+             # cwd+sys.argv[2]
+             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
+              
+             open(dir, "x").close()
+             with open(dir, "w") as f:
+               f.write(translator.getluainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
@@ -309,15 +318,24 @@ def cw():
         print(colortext.red("roblox-c: Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        if sys.argv.__len__() >= 2:
+        try:
           cwd = os.getcwd()
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
           open(dir, "x").close()
           with open(dir, "w") as f:
             f.write(translator.get_luainit())
-        else:
-          print(colortext.red("roblox-c: No path specified!"))
+        except IndexError:
+          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
+            print(colortext.red("roblox-c: No path specified!"))
+          else:
+             cwd = os.getcwd()
+             # cwd+sys.argv[2]
+             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
+              
+             open(dir, "x").close()
+             with open(dir, "w") as f:
+               f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
@@ -401,14 +419,24 @@ def cpw():
         print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        if sys.argv.__len__() >= 2:
+        try:
           cwd = os.getcwd()
+          # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
-          open(sys.argv[2], "x").close()
-          with open(sys.argv[2], "w") as f:
-            f.write(translator.getluainit())
-        else:
-          print(colortext.red("roblox-cpp: No path specified!"))
+          open(dir, "x").close()
+          with open(dir, "w") as f:
+            f.write(translator.get_luainit())
+        except IndexError:
+          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
+            print(colortext.red("roblox-cpp: No path specified!"))
+          else:
+             cwd = os.getcwd()
+             # cwd+sys.argv[2]
+             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
+              
+             open(dir, "x").close()
+             with open(dir, "w") as f:
+               f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
@@ -475,14 +503,24 @@ def lunar():
         print(colortext.red("roblox-lunar: Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        if sys.argv.__len__() >= 2:
+        try:
           cwd = os.getcwd()
+          # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
-          open(sys.argv[2], "x").close()
-          with open(sys.argv[2], "w") as f:
-            f.write(translator.getluainit())
-        else:
-          print(colortext.red("roblox-lunar: No path specified!"))
+          open(dir, "x").close()
+          with open(dir, "w") as f:
+            f.write(translator.get_luainit())
+        except IndexError:
+          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
+            print(colortext.red("roblox-lunar: No path specified!"))
+          else:
+             cwd = os.getcwd()
+             # cwd+sys.argv[2]
+             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
+              
+             open(dir, "x").close()
+             with open(dir, "w") as f:
+               f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
@@ -539,7 +577,8 @@ Config menu
 1 - {py}
 2 - {c}
 3 - {cpp}
-4 - {lunar}         
+4 - {lunar}   
+5 - General      
       """)
       returnval = input("Select which config to open: ")
       
@@ -585,6 +624,15 @@ Configuring {cpp}
           setconfig("cpp", "dynamiclibpath", returned)
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
+      elif returnval == "5":
+        print("""
+Configuring General
+{border}
+1 - Change default lib path
+              """)
+        if inputval == "1":
+          returned = input("Enter the default lib path: ")
+          setconfig("general", "defaultlibpath", returned)
       else:
         print(colortext.red("Invalid option!"))
     elif sys.argv[1] == "devforum":
