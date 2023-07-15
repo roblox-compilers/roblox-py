@@ -9,6 +9,6 @@ local range = builtin.range
 -----------------------------------------------------------------------------
 for i in range(10) do
     if (i == 5) then
-        continue 17
+        continue
     end
 end
