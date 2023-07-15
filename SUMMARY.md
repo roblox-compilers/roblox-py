@@ -3,7 +3,7 @@
 * [Introduction](README.md)
 * [Technical Guide](build.md)
 
-## ⏹ CLI
+## 🔮 CLI
 
 * [Introduction](group-4/introduction.md)
 
