@@ -4,6 +4,7 @@
 ------------------------------------ BUILT IN -------------------------------
 local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
+local python = builtin.python
 local all = builtin.all
 local compile = builtin.compile
 local range = builtin.range

@@ -79,3 +79,4 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 * [seasnake](https://github.com/pybee/seasnake). Modified to convert C/C++ to Luau rather than C/C++ to Python 2.7
 * [MoonScript](https://github.com/leafo/moonscript). Modified to lunar
 * [t](https://github.com/osyrisrblx/t). Modified to work for lunar
+* t-util. Modified to work for lunar
