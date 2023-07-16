@@ -17,6 +17,7 @@
 
 * [Introduction](lunar-docs/introduction.md)
 * [Official docs](https://moonscript.org/reference/)
+* [API](lunar/api.md)
 
 ## 🔵 C and C++ <a href="#c-c++" id="c-c++"></a>
 
