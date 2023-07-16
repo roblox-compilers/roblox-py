@@ -76,8 +76,6 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 * [Highlighter](https://github.com/boatbomber/Highlighter). modified to work with python (plugin usage)
 * [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus). uses a modified version with autocomplete (plugin usage)
 * [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes. (read licenses in [copyright.txt](COPYRIGHTS.txt))
-* seasnake. Modified to compile rather than C++-Python but C++-Lua
-* MoonScript. Used as a core for Lunar
-
-
-
+* [seasnake](https://github.com/pybee/seasnake). Modified to convert C/C++ to Luau rather than C/C++ to Python 2.7
+* [MoonScript](https://github.com/leafo/moonscript). Modified to lunar
+* [t](https://github.com/osyrisrblx/t). Modified to work for lunar
