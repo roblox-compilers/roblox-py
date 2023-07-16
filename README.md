@@ -26,29 +26,29 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 
 ***
 ### Features
-- 🔄 Interchangeable </br>
+- 🔄 **Interchangeable** </br>
     roblox-pyc supports using Lua, Lunar, roblox-ts, C, C++, and Python all at once so you can have the best of all sides.
-- ☄️ Ultrafast compiler </br>
+- ☄️ **Ultrafast compiler** </br>
     The roblox-pyc compiler is designed so entire projects can be compiled in a matter of seconds
   
-- 📉 Optimized code </br>
+- 📉 **Optimized code** </br>
   roblox-pyc is a source-source compiler, it doesn't use any WASM or anything like that to cheat its way and has major performance drops. It uses an AST and rewrites your code and optimizes it. 
 
-- ⚠️ Easy error checking </br>
+- ⚠️ **Easy error checking** </br>
   Your code can easily be checked for errors because of the precompiler error system.
-- 🧩 Cross-language module support </br>
+- 🧩 **Cross-language module support** </br>
   roblox-pyc allows you to require/import modules from other languages.
-- 🛠️ Supports all VsCode sync plugins, OS, and Code Editors </br>
+- 🛠️ **Supports everything** </br>
   Regardless if you use Rojo, Argon, in Mac, Windows with any code editors or anything else roblox-pyc is highly customizable and allows you to use any of them
-- ↗️ Customizable </br>
+- ↗️ **Customizable** </br>
   You can customize roblox-pyc to change your C/C++ version or dynamic library or any QoL features, not only that roblox-pyc and all of its dependencies are open-source so you can mod it and change anything to your liking
-- 💻 Languages </br>
+- 💻 **Languages** </br>
   roblox-pyc supports a great variety of languages that are fully programmed.
-- 🌎 Upload your code to the world </br>
+- 🌎 **Upload your code to the world** </br>
   Using a VScode sync plugin you can upload your code to the world with GitHub, GitLab, whatever.
-- 📲  In-roblox plugin </br>
+- 📲  **In-roblox plugin** </br>
   If you dont what to use VScode, python supports a roblox plugin which can be hosted in the terminal with all the features listed above!
-- 🌙 Lunar </br>
+- 🌙 **Lunar** </br>
   roblox-pyc comes with a custom language called lunar with amazing syntax features which is a modified version of MoonScript for roblox
 
   
