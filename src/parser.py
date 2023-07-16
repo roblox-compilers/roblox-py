@@ -95,7 +95,9 @@ class CodeConverter(BaseParser):
 
     def set_dylib(self, dylib):
         if dylib != 'None':
+            print("Setting dylib to %s" % dylib)
             Config.set_library_file(dylib)
+            
         
     def output_all(self, out):
         self._output_module(self.root_module, out)
