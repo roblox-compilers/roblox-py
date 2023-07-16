@@ -112,17 +112,21 @@ def checkboth():
         install_moonscript()
         
 # CONFIG
-def getconfig(lang, key):
+def getconfig(lang, key, default=None):
   script_dir = os.path.dirname(os.path.realpath(__file__))
   try:
     with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-      return pickle.load(file)[lang][key]
+      returnval = pickle.load(file)[lang][key]
+      if returnval == None or returnval == "":
+        return default
+      else:
+        return returnval
   except EOFError:
     # the file is empty, write {} to it
     with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
       pickle.dump({}, file)
 
-    return None
+    return default
 def setconfig(lang, key, value):
   script_dir = os.path.dirname(os.path.realpath(__file__))
   try:
@@ -137,7 +141,8 @@ def setconfig(lang, key, value):
     # the file is empty, write {} to it
     with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
       pickle.dump({}, file)
-      
+
+    
 
 
 # UTIL
@@ -300,11 +305,11 @@ def cw():
                   ] + [
                       '-D%s' % define for define in []
                   ] + [
-                      '-std=%s' % getconfig("c", "std")
+                      '-std=%s' % getconfig("c", "std", "c11")
                   ] + [
-                      '-stdlib=%s' % getconfig("c", "stdlib")
+                      '-stdlib=%s' % getconfig("c", "stdlib", "libc")
                   ] + [
-                    '-L=%s' % getconfig("c", "dynamiclibpath")
+                    '-L=%s' % getconfig("c", "dynamiclibpath", "None")
                   ]
                 )
                 
@@ -403,9 +408,11 @@ def cpw():
                   ] + [
                       '-D%s' % define for define in []
                   ] + [
-                      '-std=%s' % getconfig("cpp", "std")
+                      '-std=%s' % getconfig("cpp", "std", "c++11")
                   ] + [
-                      '-stdlib=%s' % getconfig("cpp", "stdlib")
+                      '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
+                  ] + [
+                    '-L=%s' % getconfig("cpp", "dynamiclibpath", "None")
                   ]
                 )
                 
@@ -626,13 +633,13 @@ Configuring {c}
         
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the std, it currently is %s: " % getconfig("c", "std"))
+          returned = input("Enter the std, it currently is %s: " % getconfig("c", "std", "c11"))
           setconfig("c", "std", returned)
         elif inputval == "2":
-          returned = input("Enter the stdlib, it currently is %s: " % getconfig("c", "stdlib"))
+          returned = input("Enter the stdlib, it currently is %s: " % getconfig("c", "stdlib", "libc"))
           setconfig("c", "stdlib", returned)
         elif inputval == "3":
-          returned = input("Enter the dynamic, it currently is %s: " % getconfig("c", "dynamiclibpath"))
+          returned = input("Enter the dynamiclib, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
           setconfig("c", "dynamiclibpath", returned)
       elif returnval == "3": #
         print(f"""
@@ -645,13 +652,13 @@ Configuring {cpp}
         
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the std, it currently is %s: " % getconfig("cpp", "std"))
+          returned = input("Enter the std, it currently is %s: " % getconfig("cpp", "std", "c++11"))
           setconfig("cpp", "std", returned)
         elif inputval == "2":
-          returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib"))
+          returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib", "libc++"))
           setconfig("cpp", "stdlib", returned)
         elif inputval == "3":
-          returned = input("Enter the dynamic library path, it currently is %s: " % getconfig("cpp", "dynamiclibpath"))
+          returned = input("Enter the dynamic library path, it currently is %s: " % getconfig("cpp", "dynamiclibpath", "None"))
           setconfig("cpp", "dynamiclibpath", returned)
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
