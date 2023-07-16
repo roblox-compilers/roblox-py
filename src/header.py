@@ -32,4 +32,4 @@ def lunarheader(functions):
         code += "local "+i+" = builtin."+i+"\n"
     
     #print(code)
-    return headertemplate.format(code)
+    return lunarheadertemplate.format(code)

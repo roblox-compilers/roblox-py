@@ -101,7 +101,7 @@ def install_luarocks():
 
 def install_moonscript():
     print("Installing MoonScript...")
-    subprocess.call(["luarocks", "install", "moonscript"])
+    subprocess.call(["luarocks", "install", "moonscript", "--dev"])
 
 def checkboth():
     if check_luarocks() == False:
@@ -485,18 +485,19 @@ def lunar():
               # compile the file to a file with the same name and path but .lua
               try:
                 subprocess.call(["moonc", os.path.join(r, file)])
-                print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
                 
-                newheader = header.lunarheader(luainit.allfunctions)
+                newheader = header.lunarheader(luainit.lunarfunctions)
                 
                 # check if the new file has been created
                 if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+                  print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
+                  
                   with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
                     contents = f.read()
                   with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
                     f.write(newheader+contents)
                 else:
-                  print(colortext.red("roblox-lunar: File lost! Please report this in the discord server, devforum post, github issues."))
+                  print(colortext.red("Compile Error for "+os.path.join(r, file)+"!"))
               except Exception as e:
                 print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
