@@ -83,14 +83,14 @@ translator = pytranslator.Translator()
 # INSTALL MOONSCRIPT
 def check_luarocks():
     try:
-        subprocess.call(["luarocks", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        subprocess.call(["luarocks", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
         return True
     except FileNotFoundError:
         return False
 
 def check_moonscript():
     try:
-        subprocess.call(["moonc", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        subprocess.call(["moonc", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
         return True
     except FileNotFoundError:
         return False
