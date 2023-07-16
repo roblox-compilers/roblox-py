@@ -1,5 +1,11 @@
 from setuptools import setup
 
+# One up version in setup.cfg
+with open("setup.cfg", "r") as f:
+    oldcode = f.read()
+    version = "1.16.16" # for testing purposes
+    f.write(oldcode.replace("version = 1.16.15", "version = {}".format(version)))
+    
 setup(install_requires=[
           'clang',
           'libclang',
