@@ -290,6 +290,8 @@ def cw():
                       '-std=%s' % getconfig("c", "std")
                   ] + [
                       '-stdlib=%s' % getconfig("c", "stdlib")
+                  ] + [
+                    '-L=%s' % getconfig("c", "dynamiclibpath")
                   ]
                 )
                 
