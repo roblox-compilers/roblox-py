@@ -116,18 +116,45 @@ def getconfig(lang, key, default=None):
   script_dir = os.path.dirname(os.path.realpath(__file__))
   try:
     with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-      returnval = pickle.load(file)[lang][key]
-      if returnval == None or returnval == "":
+      try:
+        returnval = pickle.load(file)[lang][key]
+        if returnval == None or returnval == "":
+          return default
+        else:
+          return returnval
+      except KeyError:
+        # find which one doesnt exist, lang or key
+        bugged = ""
+        try:
+          test = pickle.load(file)[lang]
+        except KeyError:
+          bugged = "lang"
+        if bugged == "":
+          try:
+            test = pickle.load(file)[lang][key]
+          except KeyError:
+            bugged = "key"
+        if bugged == "": 
+          print(colortext.red("roblox-py: Config file KeyError!"))
+          return default
+        # Write the missing lang or key in and return the default
+        if bugged == "lang":
+          new = pickle.load(file)
+          new[lang] = {}
+          pickle.dump(new, file)
+        else:
+          new = pickle.load(file)
+          new[lang][key] = default
+          pickle.dump(new, file)
+        
         return default
-      else:
-        return returnval
   except EOFError:
     # the file is empty, write {} to it
     with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
       pickle.dump({}, file)
 
     return default
-def setconfig(lang, key, value):
+def setconfig(lang, key, value, default=None):
   script_dir = os.path.dirname(os.path.realpath(__file__))
   try:
     with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
@@ -141,6 +168,9 @@ def setconfig(lang, key, value):
     # the file is empty, write {} to it
     with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
       pickle.dump({}, file)
+  except KeyError:
+    # this is now getconfigs problem i dont give a shit no more
+    getconfig(lang, key, default)
 
     
 
@@ -634,13 +664,13 @@ Configuring {c}
         inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the std, it currently is %s: " % getconfig("c", "std", "c11"))
-          setconfig("c", "std", returned)
+          setconfig("c", "std", returned, "c11")
         elif inputval == "2":
           returned = input("Enter the stdlib, it currently is %s: " % getconfig("c", "stdlib", "libc"))
-          setconfig("c", "stdlib", returned)
+          setconfig("c", "stdlib", returned, "libc")
         elif inputval == "3":
           returned = input("Enter the dynamiclib, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
-          setconfig("c", "dynamiclibpath", returned)
+          setconfig("c", "dynamiclibpath", returned, "None")
       elif returnval == "3": #
         print(f"""
 Configuring {cpp}
@@ -653,13 +683,13 @@ Configuring {cpp}
         inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the std, it currently is %s: " % getconfig("cpp", "std", "c++11"))
-          setconfig("cpp", "std", returned)
+          setconfig("cpp", "std", returned, "c++11")
         elif inputval == "2":
           returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib", "libc++"))
-          setconfig("cpp", "stdlib", returned)
+          setconfig("cpp", "stdlib", returned, "libc++")
         elif inputval == "3":
           returned = input("Enter the dynamic library path, it currently is %s: " % getconfig("cpp", "dynamiclibpath", "None"))
-          setconfig("cpp", "dynamiclibpath", returned)
+          setconfig("cpp", "dynamiclibpath", returned, "None")
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
       elif returnval == "5":
@@ -671,7 +701,7 @@ Configuring General
         inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the default lib path, it currently is %s: " % getconfig("general", "defaultlibpath"))
-          setconfig("general", "defaultlibpath", returned)
+          setconfig("general", "defaultlibpath", returned, "")
       else:
         print(colortext.red("Invalid option!"))
     elif sys.argv[1] == "devforum":
