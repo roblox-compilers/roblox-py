@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
     
 setup(install_requires=[
           'clang',
@@ -14,4 +14,5 @@ setup(install_requires=[
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
       include_package_data=True,
+      packages=find_packages(),
     )
