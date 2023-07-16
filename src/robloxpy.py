@@ -275,7 +275,7 @@ def cw():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.c' in file:
+            if '.c' in file and not '.cpp' in file:
               # compile the file to a file with the same name and path but .lua
               try:
                 newctranslator = parser.CodeConverter("name.c")
