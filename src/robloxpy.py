@@ -626,13 +626,13 @@ Configuring {c}
         
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the std: ")
+          returned = input("Enter the std, it currently is %s: " % getconfig("c", "std"))
           setconfig("c", "std", returned)
         elif inputval == "2":
-          returned = input("Enter the stdlib: ")
+          returned = input("Enter the stdlib, it currently is %s: " % getconfig("c", "stdlib"))
           setconfig("c", "stdlib", returned)
         elif inputval == "3":
-          returned = input("Enter the dynamic library path: ")
+          returned = input("Enter the dynamic, it currently is %s: " % getconfig("c", "dynamiclibpath"))
           setconfig("c", "dynamiclibpath", returned)
       elif returnval == "3":
         print(f"""
@@ -645,13 +645,13 @@ Configuring {cpp}
         
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the std: ")
+          returned = input("Enter the std, it currently is %s: " % getconfig("cpp", "std"))
           setconfig("cpp", "std", returned)
         elif inputval == "2":
-          returned = input("Enter the stdlib: ")
+          returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib"))
           setconfig("cpp", "stdlib", returned)
         elif inputval == "3":
-          returned = input("Enter the dynamic library path: ")
+          returned = input("Enter the dynamic library path, it currently is %s: " % getconfig("cpp", "dynamiclibpath"))
           setconfig("cpp", "dynamiclibpath", returned)
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
@@ -663,7 +663,7 @@ Configuring General
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the default lib path: ")
+          returned = input("Enter the default lib path, it currently is %s: " % getconfig("general", "defaultlibpath"))
           setconfig("general", "defaultlibpath", returned)
       else:
         print(colortext.red("Invalid option!"))
