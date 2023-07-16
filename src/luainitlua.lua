@@ -1671,26 +1671,32 @@ local proxyMetaTable = {
 		if instance[key] ~= nil then
 			-- If the key is a function, return a wrapped function
 			local value = instance[key]
-			if type(value) == "function" then
-				--print(function(_, ...)end, "5")
-				return function(_, ...)
-					--print(value(instance, ...), "6")
-					return value(instance, ...)
+			if typeof(value) == "RBXScriptSignal" then
+				local event = {}
+				local eventmeta = {
+					__call = function(proxy, ...)
+						proxy.Instance:Connect(...)
+					end,
+				}
+
+				event.Instance = value
+				setmetatable(event, eventmeta)
+
+				return event
+			end
+			if typeof(value) == "function" then
+				-- Wrap the function args and return values
+				local function wrappedFunction(...)
+					local args = unpack(...)
+					for i, arg in ipairs(args) do
+						setmetatable(args[i], proxyMetaTable)
+					end
+					local returnval = value(table.pack(args))
+					setmetatable(returnval, proxyMetaTable)
+					return returnval
 				end
+				return wrappedFunction
 			else
-				if typeof(value) == "RBXScriptSignal" then
-					local event = {}
-					local eventmeta = {
-						__call = function(proxy, ...)
-							proxy.Instance:Connect(...)
-						end,
-					}
-
-					event.Instance = value
-					setmetatable(event, eventmeta)
-
-					return event
-				end
 				return value
 			end
 		end

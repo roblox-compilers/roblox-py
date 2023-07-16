@@ -114,18 +114,31 @@ def checkboth():
 # CONFIG
 def getconfig(lang, key):
   script_dir = os.path.dirname(os.path.realpath(__file__))
-  with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-    return pickle.load(file)[lang][key]
+  try:
+    with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+      return pickle.load(file)[lang][key]
+  except EOFError:
+    # the file is empty, write {} to it
+    with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
+      pickle.dump({}, file)
 
+    return None
 def setconfig(lang, key, value):
   script_dir = os.path.dirname(os.path.realpath(__file__))
-  with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-    cfg = pickle.load(file)
-    if not lang in cfg:
-      cfg[lang] = {}
-    cfg[lang][key] = value
+  try:
+    with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+      cfg = pickle.load(file)
+      if not lang in cfg:
+        cfg[lang] = {}
+      cfg[lang][key] = value
+      with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
+        pickle.dump(cfg, file)
+  except EOFError:
+    # the file is empty, write {} to it
     with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-      pickle.dump(cfg, file)
+      pickle.dump({}, file)
+      
+
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -640,6 +653,7 @@ Configuring General
 {border}
 1 - Change default lib path
               """)
+        inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the default lib path: ")
           setconfig("general", "defaultlibpath", returned)
