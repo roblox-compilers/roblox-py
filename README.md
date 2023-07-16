@@ -49,7 +49,7 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 - 📲  **In-roblox plugin** </br>
   If you dont what to use VScode, python supports a roblox plugin which can be hosted in the terminal with all the features listed above!
 - 🌙 **Lunar** </br>
-  roblox-pyc comes with a custom language called lunar with amazing syntax features which is a modified version of MoonScript for roblox
+  roblox-pyc comes with a custom language called lunar with amazing syntax features and an extended standard library, which is a modified version of MoonScript for roblox
 
   
 ***
