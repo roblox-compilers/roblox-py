@@ -93,15 +93,14 @@ class CodeConverter(BaseParser):
         for submodule in mod.submodules.values():
             self._output_module(submodule, out)
 
+    def set_dylib(self, dylib):
+        if dylib != 'None':
+            Config.set_library_file(dylib)
+        
     def output_all(self, out):
         self._output_module(self.root_module, out)
 
     def parse(self, filenames, flags):
-        # flags will have an item like -L=libclang_path
-        Lindex = [i for i, x in enumerate(flags) if x.startswith('-L=')]
-        if Lindex != "None":
-            print(flags[Lindex].split('=')[1])
-            Config.set_library_path(flags[Lindex].split('=')[1])
         abs_filenames = [os.path.abspath(f) for f in filenames]
         self.filenames.update(abs_filenames)
 
