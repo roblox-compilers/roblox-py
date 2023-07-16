@@ -5,6 +5,7 @@
 
 ## 🔮 CLI
 
+* [Installation](cli/installation.md)
 * [Introduction](cli-docs/introduction.md)
 
 ## 🐍 Python
