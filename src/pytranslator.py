@@ -22,7 +22,7 @@ class Translator:
 
         visitor = NodeVisitor(config=self.config)
 
-        if self.show_ast:
+        if self.show_ast: # 
             print(ast.dump(py_ast_tree))
 
         visitor.visit(py_ast_tree)

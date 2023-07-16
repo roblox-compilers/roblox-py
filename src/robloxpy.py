@@ -169,7 +169,7 @@ def p():
 
   @app.route("/lib", methods=["GET"]) 
   def library():
-      return translator.getluainit()
+      return translator.get_luainit()
     
   app.run(
   host='0.0.0.0', 
@@ -230,7 +230,7 @@ def w():
           
           open(dir, "x").close()
           with open(dir, "w") as f:
-            f.write(translator.getluainit())
+            f.write(translator.get_luainit())
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-py: No path specified!"))
@@ -241,7 +241,7 @@ def w():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
-               f.write(translator.getluainit())
+               f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
@@ -634,7 +634,7 @@ Configuring {c}
         elif inputval == "3":
           returned = input("Enter the dynamic, it currently is %s: " % getconfig("c", "dynamiclibpath"))
           setconfig("c", "dynamiclibpath", returned)
-      elif returnval == "3":
+      elif returnval == "3": #
         print(f"""
 Configuring {cpp}
 {border}
