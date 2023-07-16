@@ -12,6 +12,12 @@
 
 ***
 
+```
+pip install roblox-pyc
+```
+
+
+
 Python, Lunar, C, C++ Compiler for Roblox.
 
 Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
