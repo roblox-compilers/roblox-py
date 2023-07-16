@@ -64,8 +64,50 @@ end
 onPlrAdd = py.Players.PlayerAdded(onPlrAdd)
 ```
 
+> stringmeta, list, dict are all functions used to add the Python API to lua objects.&#x20;
+
+***
+
+### Embedding Lua into Python
+
+Sometimes you need to do something in Lua, inside of a python script! But how?
+
+```python
+print("Python code")
+for i in range(1,10):
+    print("Python loop", i)
+```
+
+Thats python code, now let's add some lua code
+
+```psl
+print("Python code")
+for i in range(10):
+    print("Python loop", i)
+    
+"""[[lua]]
+```
+
+```lua
+-- As seen above this is not a multiline comment because of the [[lua]]
+for i = 1, 10 do 
+    print(i)
+end
+
+-- We can still use python functions in lua this time without a problem
+for i, v in range(10) do 
+    print(i)
+end
+```
+
+```python
+"""
+```
+
+> This is the same script but I split it to 3 different code blocks for syntax highlighting
+
 
 
 ***
 
-Check out the tests in github
+Check out the tests in GitHub!
