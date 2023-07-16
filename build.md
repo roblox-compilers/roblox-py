@@ -4,7 +4,7 @@ description: For personal usage so I can remember what commands to use.
 
 # Technical Guide
 
-## Local build
+## Build
 
 * `python3 -m build`
 * `pip install dist/roblox_pyc-{version}-py3-none-any.whl --force-reinstall`
@@ -14,6 +14,8 @@ description: For personal usage so I can remember what commands to use.
 * open setup.cfg
 * change version
 
-## Upload (git releases covers this)
+## Upload
+
+GitHub actions does this whenever a commit is passed on `setup.cfg.`
 
 * `twine upload dist/*`

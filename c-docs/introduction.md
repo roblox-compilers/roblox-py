@@ -2,7 +2,7 @@
 
 > These languages are best for learning new syntax
 
-### C
+## C
 
 ```
 roblox-c c
@@ -24,7 +24,7 @@ Download the library, Recommended to install in the VsCode equivalent of Replica
 
 
 
-### C++
+## C++
 
 ```
 roblox-cpp c

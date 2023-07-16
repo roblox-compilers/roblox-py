@@ -4,6 +4,8 @@ description: How can you use the built in API.
 
 # API
 
+## Built-in
+
 Use the&#x20;
 
 ```
@@ -68,7 +70,7 @@ onPlrAdd = py.Players.PlayerAdded(onPlrAdd)
 
 ***
 
-### Embedding Lua into Python
+## Embedding lua
 
 Sometimes you need to do something in Lua, inside of a python script! But how?
 
