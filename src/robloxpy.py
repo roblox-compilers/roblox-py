@@ -496,23 +496,31 @@ def lunar():
         for file in f:
             if '.moon' in file:
               # compile the file to a file with the same name and path but .lua
-              try:
-                subprocess.call(["moonc", os.path.join(r, file)])
+                # Run command and check if anything is outputted to stderr, stdout, or stdin
                 
-                newheader = header.lunarheader(luainit.lunarfunctions)
+                stdout, stderr = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 
-                # check if the new file has been created
-                if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-                  print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
-                  
-                  with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
-                    contents = f.read()
-                  with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-                    f.write(newheader+contents)
+                if stdout or stderr:
+                  if stdout:
+                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+str(stdout)))
+                  else:
+                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+str(stderr)))
                 else:
-                  print(colortext.red("Compile Error for "+os.path.join(r, file)+"!"))
-              except Exception as e:
-                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+                  try:
+                    newheader = header.lunarheader(luainit.lunarfunctions)
+                    
+                    # check if the new file has been created
+                    if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+                      print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
+                      
+                      with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
+                        contents = f.read()
+                      with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
+                        f.write(newheader+contents)
+                    else:
+                      print(colortext.red("File error for "+os.path.join(r, file)+"!"))
+                  except Exception as e:
+                    print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
 
       action = input("")

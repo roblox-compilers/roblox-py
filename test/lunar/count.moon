@@ -6,3 +6,5 @@ count_to_10!
 
 for i in 5,10
     print i
+
+game.Workspace.?BrickColor = BrickColor.new(100)
