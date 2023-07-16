@@ -351,6 +351,8 @@ def cw():
                   
                 print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
               except Exception as e:
+                if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
+                  print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
                 print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
 
@@ -454,6 +456,8 @@ def cpw():
                   
                 print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
               except Exception as e:
+                if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
+                  print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
                 print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               
 
