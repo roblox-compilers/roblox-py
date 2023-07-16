@@ -77,4 +77,13 @@ local __import_ = builtin.__import_
 local formatmod = builtin.formatmod
 
 -----------------------------------------------------------------------------
-
+local count_to_10
+count_to_10 = function()
+  for i in 1 .. 10 do
+    print(i)
+  end
+end
+count_to_10()
+for i in 5 .. 10 do
+  print(i)
+end
