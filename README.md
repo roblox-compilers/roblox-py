@@ -32,7 +32,7 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
     The roblox-pyc compiler is designed so entire projects can be compiled in a matter of seconds
   
 - 📉 Optimized code </br>
-  Your code will have near-0 performance drops so you do not have something new to worry about
+  roblox-pyc is a source-source compiler, it doesn't use any WASM or anything like that to cheat its way and has major performance drops. It uses an AST and rewrites your code and optimizes it. 
 
 - ⚠️ Easy error checking </br>
   Your code can easily be checked for errors because of the precompiler error system.
