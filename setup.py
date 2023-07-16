@@ -15,4 +15,7 @@ setup(install_requires=[
       long_description_content_type='text/markdown',
       include_package_data=True,
       packages=find_packages(),
-    )
+      author='roblox-pyc team',
+      author_email="roblox.pyc@gmail.com",
+      license="GNU AFFERO GENERAL PUBLIC LICENSE",
+  )

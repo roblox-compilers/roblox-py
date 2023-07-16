@@ -715,6 +715,10 @@ Configuring General
       webbrowser.open("https://discord.gg/jbMFyBcBC2")
     elif sys.argv[1] == "github":
       webbrowser.open("https://github.com/AsynchronousAI/roblox-pyc")
+    elif sys.argv[1] == "help":
+      raise IndexError
+    elif sys.argv[1] == "info":
+      subprocess.call(["pip", "show", "roblox-pyc"])
     else:
       raise IndexError
   except IndexError:
