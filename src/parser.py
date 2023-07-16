@@ -100,6 +100,7 @@ class CodeConverter(BaseParser):
         # flags will have an item like -L=libclang_path
         Lindex = [i for i, x in enumerate(flags) if x.startswith('-L=')]
         if Lindex != "None":
+            print(flags[Lindex].split('=')[1])
             Config.set_library_path(flags[Lindex].split('=')[1])
         abs_filenames = [os.path.abspath(f) for f in filenames]
         self.filenames.update(abs_filenames)

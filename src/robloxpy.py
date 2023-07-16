@@ -19,7 +19,7 @@ class Reporter:
 
     def unexpectedError(self, filename, msg):
         """
-        An unexpected error occurred trying to process C{filename}.
+        An unexpected error occurred attemptinh to process C{filename}.
 
         @param filename: The path to a file that we could not process.
         @ptype filename: C{unicode}
@@ -323,7 +323,8 @@ def cw():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.c' in file and not '.cpp' in file:
+            # check if it ENDS with .c, not if it CONTAINS .c
+            if '.c' in file and file.endswith(".c"):
               # compile the file to a file with the same name and path but .lua
               try:
                 newctranslator = parser.CodeConverter("name.c")
@@ -540,9 +541,10 @@ def lunar():
                 
                 if stdout or stderr:
                   if stdout:
-                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+str(stdout)))
+                    
+                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
                   else:
-                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+str(stderr)))
+                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
                 else:
                   try:
                     newheader = header.lunarheader(luainit.lunarfunctions)
