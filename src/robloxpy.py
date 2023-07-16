@@ -5,8 +5,7 @@ import re
 import sys
 import webbrowser
 import pickle
-
-from . import pytranslator, colortext, luainit, parser, ctranslator
+from . import pytranslator, colortext, luainit, parser, ctranslator, luainit, header #ctranslator is old and not used
 import subprocess
 import shutil
 import sys
@@ -79,9 +78,6 @@ class Reporter:
 
 
 app = Flask(__name__)
-#typerapp = typer.Typer() #py
-#typerapp2 = typer.Typer() #c
-#typerapp3 = typer.Typer() #cpp
 translator = pytranslator.Translator()
 
 # INSTALL MOONSCRIPT
@@ -488,6 +484,17 @@ def lunar():
               try:
                 subprocess.call(["moonc", os.path.join(r, file)])
                 print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
+                
+                newheader = header.lunarheader(luainit.allfunctions)
+                
+                # check if the new file has been created
+                if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+                  with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
+                    contents = f.read()
+                  with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
+                    f.write(newheader+contents)
+                else:
+                  print(colortext.red("roblox-lunar: File lost! Please report this in the discord server, devforum post, github issues."))
               except Exception as e:
                 print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
               

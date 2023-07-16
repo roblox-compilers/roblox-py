@@ -1,5 +1,3 @@
-
-
 --// AsynchronousAI @Dev98799 \\--
 -------------------------------------------------------------------------------
 -- this script was added by roblox-pyc plugin to give you the full experience.-- 
@@ -1750,9 +1748,11 @@ local module = function(scriptname)
 			pylib,
 			{ -- pip library
 			},
-			{ -- built in
+			{ -- python built in
 				stringmeta = string_meta, list = list, dict = dict, -- class meta
-
+				python = function(input) 
+					return createProxy(input) 
+				end, -- python()
 				staticmethod = function(old_fun) -- staticmethod
 					local wrapper = function(first, ...)
 						return old_fun(...)
@@ -2274,8 +2274,16 @@ local module = function(scriptname)
 						error("Invalid argument type for %")
 					end
 				end
+			},
+		},
+		lunar = {
+			{-- lunar built in
+				type = t
 			}
-
+		},
+		c = {
+			{-- c and c++ built in
+			}
 		}
 	}
 end
