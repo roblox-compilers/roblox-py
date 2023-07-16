@@ -535,7 +535,8 @@ def lunar():
               # compile the file to a file with the same name and path but .lua
                 # Run command and check if anything is outputted to stderr, stdout, or stdin
                 
-                stdout, stderr = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
                 
                 if stdout or stderr:
                   if stdout:

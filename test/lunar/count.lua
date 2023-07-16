@@ -1,13 +1,3 @@
---// Compiled using roblox-pyc \--
-		
-		
------------------------------------- BUILT IN -------------------------------
-local builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
-
-local type = builtin.type
-local table = builtin.table
-
------------------------------------------------------------------------------
 local Inventory
 do
   local _class_0
