@@ -328,7 +328,7 @@ def cw():
               # compile the file to a file with the same name and path but .lua
               try:
                 newctranslator = parser.CodeConverter("name.c")
-                newctranslator.set_dylib_path(getconfig("c", "dynamiclibpath", "None"))
+                newctranslator.set_dylib(getconfig("c", "dynamiclibpath", "None"))
                 newctranslator.parse(
                   os.path.join(r, file),
                   # C not C++
@@ -433,7 +433,7 @@ def cpw():
               # compile the file to a file with the same name and path but .lua
               try:
                 newctranslator = parser.CodeConverter("name.cpp")
-                newctranslator.set_dylib_path(getconfig("cpp", "dynamiclibpath", "None"))
+                newctranslator.set_dylib(getconfig("cpp", "dynamiclibpath", "None"))
                 newctranslator.parse(
                   os.path.join(r, file),
                   flags=[
