@@ -221,7 +221,7 @@ def w():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.py' in file:
+            if file.endswith(".py"):
               # compile the file to a file with the same name and path but .lua
               contents = ""
               
@@ -327,8 +327,7 @@ def cw():
             if '.c' in file and file.endswith(".c"):
               # compile the file to a file with the same name and path but .lua
               try:
-                newctranslator = parser.CodeConverter("name.c")
-                newctranslator.set_dylib(getconfig("c", "dynamiclibpath", "None"))
+                newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
                 newctranslator.parse(
                   os.path.join(r, file),
                   # C not C++
@@ -429,11 +428,11 @@ def cpw():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.cpp' in file:
+            if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
               try:
-                newctranslator = parser.CodeConverter("name.cpp")
-                newctranslator.set_dylib(getconfig("cpp", "dynamiclibpath", "None"))
+                newctranslator = parser.CodeConverter(file, getconfig("cpp", "dynamiclibpath", "None"))
+                
                 newctranslator.parse(
                   os.path.join(r, file),
                   flags=[
@@ -534,7 +533,7 @@ def lunar():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if '.moon' in file:
+            if file.endswith(".moon"):
               # compile the file to a file with the same name and path but .lua
                 # Run command and check if anything is outputted to stderr, stdout, or stdin
                 
