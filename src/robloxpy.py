@@ -664,7 +664,7 @@ Configuring {c}
 {border}
 1 - Change std 
 2 - Change stdlib
-3 - Change dynamic library path
+3 - Change dynamic library file
               """)
         
         inputval = input("Select which config to open: ")
@@ -683,7 +683,7 @@ Configuring {cpp}
 {border}
 1 - Change std 
 2 - Change stdlib
-3 - Change dynamic library path
+3 - Change dynamic library file
               """)
         
         inputval = input("Select which config to open: ")
@@ -694,7 +694,7 @@ Configuring {cpp}
           returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib", "libc++"))
           setconfig("cpp", "stdlib", returned, "libc++")
         elif inputval == "3":
-          returned = input("Enter the dynamic library path, it currently is %s: " % getconfig("cpp", "dynamiclibpath", "None"))
+          returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("cpp", "dynamiclibpath", "None"))
           setconfig("cpp", "dynamiclibpath", returned, "None")
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
