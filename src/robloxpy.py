@@ -706,7 +706,7 @@ Configuring General
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the default lib path, it currently is %s: " % getconfig("general", "defaultlibpath"))
+          returned = input("Enter the default lib file, it currently is %s: " % getconfig("general", "defaultlibpath"))
           setconfig("general", "defaultlibpath", returned, "")
       else:
         print(colortext.red("Invalid option!"))
@@ -720,6 +720,42 @@ Configuring General
       raise IndexError
     elif sys.argv[1] == "info":
       subprocess.call(["pip", "show", "roblox-pyc"])
+      """elif sys.argv[1] == "install":
+      # Verify sys.argv[2] is valid and a git repo
+      try:
+        if ("github.com/" in sys.argv[2]) and (sys.argv[3]):
+          # Install the repo into the scripts directory and add it to the config 
+          currentlist = getconfig("general", "scripts", {})
+          currentlist[sys.argv[3]] = sys.argv[2]
+          setconfig("general", "scripts", currentlist, {})
+          
+          # Install it into cwd/dependencies
+          cwd = os.getcwd()
+          if not os.path.exists(os.path.join(cwd, "dependencies")):
+            os.mkdir(os.path.join(cwd, "dependencies"))
+          cwd = os.path.join(cwd, "dependencies")
+          # Check if it is already installed under scriptname, otherwise install it
+          if not os.path.exists(os.path.join(cwd, sys.argv[3])):
+            # Install it into cwd/dependencies/scriptname
+            subprocess.call(["git", "clone", sys.argv[2], os.path.join(cwd, sys.argv[3])])
+      except IndexError:
+        print(colortext.red("No repo specified!"))
+    else:
+      # check if sys.argv[1] is a valid script
+      scripts = getconfig("general", "scripts", {})
+      if sys.argv[1] in scripts:
+        # check if its in cwd/dependencies/scriptname
+        cwd = os.getcwd()
+        cwd = os.path.join(cwd, "dependencies")
+        cwd = os.path.join(cwd, sys.argv[1])
+        
+        if os.path.exists(cwd):
+          # Call its __init__.py with the rest of the args
+          pass
+        else:
+          raise IndexError
+      else:
+        raise IndexError"""
     else:
       raise IndexError
   except IndexError:
