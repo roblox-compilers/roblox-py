@@ -82,11 +82,7 @@ translator = pytranslator.Translator()
 
 # INSTALL SEALANG
 def check_llvm():
-  try:
-    subprocess.call(["llvm-config", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-    return True
-  except FileNotFoundError:
-    return False
+  return True # Add LLVM check/installs later
 def install_llvm():
   print("Installing LLVM...")
   if sys.platform == "linux":
@@ -161,12 +157,15 @@ def getconfig(lang, key, default=None):
         if bugged == "": 
           print(colortext.red("roblox-py: Config file KeyError!"))
           return default
+    
         # Write the missing lang or key in and return the default
         if bugged == "lang":
+          print(colortext.yellow("roblox-py: Adding missing language %s to config file..." % lang))
           new = pickle.load(file)
           new[lang] = {}
           pickle.dump(new, file)
-        else:
+        if bugged == "key":
+          print(colortext.yellow("roblox-py: Adding missing key %s to config file..." % key))
           new = pickle.load(file)
           new[lang][key] = default
           pickle.dump(new, file)
@@ -463,7 +462,7 @@ def cpw():
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
               try:
-                newctranslator = parser.CodeConverter(file, getconfig("cpp", "dynamiclibpath", "None"))
+                newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
                 
                 newctranslator.parse(
                   os.path.join(r, file),
@@ -739,7 +738,6 @@ Configuring General
         elif inputval == "2":
           returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
           setconfig("c", "dynamiclibpath", returned, "None")
-          setconfig("cpp", "dynamiclibpath", returned, "None")
         elif inputval == "3":
           returned = input("Enter the LLVM Home Path, it currently is %s: " % getconfig("general", "llvmhomepath", "None"))
           setconfig("general", "llvmhomepath", returned, "")
