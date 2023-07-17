@@ -638,9 +638,11 @@ def pyc():
   lunar = colortext.blue("roblox-lunar")
   border = colortext.white("--------------------")
   blank = colortext.blue("roblox-")+colortext.magenta("<lang>")
+  blank2 = colortext.blue("rblx-")+colortext.magenta("<lang>")
   blankpath = colortext.magenta("<path>")
   selftool = colortext.blue("roblox-pyc")
-  
+  shortselftool = colortext.blue("rblx-pyc")
+  shorterselftool = colortext.blue("rpyc")
   try:
     if sys.argv[1] == "config":
       # Open config menu
@@ -698,7 +700,7 @@ Configuring {cpp}
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
       elif returnval == "5":
-        print("""
+        print(f"""
 Configuring General
 {border}
 1 - Change default lib path
@@ -743,10 +745,22 @@ Configuring General
   - {blank} p - Start the plugin server (only for {py})
   - {blank} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
   - {blank} c - Convert all .lua files to targeted language files, it will comment the existing lua code
+  - {blank2} w - Click enter in the terminal to compile all scripts
+  - {blank2} p - Start the plugin server (only for {py})
+  - {blank2} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
+  - {blank2} c - Convert all .lua files to targeted language files, it will comment the existing lua code
   - {selftool} config - Open the config menu
   - {selftool} devforum - Open the devforum page in a browser
   - {selftool} discord - Open the discord server in a browser
   - {selftool} github - Open the github page in a browser
+  - {shortselftool} config - Open the config menu
+  - {shortselftool} devforum - Open the devforum page in a browser
+  - {shortselftool} discord - Open the discord server in a browser
+  - {shortselftool} github - Open the github page in a browser
+  - {shorterselftool} config - Open the config menu
+  - {shorterselftool} devforum - Open the devforum page in a browser
+  - {shorterselftool} discord - Open the discord server in a browser
+  - {shorterselftool} github - Open the github page in a browser
   {border}
   MORE HELP:
   - Devforum
