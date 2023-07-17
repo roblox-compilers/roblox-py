@@ -55,10 +55,8 @@ class BaseParser(object):
 class CodeConverter(BaseParser):
     def __init__(self, name, dylib, verbosity=0):
         if dylib != 'None':
-            print("Setting dylib to %s" % dylib)
+            #print("Setting dylib to %s" % dylib)
             Config.set_library_file(dylib)
-        else:
-            print("Using default dylib")
         super(CodeConverter, self).__init__()
         # Tools for debugging.
         self.verbosity = verbosity

@@ -80,6 +80,30 @@ class Reporter:
 app = Flask(__name__)
 translator = pytranslator.Translator()
 
+# INSTALL SEALANG
+def check_llvm():
+  try:
+    subprocess.call(["llvm-config", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+    return True
+  except FileNotFoundError:
+    return False
+def install_llvm():
+  print("Installing LLVM...")
+  if sys.platform == "linux":
+    subprocess.call(["apt-get", "install", "-y", "llvm"])
+  elif sys.platform == "darwin":
+    subprocess.call(["brew", "install", "llvm", "--with-clang", "--with-asan"])
+  elif sys.platform == "win32":
+    subprocess.call(["choco", "install", "llvm"])
+  else:
+    print(colortext.red("Could not auto-install llvm, please install it manually."))
+
+def config_llvm(home=None, lib=None):
+  if home and home != "None":
+    subprocess.call(["export", "LLVM_HOME="+home])
+  if lib and lib != "None":
+    subprocess.call(["export", "LD_LIBRARY_PATH="+lib])
+    
 # INSTALL MOONSCRIPT
 def check_luarocks():
     try:
@@ -313,6 +337,10 @@ def w():
   except KeyboardInterrupt:
     print(colortext.red("roblox-py: Aborted!"))
 def cw():
+  if not check_llvm():
+    install_llvm()
+  
+  config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
   try:
     print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
@@ -416,8 +444,12 @@ def cw():
     print(colortext.red("roblox-c: Invalid amount of arguments!"))
   except KeyboardInterrupt:
     print(colortext.red("roblox-c: Aborted!"))
-     
 def cpw():
+  if not check_llvm():
+    install_llvm()
+  
+  config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
+  
   try:
     print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
@@ -520,8 +552,7 @@ def cpw():
   except IndexError:
     print(colortext.red("roblox-cpp: Invalid amount of arguments!"))
   except KeyboardInterrupt:
-    print(colortext.red("roblox-cpp: Aborted!"))
-    
+    print(colortext.red("roblox-cpp: Aborted!"))   
 def lunar():
   try:
     checkboth() # install luarocks and moonscript if not installed
@@ -628,7 +659,6 @@ def lunar():
   except KeyboardInterrupt:
     print(colortext.red("roblox-lunar: Aborted!"))
         
-
 def pyc():
   title = colortext.magenta("roblox-pyc")
   py = colortext.blue("roblox-py")
@@ -664,7 +694,6 @@ Configuring {c}
 {border}
 1 - Change std 
 2 - Change stdlib
-3 - Change dynamic library file
               """)
         
         inputval = input("Select which config to open: ")
@@ -674,16 +703,12 @@ Configuring {c}
         elif inputval == "2":
           returned = input("Enter the stdlib, it currently is %s: " % getconfig("c", "stdlib", "libc"))
           setconfig("c", "stdlib", returned, "libc")
-        elif inputval == "3":
-          returned = input("Enter the dynamiclib, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
-          setconfig("c", "dynamiclibpath", returned, "None")
       elif returnval == "3": #
         print(f"""
 Configuring {cpp}
 {border}
 1 - Change std 
 2 - Change stdlib
-3 - Change dynamic library file
               """)
         
         inputval = input("Select which config to open: ")
@@ -703,11 +728,26 @@ Configuring {cpp}
 Configuring General
 {border}
 1 - Change default lib path
+2 - Change C and C++ dylib
+3 - Change LLVM Home Path (only for C and C++)
+4 - Change LD-LIBRARY-PATH (only for C and C++)
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the default lib file, it currently is %s: " % getconfig("general", "defaultlibpath"))
           setconfig("general", "defaultlibpath", returned, "")
+        elif inputval == "2":
+          returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
+          setconfig("c", "dynamiclibpath", returned, "None")
+          setconfig("cpp", "dynamiclibpath", returned, "None")
+        elif inputval == "3":
+          returned = input("Enter the LLVM Home Path, it currently is %s: " % getconfig("general", "llvmhomepath", "None"))
+          setconfig("general", "llvmhomepath", returned, "")
+          config_llvm(getconfig("general", "llvmhomepath", ""))
+        elif inputval == "4":
+          returned = input("Enter the LD-LIBRARY-PATH, it currently is %s: " % getconfig("general", "ldlibrarypath", "None"))
+          setconfig("general", "ldlibrarypath", returned, "")
+          config_llvm(None, getconfig("general", "ldlibrarypath", ""))
       else:
         print(colortext.red("Invalid option!"))
     elif sys.argv[1] == "devforum":
@@ -805,6 +845,8 @@ Configuring General
           """)
   except KeyboardInterrupt:
     print(colortext.red("roblox-pyc: Aborted!"))  
+
+
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
   mode = input("Select which app to run (1, 2, 3): ")
