@@ -79,7 +79,6 @@ class Reporter:
 
 
 app = Flask(__name__)
-translator = pytranslator.Translator()
 
 # INSTALL SEALANG
 def check_llvm():
@@ -271,6 +270,7 @@ def pycompile(r, file):
       return
               
     try:
+      translator = pytranslator.Translator()
       lua_code = translator.translate(contents)
       print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
       # get the relative path of the file and replace .py with .lua

@@ -73,7 +73,7 @@ new_test.static_test()
 new_test.class_test()
 local string = stringmeta "This"
 local string2 = stringmeta "This is a test string"
-if (not operator_in(string1, string2)) then
+if (not operator_in(string, string2)) then
     print(stringmeta "x is not in y")
 else
     print(stringmeta "x is in y")
