@@ -57,7 +57,8 @@ new_test.class_test()
 
 string = "This"
 string2 = "This is a test string"
-if string1 not in string2:
+
+if string not in string2:
     print("x is not in y")
 else:
     print("x is in y")

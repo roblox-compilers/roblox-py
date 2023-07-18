@@ -227,7 +227,7 @@ def cppcompile(r, file):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" at line "+str(e.__traceback__.tb_lineno)))
 def ccompile(r, file):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
@@ -256,7 +256,7 @@ def ccompile(r, file):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" at line "+str(e.__traceback__.tb_lineno)))
 def pycompile(r, file):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -281,7 +281,7 @@ def pycompile(r, file):
       with open(relative_path, "w") as f:
         f.write(lua_code)
     except Exception as e:
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" at line "+str(e.__traceback__.tb_lineno)))
 def lunarcompile(r, file):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -309,7 +309,7 @@ def lunarcompile(r, file):
         else:
           print(colortext.red("File error for "+os.path.join(r, file)+"!"))
       except Exception as e:
-          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" at line "+str(e.__traceback__.tb_lineno)))
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
