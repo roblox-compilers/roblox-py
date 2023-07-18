@@ -273,12 +273,12 @@ class NodeVisitor(ast.NodeVisitor):
 
         for name in node.names:
             if name.asname is None:
-                self.emit("local {name} = require('{module}{name}')".format(
+                self.emit("local {name} = import({module}, {name})".format(
                     name=name.name,
                     module=module,
                 ))
             else:
-                self.emit("local {name} = require('{module}{name}')".format(
+                self.emit("local {name} = import({module}, {name})".format(
                     name=name.asname,
                     module=module,
                 ))
@@ -669,7 +669,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node):
         """Visit import"""
-        line = 'local {asname} = require "{name}"'
+        line = 'local {asname} = import("{name}")'
         values = {"asname": "", "name": ""}
 
         if node.names[0].asname is None:

@@ -2055,13 +2055,17 @@ function table.removeDupes(tbl)
 	return ret
 end
 
+local libraries = {
+
+}
 
 local module = function(scriptname)
 	return { 
 		py = {
 			pylib,
-			{ -- pip library
-			},
+			function(index, sub) -- import
+				return libraries[index]
+			end,
 			{ -- python built in
 				stringmeta = string_meta, list = list, dict = dict, -- class meta
 				python = function(input) 
@@ -2591,12 +2595,18 @@ local module = function(scriptname)
 			},
 		},
 		lunar = {
+			function(index) -- import
+				return libraries[index]
+			end,
 			{-- lunar built in
 				type = t,
 				table = table,
-			}
+			},
 		},
 		c = {
+			function(index) -- import
+				return libraries[index]
+			end,
 			{-- c and c++ built in
 			}
 		}

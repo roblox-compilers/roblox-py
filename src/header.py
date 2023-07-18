@@ -2,7 +2,7 @@ headertemplate = """--// Compiled using roblox-pyc \\--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 {}
 -----------------------------------------------------------------------------
@@ -11,7 +11,7 @@ lunarheadertemplate = """--// Compiled using roblox-pyc \\--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
+local import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
 
 {}
 -----------------------------------------------------------------------------
