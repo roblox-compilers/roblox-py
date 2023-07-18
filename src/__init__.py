@@ -1,1 +1,1 @@
-"""Python to lua translator module"""
+"""roblox-pyc"""

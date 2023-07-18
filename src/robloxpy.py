@@ -10,6 +10,8 @@ import subprocess
 import shutil
 import sys
 import threading
+import json
+import requests 
 
 class Reporter:
     """
@@ -77,9 +79,14 @@ class Reporter:
         self.diagnostics.append("2"+str(message))
         self.diagnostics.append('\n')
 
-
 app = Flask(__name__)
-
+registryrawurl = "https://raw.githubusercontent.com/roblox-pyc/registry/main/registry.json"
+try:
+  registry = json.loads(requests.get(registryrawurl).text)
+except json.JSONDecodeError:
+  print(colortext.red("roblox-py: Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
+  registry = {} 
+  
 # INSTALL SEALANG
 def check_llvm():
   return True # Add LLVM check/installs later
@@ -324,6 +331,7 @@ def p():
   def base_page():
     code = (request.data).decode()
     try:
+      translator = pytranslator.Translator()
       lua_code = translator.translate(code)
     except Exception as e:
       return "CompileError!:"+str(e)
@@ -340,6 +348,7 @@ def p():
 
   @app.route("/lib", methods=["GET"]) 
   def library():
+      translator = pytranslator.Translator()
       return translator.get_luainit()
     
   app.run(
@@ -358,8 +367,8 @@ def w():
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".py"):
-            #threading.Thread(target=pycompile, args=(r, file)).start()
-            pycompile(r, file)
+            threading.Thread(target=pycompile, args=(r, file)).start()
+            #pycompile(r, file)
               
 
       action = input("")
@@ -380,6 +389,7 @@ def w():
           
           open(dir, "x").close()
           with open(dir, "w") as f:
+            translator = pytranslator.Translator()
             f.write(translator.get_luainit())
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
@@ -391,6 +401,7 @@ def w():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
+               translator = pytranslator.Translator()
                f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
@@ -445,8 +456,8 @@ def cw():
             # check if it ENDS with .c, not if it CONTAINS .c
             # Run use threading 
           if file.endswith(".c"):
-            #threading.Thread(target=ccompile, args=(r, file)).start()
-            ccompile(r, file)
+            threading.Thread(target=ccompile, args=(r, file)).start()
+            #ccompile(r, file)
 
       action = input("")
       if action == "exit":
@@ -465,6 +476,7 @@ def cw():
           dir = os.path.join(cwd, sys.argv[2])
           open(dir, "x").close()
           with open(dir, "w") as f:
+            translator = pytranslator.Translator()
             f.write(translator.get_luainit())
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
@@ -476,6 +488,7 @@ def cw():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
+               translator = pytranslator.Translator()
                f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
@@ -528,8 +541,8 @@ def cpw():
         for file in f:
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
-              #threading.Thread(target=cppcompile, args=(r, file)).start()
-              cppcompile(r, file)
+              threading.Thread(target=cppcompile, args=(r, file)).start()
+              #cppcompile(r, file)
               
 
       action = input("")
@@ -549,6 +562,7 @@ def cpw():
           dir = os.path.join(cwd, sys.argv[2])
           open(dir, "x").close()
           with open(dir, "w") as f:
+            translator = pytranslator.Translator()
             f.write(translator.get_luainit())
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
@@ -560,6 +574,7 @@ def cpw():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
+               translator = pytranslator.Translator()
                f.write(translator.get_luainit())
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
@@ -607,8 +622,8 @@ def lunar():
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".moon"):
-            #threading.Thread(target=lunarcompile, args=(r, file)).start()
-            lunarcompile(r, file)
+            threading.Thread(target=lunarcompile, args=(r, file)).start()
+            #lunarcompile(r, file)
               
 
       action = input("")
@@ -628,6 +643,7 @@ def lunar():
           dir = os.path.join(cwd, sys.argv[2])
           open(dir, "x").close()
           with open(dir, "w") as f:
+            translator = pytranslator.Translator()
             f.write(translator.get_luainit())
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
