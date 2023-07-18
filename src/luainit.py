@@ -5,7 +5,8 @@ import sys
 initcode = ""
 
 try:
-	with open("src/luainitlua.lua", "r") as f:
+    # check for a luainitlua.lua file from the same directory as this file
+	with open(os.path.join(os.path.dirname(__file__), "luainitlua.lua")) as f:
 		initcode = f.read()
 except FileNotFoundError:
     print("roblox-pyc: Due to a bug, lib will not work, please report this issue to the github repo, discord server, or the devforum post\nthanks!")

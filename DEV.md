@@ -1,0 +1,4 @@
+- Fix luainit (Found the issue, made a fix, havent tested yet)
+- Fix "list index out of range"
+- Fix test duplication error (May be fixed, cannot reproduce)
+- Fix dylib config not saving after using C or C++ compiler 
