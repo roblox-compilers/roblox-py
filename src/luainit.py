@@ -26,7 +26,7 @@ def generatewithlibraries (libs):
     
     currentcode = initcode
     sources = []
-    items = []
+    items = {}
     
     for i in range(len(libs)):
         sources.append(libs[i]["data"])
@@ -36,7 +36,7 @@ def generatewithlibraries (libs):
     itemstext = ""
     
     for i in range(len(items)):
-        itemstext += f"\"{list(items.keys())[i]}\" = {list(items.values())[i]}"
+        itemstext += f'"{list(items.keys())[i]}" = {list(items.values())[i]}\n'
 	
     currentcode = currentcode.replace("--{SOURCECODEHERE}--", sourcestext)
     currentcode = currentcode.replace("--{ITEMSHERE}--", itemstext)

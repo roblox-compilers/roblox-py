@@ -411,7 +411,7 @@ def w():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-py: No path specified!"))
@@ -423,7 +423,7 @@ def w():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
@@ -496,7 +496,7 @@ def cw():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-c: No path specified!"))
@@ -508,7 +508,7 @@ def cw():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
@@ -582,7 +582,7 @@ def cpw():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-cpp: No path specified!"))
@@ -594,7 +594,7 @@ def cpw():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
@@ -663,7 +663,7 @@ def lunar():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-lunar: No path specified!"))
@@ -674,7 +674,7 @@ def lunar():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
-               f.write(translator.get_luainit(getconfig("general", "luaext", {})))
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
@@ -820,7 +820,7 @@ Configuring General Settings
         elif type == "luaext":
           # save to config the name and url data after request
           print(colortext.green("Fetching "+sys.argv[2]+" ..."))
-          newlist = getconfig("general", "luaext", {})
+          newlist = getconfig("general", "luaext", [])
           packagedata = json.loads(requests.get(item["url"]).text)
           fileurl = packagedata["file"]
           
@@ -846,7 +846,7 @@ Configuring General Settings
         if type == "cli":
           pass
         elif type == "luaext":
-          currentlist = getconfig("general", "luaext", {})
+          currentlist = getconfig("general", "luaext", [])
           # remove, if not found error
           found = False
           
@@ -876,7 +876,7 @@ Configuring General Settings
     elif sys.argv[1] == "list":
       # First list all items in config
       print(colortext.green("Extensions:"))
-      for i in getconfig("general", "luaext", {}):
+      for i in getconfig("general", "luaext", []):
         print(colortext.green("  - "+i["name"]))
       
       print(colortext.green("Packages:"))
