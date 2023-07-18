@@ -819,12 +819,14 @@ Configuring General Settings
           pass
         elif type == "luaext":
           # save to config the name and url data after request
+          print(colortext.green("Fetching "+sys.argv[2]+" ..."))
           newlist = getconfig("general", "luaext", [])
           packagedata = json.loads(requests.get(item["url"]).text)
           fileurl = packagedata["file"]
           
           newlist.append({"name": sys.argv[2], "data": requests.get(fileurl).text, "var": packagedata["outputvar"]})
           setconfig("general", "luaext", newlist, [])
+          print(colortext.green("Fetched "+sys.argv[2]+"!"))
         elif type == "package":
           # Create new folder in cwd called dependencies if it doesnt exist
           print(colortext.green("Installing "+sys.argv[2]+" ..."))
@@ -835,6 +837,57 @@ Configuring General Settings
           # Gitclone item["url"] to dependencies folder
           subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
           print(colortext.green("Installed "+sys.argv[2]+"!"))
+    elif sys.argv[1] == "uninstall":
+      # Find out how to install, cli or package
+        item = registry[sys.argv[2]]
+        type = item["type"]
+        
+        # for cli do nothing, for luaext remove from config, for package remove from dependencies folder
+        if type == "cli":
+          pass
+        elif type == "luaext":
+          currentlist = getconfig("general", "luaext", [])
+          # remove, if not found error
+          found = False
+          
+          for i in currentlist:
+            if i["name"] == sys.argv[2]:
+              currentlist.remove(i)
+              found = True
+          
+          if not found:
+            print(colortext.red("roblox-pyc: Module not found!"))
+          else:
+            setconfig("general", "luaext", currentlist, [])
+        elif type == "package":
+          dependenciesPath = os.path.join(os.getcwd(), "dependencies")
+          # if it doesnt exist error
+          if not os.path.exists(dependenciesPath):
+            print(colortext.red("roblox-pyc: Dependencies folder not found! Creating one now..."))
+            os.mkdir(dependenciesPath)
+            return
+          # remove, if not found error
+          if not os.path.exists(os.path.join(dependenciesPath, sys.argv[2])):
+            print(colortext.red("roblox-pyc: Package not found!"))
+          
+          if os.path.exists(os.path.join(dependenciesPath, sys.argv[2])):
+            shutil.rmtree(os.path.join(dependenciesPath, sys.argv[2]))
+            print(colortext.green("roblox-pyc: Uninstalled "+sys.argv[2]+"!"))
+    elif sys.argv[1] == "list":
+      # First list all items in config
+      print(colortext.green("Extensions:"))
+      for i in getconfig("general", "luaext", []):
+        print(colortext.green("  - "+i["name"]))
+      
+      print(colortext.green("Packages:"))
+      # Then list all items in dependencies folder
+      dependenciesPath = os.path.join(os.getcwd(), "dependencies") 
+      if not os.path.exists(dependenciesPath):
+        print(colortext.yellow("roblox-pyc: Dependencies folder not found! Creating one now..."))
+        os.mkdir(dependenciesPath)
+        return
+      for i in os.listdir(dependenciesPath):
+        print(colortext.green("  - "+i))
     else:
       raise IndexError
   except IndexError:
@@ -853,6 +906,7 @@ Configuring General Settings
   - {lunar} is based off MoonScript, and is completed and reccomended if you want a really nice language with good syntax sugar.
   - I would highly reccomend {py} and {lunar} for production use over ideal lua, as they are much more powerful and easier to use.
   - At the moment lunar is the exact same as moonscript, but adding roblox specific features is planned.
+  - rpyc and rblx-pyc can be used rather than roblox-pyc, they are just shorter versions of the name.
   {border}
   CLI DOCS:
   - {blank} w - Click enter in the terminal to compile all scripts
@@ -867,14 +921,9 @@ Configuring General Settings
   - {selftool} devforum - Open the devforum page in a browser
   - {selftool} discord - Open the discord server in a browser
   - {selftool} github - Open the github page in a browser
-  - {shortselftool} config - Open the config menu
-  - {shortselftool} devforum - Open the devforum page in a browser
-  - {shortselftool} discord - Open the discord server in a browser
-  - {shortselftool} github - Open the github page in a browser
-  - {shorterselftool} config - Open the config menu
-  - {shorterselftool} devforum - Open the devforum page in a browser
-  - {shorterselftool} discord - Open the discord server in a browser
-  - {shorterselftool} github - Open the github page in a browser
+  - {selftool} install <package> - Install a item from the registry. Read docs for more info
+  - {selftool} uninstall <package> - Uninstall a item from the registry. Read docs for more info
+  - {selftool} list - List all installed packages
   {border}
   MORE HELP:
   - Devforum
@@ -884,7 +933,7 @@ Configuring General Settings
           """)
   except KeyboardInterrupt:
     print(colortext.red("roblox-pyc: Aborted!"))  
-
+  
 
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))

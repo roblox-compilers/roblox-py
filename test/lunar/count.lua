@@ -46,12 +46,8 @@ count(0)
 count(1)
 count(2.0)
 count("hi")
-count({
+return count({
   1,
   2,
   3
 })
-count(null)
-count(undefined)
-count(NaN)
-return count(Infinity)
