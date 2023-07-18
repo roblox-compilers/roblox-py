@@ -1,4 +1,4 @@
---// AsynchronousAI @Dev98799 \\--
+					--// AsynchronousAI @Dev98799 \\--
 ----------------------------------------------------------------------------------------
 -- this script was added by roblox-pyc plugin and cli to give you the full experience -- 
 -- below you will find lua equivelents of built in python functions, it is            --         
@@ -1348,7 +1348,7 @@ local typeof = gtype
 
 
 function string_meta(input)
-	if type(input) == "userdata" then
+	if type(input) == "string" then
 		local fake = newproxy(true)
 
 		setmetatable(fake, {
@@ -1370,16 +1370,39 @@ function string_meta(input)
 						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
 					end
 				end
+				return input[index]
+			end,
+			__newindex = function(self, index, value)
+				input[index] = value
+			end,
+			__tostring = function(self)
+				return input
+			end,
+			__call = function(self, ...)
+				return string.format(input, ...)
+			end,
+			__sub = function(v1, v2)
+				if typeof(v1) == "string" and typeof(v2) == "string" then
+					return string.gsub(v1, v2, "")
+				end
+				return v1 - v2
+			end,
+			__mul = function(v1, v2)
+				if typeof(v1) == "string" then
+					return string.rep(v1, v2)
+				end
+				return v1 * v2
 			end,
 
 		})
+		return fake
 	else
 		return input
 	end
 end
 function list(input)
-	if type(input) == "userdata" then
-		local fake = newproxy(true)
+	if type(input) == "table" then
+		local fake = input
 
 		setmetatable(fake, {
 			__call = function(_, t)
@@ -1520,13 +1543,14 @@ function list(input)
 				return result
 			end,
 		})
+		return fake
 	else
 		return input
 	end
 end
 function dict(input)
-	if type(input) == "userdata" then
-		local fake = newproxy(true)
+	if type(input) == "table" then
+		local fake = input
 
 		setmetatable(fake, {
 			__call = function(_, t)
@@ -1657,96 +1681,90 @@ function dict(input)
 				return result
 			end,
 		})
+		return fake
 	else
 		return input
 	end
 end
-local proxyMetaTable = {
-	-- Metamethod called when accessing an index
-	__index = function(proxy, key)
-		-- Get the wrapped instance
-		local instance = proxy.instance
 
-		-- Check if the key exists in the instance
-		if instance[key] ~= nil then
-			-- If the key is a function, return a wrapped function
-			local value = instance[key]
-			if typeof(value) == "RBXScriptSignal" then
-				local event = {}
-				local eventmeta = {
-					__call = function(proxy, ...)
-						proxy.Instance:Connect(...)
-					end,
-				}
-
-				event.Instance = value
-				setmetatable(event, eventmeta)
-
-				return event
+-- Make a directory system called py
+local py = {}
+local submeta = function(selfinstacnce)
+	return {
+		__index = function(self, index)
+			-- Check if that is an instance inside of game
+			local instance = selfinstacnce:FindFirstChild(index)
+			if instance then
+				return instance
 			end
-			if typeof(value) == "function" then
-				-- Wrap the function args and return values
-				local function wrappedFunction(...)
-					local args = unpack(...)
-					for i, arg in ipairs(args) do
-						setmetatable(args[i], proxyMetaTable)
+			local property = selfinstacnce[index]
+			if property then
+				if type(property) == "RBXScriptSignal" then
+					-- return a wrapped version of property than when called it will :Connect
+					local meta = {}
+					meta.__call = function(self, callback)
+						return property:Connect(callback)
 					end
-					local returnval = value(table.pack(args))
-					setmetatable(returnval, proxyMetaTable)
-					return returnval
+					meta.__index = function(self, index)
+						if index == "Connect" then
+							error("RBXScriptSignals should be called, not indexed by Connect")
+						end
+						return property[index]
+					end
+
+					return setmetatable({}, meta)
 				end
-				return wrappedFunction
+				if type(property) == "table" then
+					return list(property)
+				end
+				if type(property) == "string" then
+					return string_meta(property)
+				end
+				return property
 			else
-				return value
+				error("No such property, instance, or event called " .. index)
 			end
-		end
-
-		-- Check if the key exists in the parent
-		local parent = instance.Parent
-		while parent do
-			if parent[key] ~= nil then
-				--print(parent[key], "4")
-				return parent[key]
-			end
-			parent = parent.Parent
-		end
-
-		-- Key not found, return nil
-		--print(nil, "3")
-		return nil
-	end,
-
-	-- Metamethod called when calling the proxy itself
-	__call = function(proxy, ...)
-		-- Forward the call to the wrapped instance
-		--print(proxy.instance(...), "2")
-		return proxy.instance(...)
-	end
-}
-
--- Function to recursively create proxy objects
-local function createProxy(instance)
-	-- Create a proxy object
-	local proxy = {}
-
-	-- Set the instance as a property of the proxy
-	proxy.instance = instance
-
-	-- Set the metatable for the proxy
-	setmetatable(proxy, proxyMetaTable)
-
-	-- Recursively create proxies for children
-	for _, child in ipairs(instance:GetChildren()) do
-		pcall(function()
-			proxy[child.Name] = createProxy(child)
-		end)
-	end
-	--print(proxy, "1")
-	return proxy
+		end,
+		__newindex = function(self, index, value)
+			error("Cannot set " .. index .. " to " .. value)
+		end,
+	}
 end
+local meta = {
+	__index = function(self, index)
+		-- Check if that is an instance inside of game
+		local instance = game:FindFirstChild(index)
+		if instance then
+			-- wrap instance with submeta
+			return setmetatable({}, submeta(instance))
+		end
+		local property = game[index]
+		if property then
+			if type(property) == "RBXScriptSignal" then
+				-- return a wrapped version of property than when called it will :Connect
+				local meta = {}
+				meta.__call = function(self, callback)
+					return property:Connect(callback)
+				end
+				meta.__index = function(self, index)
+					if index == "Connect" then
+						error("RBXScriptSignals should be called, not indexed by Connect")
+					end
+					return property[index]
+				end
 
--- Create a proxy for the Roblox game directory
-local pylib = createProxy(game)
+				return setmetatable({}, meta)
+			end
+			return property
+		else
+			error("No such property, instance, or event called " .. index)
+		end
+	end,
+	__newindex = function(self, index, value)
+		error("Cannot set " .. index .. " to " .. value)
+	end,
+}
+setmetatable(py, )
 
 -- Lua's table references
 local sort = table.sort

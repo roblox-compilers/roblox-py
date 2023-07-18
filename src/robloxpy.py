@@ -203,7 +203,25 @@ def setconfig(lang, key, value, default=None):
     # this is now getconfigs problem i dont give a shit no more
     getconfig(lang, key, default)
 
-    
+# UPDATES
+"""
+def get_latest_version(package_name):
+    url = f"https://pypi.org/pypi/{package_name}/json"
+    response = requests.get(url)
+    data = response.json()
+    return data["info"]["version"]
+
+def check_for_updates(current_version):
+  latest_version = get_latest_version
+  if version.parse(latest_version) > version.parse(current_version):
+    print(f"Update available: {latest_version}")
+    choice = input("Do you want to update? (yes/no): ").lower()
+    if choice == "yes":
+      # Add the pip upgrade command here.
+      subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
+      print("Update successful!")
+"""
+
 # ASYNC 
 def cppcompile(r, file):
   if '.cpp' in file and file.endswith(".cpp"):
@@ -798,7 +816,10 @@ Configuring General Settings
         elif type == "luaext":
           # save to config the name and url data after request
           newlist = getconfig("general", "luaext", [])
-          newlist.append({"name": sys.argv[2], "data": requests.get(item["url"]).text})
+          packagedata = json.load(requests.get(item["url"]).text)
+          fileurl = packagedata["file"]
+          
+          newlist.append({"name": sys.argv[2], "data": requests.get(fileurl).text, "var": packagedata["outputvar"]})
           setconfig("general", "luaext", newlist, [])
         elif type == "package":
           # Create new folder in cwd called dependencies if it doesnt exist
