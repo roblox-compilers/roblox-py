@@ -38,7 +38,7 @@ def generatewithlibraries (libs):
     for i in range(len(items)):
         itemstext += f'"{list(items.keys())[i]}" = {list(items.values())[i]}\n'
 	
-    currentcode = currentcode.replace("--{SOURCECODEHERE}--", sourcestext)
-    currentcode = currentcode.replace("--{ITEMSHERE}--", itemstext)
+    currentcode = currentcode.replace("--{SOURCECODEGOESHERE}--", sourcestext)
+    currentcode = currentcode.replace("--{ITEMSGOHERE}--", itemstext)
  
     return currentcode

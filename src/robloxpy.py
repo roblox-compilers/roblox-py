@@ -408,7 +408,8 @@ def w():
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
           
-          open(dir, "x").close()
+          if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -419,8 +420,8 @@ def w():
              cwd = os.getcwd()
              # cwd+sys.argv[2]
              dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-              
-             open(dir, "x").close()
+             if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -493,7 +494,8 @@ def cw():
           cwd = os.getcwd()
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
-          open(dir, "x").close()
+          if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -505,7 +507,8 @@ def cw():
              # cwd+sys.argv[2]
              dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
               
-             open(dir, "x").close()
+             if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -579,7 +582,8 @@ def cpw():
           cwd = os.getcwd()
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
-          open(dir, "x").close()
+          if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -591,7 +595,8 @@ def cpw():
              # cwd+sys.argv[2]
              dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
               
-             open(dir, "x").close()
+             if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -660,7 +665,8 @@ def lunar():
           cwd = os.getcwd()
           # cwd+sys.argv[2]
           dir = os.path.join(cwd, sys.argv[2])
-          open(dir, "x").close()
+          if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
@@ -672,7 +678,8 @@ def lunar():
              # cwd+sys.argv[2]
              dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
               
-             open(dir, "x").close()
+             if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
              with open(dir, "w") as f:
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
