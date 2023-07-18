@@ -12,6 +12,8 @@ import sys
 import threading
 import json
 import requests 
+from packaging import version
+import pkg_resources
 
 class Reporter:
     """
@@ -204,23 +206,23 @@ def setconfig(lang, key, value, default=None):
     getconfig(lang, key, default)
 
 # UPDATES
-"""
-def get_latest_version(package_name):
-    url = f"https://pypi.org/pypi/{package_name}/json"
+def get_latest_version():
+    url = f"https://pypi.org/pypi/roblox-pyc/json"
     response = requests.get(url)
     data = response.json()
     return data["info"]["version"]
 
-def check_for_updates(current_version):
-  latest_version = get_latest_version
+def check_for_updates():
+  current_version = pkg_resources.get_distribution("roblox-pyc").version
+  latest_version = get_latest_version()
   if version.parse(latest_version) > version.parse(current_version):
-    print(f"Update available: {latest_version}")
+    print(f"Update available to {latest_version}, you are currently using {current_version}")
     choice = input("Do you want to update? (yes/no): ").lower()
     if choice == "yes":
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
       print("Update successful!")
-"""
+
 
 # ASYNC 
 def cppcompile(r, file):
@@ -804,6 +806,7 @@ Configuring General Settings
       raise IndexError
     elif sys.argv[1] == "info":
       subprocess.call(["pip", "show", "roblox-pyc"])
+      check_for_updates()
     elif sys.argv[1] == "install":
       # Check registry for package
       if sys.argv[2] in registry:
