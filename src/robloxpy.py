@@ -222,7 +222,7 @@ def check_for_updates():
     if choice == "yes":
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
-      print("Update successful!")
+      
 
 
 # ASYNC 
