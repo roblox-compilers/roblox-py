@@ -9,6 +9,7 @@ from . import pytranslator, colortext, luainit, parser, ctranslator, luainit, he
 import subprocess
 import shutil
 import sys
+import threading
 
 class Reporter:
     """
@@ -93,7 +94,6 @@ def install_llvm():
     subprocess.call(["choco", "install", "llvm"])
   else:
     print(colortext.red("Could not auto-install llvm, please install it manually."))
-
 def config_llvm(home=None, lib=None):
   if home and home != "None":
     subprocess.call(["export", "LLVM_HOME="+home])
@@ -139,6 +139,7 @@ def getconfig(lang, key, default=None):
       try:
         returnval = pickle.load(file)[lang][key]
         if returnval == None or returnval == "":
+          print("Returned default because value was None or empty")
           return default
         else:
           return returnval
@@ -160,16 +161,17 @@ def getconfig(lang, key, default=None):
     
         # Write the missing lang or key in and return the default
         if bugged == "lang":
-          print(colortext.yellow("roblox-py: Adding missing language %s to config file..." % lang))
+          #print(colortext.yellow("roblox-py: Adding missing language %s to config file..." % lang))
           new = pickle.load(file)
           new[lang] = {}
           pickle.dump(new, file)
         if bugged == "key":
-          print(colortext.yellow("roblox-py: Adding missing key %s to config file..." % key))
+          #print(colortext.yellow("roblox-py: Adding missing key %s to config file..." % key))
           new = pickle.load(file)
           new[lang][key] = default
           pickle.dump(new, file)
         
+        print("Returned default because key or lang was missing and I added it")
         return default
   except EOFError:
     # the file is empty, write {} to it
@@ -196,7 +198,118 @@ def setconfig(lang, key, value, default=None):
     getconfig(lang, key, default)
 
     
-
+# ASYNC 
+def cppcompile(r, file):
+  if '.cpp' in file and file.endswith(".cpp"):
+    # compile the file to a file with the same name and path but .lua
+    try:
+      newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
+      newctranslator.parse(
+      os.path.join(r, file),
+      # C not C++
+      flags=[
+        '-I%s' % inc for inc in []
+      ] + [
+        '-D%s' % define for define in []
+      ] + [
+        '-std=%s' % getconfig("cpp", "std", "c++20")
+      ] + [
+        '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
+      ]
+      )
+                
+      newctranslator.diagnostics(sys.stderr)
+      relative_path = backwordreplace(os.path.join(r, file),".cpp", ".lua", 1)
+      with open(relative_path, 'w') as out:
+        newctranslator.output(relative_path, out)
+                  
+        print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+    except Exception as e:
+      if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
+        print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def ccompile(r, file):
+  if '.c' in file and file.endswith(".c"):
+    # compile the file to a file with the same name and path but .lua
+    try:
+      newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
+      newctranslator.parse(
+      os.path.join(r, file),
+      # C not C++
+      flags=[
+        '-I%s' % inc for inc in []
+      ] + [
+        '-D%s' % define for define in []
+      ] + [
+        '-std=%s' % getconfig("c", "std", "c11")
+      ] + [
+        '-stdlib=%s' % getconfig("c", "stdlib", "libc")
+      ]
+      )
+                
+      newctranslator.diagnostics(sys.stderr)
+      relative_path = backwordreplace(os.path.join(r, file),".c", ".lua", 1)
+      with open(relative_path, 'w') as out:
+        newctranslator.output(relative_path, out)
+                  
+        print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+    except Exception as e:
+      if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
+        print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def pycompile(r, file):
+  if file.endswith(".py"):
+    # compile the file to a file with the same name and path but .lua
+    contents = ""
+              
+    try:
+      with open(os.path.join(r, file)) as rf:
+        contents = rf.read()  
+    except Exception as e:
+      print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+      # do not compile the file if it cannot be read
+      return
+              
+    try:
+      lua_code = translator.translate(contents)
+      print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
+      # get the relative path of the file and replace .py with .lua
+      relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
+                
+      if not os.path.exists(os.path.dirname(relative_path)):
+        open(os.path.dirname(relative_path), "x").close()
+      with open(relative_path, "w") as f:
+        f.write(lua_code)
+    except Exception as e:
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def lunarcompile(r, file):
+  if file.endswith(".moon"):
+    # compile the file to a file with the same name and path but .lua
+    # Run command and check if anything is outputted to stderr, stdout, or stdin
+                
+    process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+                
+    if stdout or stderr:
+      if stdout:     
+        print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
+      else:
+        print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
+    else:
+      try:
+        newheader = header.lunarheader(luainit.lunarfunctions)
+                    
+        # check if the new file has been created
+        if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+          print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))          
+          with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
+            contents = f.read()
+          with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
+            f.write(newheader+contents)
+        else:
+          print(colortext.red("File error for "+os.path.join(r, file)+"!"))
+      except Exception as e:
+          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -244,30 +357,8 @@ def w():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if file.endswith(".py"):
-              # compile the file to a file with the same name and path but .lua
-              contents = ""
-              
-              try:
-                with open(os.path.join(r, file)) as rf:
-                  contents = rf.read()  
-              except Exception as e:
-                print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
-                # do not compile the file if it cannot be read
-                continue
-              
-              try:
-                lua_code = translator.translate(contents)
-                print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
-                # get the relative path of the file and replace .py with .lua
-                relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
-                
-                if not os.path.exists(os.path.dirname(relative_path)):
-                  open(os.path.dirname(relative_path), "x").close()
-                with open(relative_path, "w") as f:
-                  f.write(lua_code)
-              except Exception as e:
-                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+          if file.endswith(".py"):
+            threading.Thread(target=pycompile, args=(r, file)).start()
               
 
       action = input("")
@@ -351,35 +442,9 @@ def cw():
       for r, d, f in os.walk(path):
         for file in f:
             # check if it ENDS with .c, not if it CONTAINS .c
-            if '.c' in file and file.endswith(".c"):
-              # compile the file to a file with the same name and path but .lua
-              try:
-                newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
-                newctranslator.parse(
-                  os.path.join(r, file),
-                  # C not C++
-                  flags=[
-                      '-I%s' % inc for inc in []
-                  ] + [
-                      '-D%s' % define for define in []
-                  ] + [
-                      '-std=%s' % getconfig("c", "std", "c11")
-                  ] + [
-                      '-stdlib=%s' % getconfig("c", "stdlib", "libc")
-                  ]
-                )
-                
-                newctranslator.diagnostics(sys.stderr)
-                relative_path = backwordreplace(os.path.join(r, file),".c", ".lua", 1)
-                with open(relative_path, 'w') as out:
-                  newctranslator.output(relative_path, out)
-                  
-                print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
-              except Exception as e:
-                if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-                  print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-              
+            # Run use threading 
+          if file.endswith(".c"):
+            threading.Thread(target=ccompile, args=(r, file)).start()
 
       action = input("")
       if action == "exit":
@@ -461,32 +526,7 @@ def cpw():
         for file in f:
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
-              try:
-                newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
-                
-                newctranslator.parse(
-                  os.path.join(r, file),
-                  flags=[
-                      '-I%s' % inc for inc in []
-                  ] + [
-                      '-D%s' % define for define in []
-                  ] + [
-                      '-std=%s' % getconfig("cpp", "std", "c++11")
-                  ] + [
-                      '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
-                  ]
-                )
-                
-                newctranslator.diagnostics(sys.stderr)
-                relative_path = backwordreplace(os.path.join(r, file),".cpp", ".lua", 1)
-                with open(relative_path, 'w') as out:
-                  newctranslator.output(relative_path, out)
-                  
-                print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
-              except Exception as e:
-                if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-                  print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-                print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+              threading.Thread(target=cppcompile, args=(r, file)).start()
               
 
       action = input("")
@@ -563,35 +603,8 @@ def lunar():
 
       for r, d, f in os.walk(path):
         for file in f:
-            if file.endswith(".moon"):
-              # compile the file to a file with the same name and path but .lua
-                # Run command and check if anything is outputted to stderr, stdout, or stdin
-                
-                process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
-                
-                if stdout or stderr:
-                  if stdout:
-                    
-                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
-                  else:
-                    print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
-                else:
-                  try:
-                    newheader = header.lunarheader(luainit.lunarfunctions)
-                    
-                    # check if the new file has been created
-                    if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-                      print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))
-                      
-                      with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
-                        contents = f.read()
-                      with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-                        f.write(newheader+contents)
-                    else:
-                      print(colortext.red("File error for "+os.path.join(r, file)+"!"))
-                  except Exception as e:
-                    print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+          if file.endswith(".moon"):
+            threading.Thread(target=lunarcompile, args=(r, file)).start()
               
 
       action = input("")
@@ -717,14 +730,11 @@ Configuring {cpp}
         elif inputval == "2":
           returned = input("Enter the stdlib, it currently is %s: " % getconfig("cpp", "stdlib", "libc++"))
           setconfig("cpp", "stdlib", returned, "libc++")
-        elif inputval == "3":
-          returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("cpp", "dynamiclibpath", "None"))
-          setconfig("cpp", "dynamiclibpath", returned, "None")
       elif returnval == "4":
         print(f"{lunar} doesnt need to be configured!")
       elif returnval == "5":
         print(f"""
-Configuring General
+Configuring General Settings
 {border}
 1 - Change default lib path
 2 - Change C and C++ dylib
@@ -847,7 +857,7 @@ Configuring General
 
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
-  mode = input("Select which app to run (1, 2, 3): ")
+  mode = input("Select which module to run (1, 2, 3, 4): ")
   
   if mode == "1":
     w()
