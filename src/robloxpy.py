@@ -358,7 +358,8 @@ def w():
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".py"):
-            threading.Thread(target=pycompile, args=(r, file)).start()
+            #threading.Thread(target=pycompile, args=(r, file)).start()
+            pycompile(r, file)
               
 
       action = input("")
@@ -444,7 +445,8 @@ def cw():
             # check if it ENDS with .c, not if it CONTAINS .c
             # Run use threading 
           if file.endswith(".c"):
-            threading.Thread(target=ccompile, args=(r, file)).start()
+            #threading.Thread(target=ccompile, args=(r, file)).start()
+            ccompile(r, file)
 
       action = input("")
       if action == "exit":
@@ -526,7 +528,8 @@ def cpw():
         for file in f:
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
-              threading.Thread(target=cppcompile, args=(r, file)).start()
+              #threading.Thread(target=cppcompile, args=(r, file)).start()
+              cppcompile(r, file)
               
 
       action = input("")
@@ -604,7 +607,8 @@ def lunar():
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".moon"):
-            threading.Thread(target=lunarcompile, args=(r, file)).start()
+            #threading.Thread(target=lunarcompile, args=(r, file)).start()
+            lunarcompile(r, file)
               
 
       action = input("")
