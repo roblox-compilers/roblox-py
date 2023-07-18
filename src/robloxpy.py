@@ -5,7 +5,7 @@ import re
 import sys
 import webbrowser
 import pickle
-from . import pytranslator, colortext, luainit, parser, ctranslator, luainit, header #ctranslator is old and not used
+from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 import subprocess
 import shutil
 import sys
@@ -349,7 +349,7 @@ def p():
   @app.route("/lib", methods=["GET"]) 
   def library():
       translator = pytranslator.Translator()
-      return translator.get_luainit()
+      return translator.get_luainit([])
     
   app.run(
   host='0.0.0.0', 
@@ -390,7 +390,7 @@ def w():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit())
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-py: No path specified!"))
@@ -402,7 +402,7 @@ def w():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit())
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
@@ -426,8 +426,6 @@ def w():
       elif sys.argv[1] == "w":
         print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
-      elif sys.argv[1] == "t":
-        luainit.generatewithlibraries()
       else:
         print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -477,7 +475,7 @@ def cw():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit())
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-c: No path specified!"))
@@ -489,7 +487,7 @@ def cw():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit())
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
@@ -563,7 +561,7 @@ def cpw():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit())
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-cpp: No path specified!"))
@@ -575,7 +573,7 @@ def cpw():
              open(dir, "x").close()
              with open(dir, "w") as f:
                translator = pytranslator.Translator()
-               f.write(translator.get_luainit())
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
@@ -644,7 +642,7 @@ def lunar():
           open(dir, "x").close()
           with open(dir, "w") as f:
             translator = pytranslator.Translator()
-            f.write(translator.get_luainit())
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
             print(colortext.red("roblox-lunar: No path specified!"))
@@ -655,7 +653,7 @@ def lunar():
               
              open(dir, "x").close()
              with open(dir, "w") as f:
-               f.write(translator.get_luainit())
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
@@ -788,42 +786,30 @@ Configuring General Settings
       raise IndexError
     elif sys.argv[1] == "info":
       subprocess.call(["pip", "show", "roblox-pyc"])
-      """elif sys.argv[1] == "install":
-      # Verify sys.argv[2] is valid and a git repo
-      try:
-        if ("github.com/" in sys.argv[2]) and (sys.argv[3]):
-          # Install the repo into the scripts directory and add it to the config 
-          currentlist = getconfig("general", "scripts", {})
-          currentlist[sys.argv[3]] = sys.argv[2]
-          setconfig("general", "scripts", currentlist, {})
-          
-          # Install it into cwd/dependencies
-          cwd = os.getcwd()
-          if not os.path.exists(os.path.join(cwd, "dependencies")):
-            os.mkdir(os.path.join(cwd, "dependencies"))
-          cwd = os.path.join(cwd, "dependencies")
-          # Check if it is already installed under scriptname, otherwise install it
-          if not os.path.exists(os.path.join(cwd, sys.argv[3])):
-            # Install it into cwd/dependencies/scriptname
-            subprocess.call(["git", "clone", sys.argv[2], os.path.join(cwd, sys.argv[3])])
-      except IndexError:
-        print(colortext.red("No repo specified!"))
-    else:
-      # check if sys.argv[1] is a valid script
-      scripts = getconfig("general", "scripts", {})
-      if sys.argv[1] in scripts:
-        # check if its in cwd/dependencies/scriptname
-        cwd = os.getcwd()
-        cwd = os.path.join(cwd, "dependencies")
-        cwd = os.path.join(cwd, sys.argv[1])
+    elif sys.argv[1] == "install":
+      # Check registry for package
+      if sys.argv[2] in registry:
+        # Find out how to install, cli or package
+        item = registry[sys.argv[2]]
+        type = item["type"]
         
-        if os.path.exists(cwd):
-          # Call its __init__.py with the rest of the args
+        if type == "cli":
           pass
-        else:
-          raise IndexError
-      else:
-        raise IndexError"""
+        elif type == "luaext":
+          # save to config the name and url data after request
+          newlist = getconfig("general", "luaext", [])
+          newlist.append({"name": sys.argv[2], "data": requests.get(item["url"]).text})
+          setconfig("general", "luaext", newlist, [])
+        elif type == "package":
+          # Create new folder in cwd called dependencies if it doesnt exist
+          print(colortext.green("Installing "+sys.argv[2]+" ..."))
+          exists = os.path.exists(os.path.join(os.getcwd(), "dependencies"))
+          if not exists:
+            os.mkdir(os.path.join(os.getcwd(), "dependencies"))
+          
+          # Gitclone item["url"] to dependencies folder
+          subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
+          print(colortext.green("Installed "+sys.argv[2]+"!"))
     else:
       raise IndexError
   except IndexError:

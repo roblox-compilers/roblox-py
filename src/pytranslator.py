@@ -6,7 +6,7 @@ from .config import Config
 from .nodevisitor import NodeVisitor
 
 from .header import header
-from .luainit import initcode, allfunctions
+from .luainit import initcode, allfunctions, generatewithlibraries
 
 class Translator:
     """Python to lua main class translator"""
@@ -67,6 +67,5 @@ class Translator:
         return "\n".join(lines)
 
     @staticmethod
-    def get_luainit(filename="luainit.lua"):
-        
-        return initcode
+    def get_luainit(items):
+        return generatewithlibraries(items)

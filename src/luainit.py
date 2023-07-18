@@ -15,29 +15,5 @@ lunarfunctions = "type, table"
 allfunctions = allfunctions.split(", ")
 lunarfunctions = lunarfunctions.split(", ")
 
-def generatewithlibraries ():
-	libraries = "{"
-	files = ""
-    
-    # add it so it would be organized like so:
-    # {x = {y = {z = {contents = "contents", name = "name"}}}}
-    # using os.walk, check where the pip libraries are stored
-    
-	pipfolder = os.path.join(os.path.dirname(sys.executable), "Lib", "site-packages")
-    
-	for root, dirs, files in os.walk(pipfolder):
-		newline = "[\"{}\"] = {".format(root)
-		for file in files:
-			newline += "[\"{}\"] = {{contents = [[{}]], name = \"{}\"}},".format(file, open(os.path.join(root, file)).read(), file)
-		newline += "},"
-  
-	files = newline
-    
-    # check all libraries that pip has installed
-	for lib in pip.get_installed_distributions():
-		libraries += "{}, ".format(lib.key)
-    
-	libraries += "}"
-    
-	print(libraries, files)
-	#return initcode.format(libs = libraries)
+def generatewithlibraries (libs):
+	return initcode
