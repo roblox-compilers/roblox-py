@@ -2,7 +2,7 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 local list = builtin.list
 local int = builtin.int

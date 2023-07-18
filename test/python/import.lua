@@ -2,14 +2,14 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 
 -----------------------------------------------------------------------------
-local examplelib = require "examplelib"
-local submodule = require "examplelib.submodule"
-local mysubsubmodule = require "examplelib.submodule.subsubmodule"
-local submodule = require('examplefromlib.submodule')
-local mysubsubmodule = require('examplefromlib.submodule.mysubsubmodule')
-local mysubmodule2 = require('examplefromlib.mysubmodule2')
-local mysubsubmodule3 = require('examplefromlib.submodule.mysubsubmodule3')
+local examplelib = import("examplelib")
+local submodule = import("examplelib.submodule")
+local mysubsubmodule = import("examplelib.submodule.subsubmodule")
+local submodule = import(examplefromlib., submodule)
+local mysubsubmodule = import(examplefromlib.submodule., mysubsubmodule)
+local mysubmodule2 = import(examplefromlib., mysubmodule2)
+local mysubsubmodule3 = import(examplefromlib.submodule., mysubsubmodule3)

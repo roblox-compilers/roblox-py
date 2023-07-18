@@ -16,4 +16,29 @@ allfunctions = allfunctions.split(", ")
 lunarfunctions = lunarfunctions.split(", ")
 
 def generatewithlibraries (libs):
-	return initcode
+    # Every item in libs is a table with 3 values
+    # name (what to download by)
+    # value (source code)
+    # var (what variable is the source code stored in)
+    
+    # The initcode has 2 comments, --{SOURCECODEHERE}-- and --{ITEMSHERE}--. Replace SOURCECODEHERE with all of the source codes seprated by newlines
+    # and for ITEMSHERE, "<name>" = <var>
+    
+    currentcode = initcode
+    sources = []
+    items = []
+    
+    for i in range(len(libs)):
+        sources.append(libs[i]["value"])
+        items[libs[i]["name"]] = libs[i]["var"]
+    
+    sourcestext = "\n".join(sources)
+    itemstext = ""
+    
+    for i in range(len(items)):
+        itemstext += f"\"{list(items.keys())[i]}\" = {list(items.values())[i]}"
+	
+    currentcode = currentcode.replace("--{SOURCECODEHERE}--", sourcestext)
+    currentcode = currentcode.replace("--{ITEMSHERE}--", itemstext)
+ 
+    return currentcode

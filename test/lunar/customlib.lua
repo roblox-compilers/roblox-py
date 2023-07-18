@@ -2,7 +2,7 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
+local import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
 
 local type = builtin.type
 local table = builtin.table

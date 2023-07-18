@@ -2,7 +2,7 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
+local import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).lunar)
 
 local type = builtin.type
 local table = builtin.table
@@ -11,8 +11,47 @@ local table = builtin.table
 local count
 count = function(current)
   if current ~= nil then
-    return print(current + 1)
+    if typeof(current == "number") then
+      if current > 0 then
+        print(current)
+        return count(current - 1)
+      else
+        if current == 0 then
+          return print(current)
+        else
+          print(current)
+          return count(current + 1)
+        end
+      end
+    elseif typeof(current == "table") then
+      if current.length > 0 then
+        print(current)
+        return count(current.slice(0, current.length - 1))
+      else
+        return print(current)
+      end
+    else
+      print(current)
+      return count(current + 1)
+    end
+  else
+    return print("Next time, give me a number!")
   end
 end
 count(0)
-return count(5)
+count(5)
+count()
+count(-1)
+count(0)
+count(1)
+count(2.0)
+count("hi")
+count({
+  1,
+  2,
+  3
+})
+count(null)
+count(undefined)
+count(NaN)
+return count(Infinity)

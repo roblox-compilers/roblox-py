@@ -83,6 +83,7 @@ class Reporter:
 
 app = Flask(__name__)
 registryrawurl = "https://raw.githubusercontent.com/roblox-pyc/registry/main/registry.json"
+
 try:
   registry = json.loads(requests.get(registryrawurl).text)
 except json.JSONDecodeError:
@@ -819,7 +820,7 @@ Configuring General Settings
         elif type == "luaext":
           # save to config the name and url data after request
           newlist = getconfig("general", "luaext", [])
-          packagedata = json.load(requests.get(item["url"]).text)
+          packagedata = json.loads(requests.get(item["url"]).text)
           fileurl = packagedata["file"]
           
           newlist.append({"name": sys.argv[2], "data": requests.get(fileurl).text, "var": packagedata["outputvar"]})

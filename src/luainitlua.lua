@@ -2073,8 +2073,11 @@ function table.removeDupes(tbl)
 	return ret
 end
 
-local libraries = {
+--{SOURCECODEGOESHERE}--
 
+local libraries = {
+	"example" = function() print("Example library!") end,
+	--{ITEMSGOHERE}--
 }
 
 local module = function(scriptname)

@@ -2,7 +2,7 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, libs, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
 
 local python = builtin.python
 local all = builtin.all
@@ -25,7 +25,7 @@ XL.py (Stands for Extralarge)
 
 A test script for the roblox-pyc compiler that uses all of the python 3.13 features.
  ]]
-local y = require "x"
+local y = import("x")
 local SSS = py.services.ServerScriptService
 for i in range(10) do
     print(i)
