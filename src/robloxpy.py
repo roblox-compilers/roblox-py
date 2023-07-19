@@ -89,7 +89,10 @@ try:
 except json.JSONDecodeError:
   print(colortext.red("roblox-py: Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
   registry = {} 
-  
+
+# ERROR
+def candcpperror():
+  print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
 # INSTALL SEALANG
 def check_llvm():
   return True # Add LLVM check/installs later
@@ -869,12 +872,12 @@ Configuring General Settings
           subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
           print(colortext.green("Installed "+sys.argv[2]+"!"))
       else:
-        print(colortext.yellow("roblox-pyc: Package not in registry!")+" install from one of these other package managers:")
+        print(colortext.yellow("roblox-pyc: Package not in registry!")+"\nInstall from one of these other package managers:")
         print("""
-              1 - luarocks
-              2 - pip (compiles to lua)
-              3 - pip3 (compiles to lua)
-              4 - None
+    1 - luarocks
+    2 - pip (compiles to lua)
+    3 - pip3 (compiles to lua)
+    4 - None
               """)
         returnval = input("Select which package manager to use: ")
         if returnval == "1":
@@ -885,12 +888,44 @@ Configuring General Settings
         elif returnval == "2":
           # install to dependencies folder
           subprocess.call(["pip", "install", sys.argv[2], "--target=dependencies"])
+          # compile the newly added directory to lua
+          for file in f:
+            if file.endswith(".py"):
+              threading.Thread(target=pycompile, args=(r, file)).start()
+              
+              # delete old file
+              os.remove(os.path.join(r, file))
+            elif file.endswith(".moon"):
+              threading.Thread(target=lunarcompile, args=(r, file)).start()
+                
+              # delete old file
+              os.remove(os.path.join(r, file))
+            elif file.endswith(".c") or file.endswith(".cpp"):
+              candcpperror()
         elif returnval == "3":
           # install to dependencies folder
           subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies"])
+          # compile the newly added directory to lua   
         else:
           print("Invalid option or exited.")
           return
+        print("Compiling to luau...")
+        for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
+          for file in f:
+            if file.endswith(".py"):
+              threading.Thread(target=pycompile, args=(r, file)).start()
+                
+              # delete old file
+              os.remove(os.path.join(r, file))
+            elif file.endswith(".moon"):
+              threading.Thread(target=lunarcompile, args=(r, file)).start()
+                
+              # delete old file
+              os.remove(os.path.join(r, file))
+            elif file.endswith(".c") or file.endswith(".cpp"):
+              candcpperror()
+        print("Successfully installed "+sys.argv[2]+"!")
+        print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
         
     elif sys.argv[1] == "uninstall":
       # Find out how to install, cli or package

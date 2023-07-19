@@ -13,6 +13,8 @@ local operator_in = builtin.operator_in
 local min = builtin.min
 
 -----------------------------------------------------------------------------
+local examplelibrary = import("example")
+local newSignal = import(signal., newSignal)
 local ValidPlayers = list {stringmeta "builderman"}
 local function onTouch(touch)
     print(stringmeta "Spawn has been touched by", touch.Name)
@@ -24,3 +26,9 @@ local function onPlrAdd(plr)
     end
 end
 onPlrAdd = py.Players.PlayerAdded(onPlrAdd)
+examplelibrary()
+local function onSignal()
+    print(stringmeta "Signal received!")
+end
+onSignal = newSignal(onSignal)
+onSignal.Fire()

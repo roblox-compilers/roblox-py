@@ -269,16 +269,16 @@ class NodeVisitor(ast.NodeVisitor):
         if module is None:
             module = ""
         else:
-            module = module + "."
+            module = module
 
         for name in node.names:
             if name.asname is None:
-                self.emit("local {name} = import({module}, {name})".format(
+                self.emit("local {name} = import(\"{module}\", \"{name}\")".format(
                     name=name.name,
                     module=module,
                 ))
             else:
-                self.emit("local {name} = import({module}, {name})".format(
+                self.emit("local {name} = import(\"{module}\", \"{name}\")".format(
                     name=name.asname,
                     module=module,
                 ))
