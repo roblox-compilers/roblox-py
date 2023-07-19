@@ -1,12 +1,11 @@
 					--// AsynchronousAI @Dev98799 \\--
 ----------------------------------------------------------------------------------------
--- this script was added by roblox-pyc plugin and cli to give you the full experience -- 
--- below you will find lua equivelents of built in python functions, it is            --         
--- free to use for your personal needs and feel free to edit it, if needed to         --
--- reset it or update it simply delete it and use the plugin again to do so           --
+-- This was added by roblox-pyc it includes the typechecker, builtins, import,        --
+-- modules, packages finder, and more. It is default to place this      			  --
+-- with the name of "roblox.pyc" in ReplicatedStorage. 							      --
 ----------------------------------------------------------------------------------------
 
--- Version 1.5.4 --
+-- Version 1.5.9 --
 
 local module = { }
 
@@ -2085,7 +2084,41 @@ local module = function(scriptname)
 		py = {
 			pylib,
 			function(index, sub) -- import
-				return libraries[index]
+				if libraries[index] then
+					if sub then
+						return libraries[index][sub]
+					else
+						return libraries[index]
+					end
+				else
+					-- Verify index is formated as so: ".Workspace.Dependency"
+					local split = string.split(index, ".")
+					if #split < 2 then
+						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
+					end
+					local service = game:FindFirstChild(split[2])
+					if not service then
+						error("Could not find service " .. split[2])
+					end
+					local moduleName = service:FindFirstChild(split[3])
+					local found 
+
+					for _, v in ipairs(service:GetDescendants()) do
+						if v.Name == split[3] then
+							found = v
+							break
+						end
+					end
+					if not found then 
+						error("Could not find module " .. split[3].." in service "..split[2])
+					end
+					local module = require(found)
+					if sub then 
+						return module[sub]
+					else
+						return module
+					end
+				end
 			end,
 			{ -- python built in
 				stringmeta = string_meta, list = list, dict = dict, -- class meta
@@ -2616,8 +2649,42 @@ local module = function(scriptname)
 			},
 		},
 		lunar = {
-			function(index) -- import
-				return libraries[index]
+			function(index, sub) -- import
+				if libraries[index] then
+					if sub then
+						return libraries[index][sub]
+					else
+						return libraries[index]
+					end
+				else
+					-- Verify index is formated as so: ".Workspace.Dependency"
+					local split = string.split(index, ".")
+					if #split < 2 then
+						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
+					end
+					local service = game:FindFirstChild(split[2])
+					if not service then
+						error("Could not find service " .. split[2])
+					end
+					local moduleName = service:FindFirstChild(split[3])
+					local found 
+
+					for _, v in ipairs(service:GetDescendants()) do
+						if v.Name == split[3] then
+							found = v
+							break
+						end
+					end
+					if not found then 
+						error("Could not find module " .. split[3].." in service "..split[2])
+					end
+					local module = require(found)
+					if sub then 
+						return module[sub]
+					else
+						return module
+					end
+				end
 			end,
 			{-- lunar built in
 				type = t,
@@ -2625,8 +2692,42 @@ local module = function(scriptname)
 			},
 		},
 		c = {
-			function(index) -- import
-				return libraries[index]
+			function(index, sub) -- import
+				if libraries[index] then
+					if sub then
+						return libraries[index][sub]
+					else
+						return libraries[index]
+					end
+				else
+					-- Verify index is formated as so: ".Workspace.Dependency"
+					local split = string.split(index, ".")
+					if #split < 2 then
+						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
+					end
+					local service = game:FindFirstChild(split[2])
+					if not service then
+						error("Could not find service " .. split[2])
+					end
+					local moduleName = service:FindFirstChild(split[3])
+					local found 
+
+					for _, v in ipairs(service:GetDescendants()) do
+						if v.Name == split[3] then
+							found = v
+							break
+						end
+					end
+					if not found then 
+						error("Could not find module " .. split[3].." in service "..split[2])
+					end
+					local module = require(found)
+					if sub then 
+						return module[sub]
+					else
+						return module
+					end
+				end
 			end,
 			{-- c and c++ built in
 			}

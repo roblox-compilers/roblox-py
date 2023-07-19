@@ -223,7 +223,16 @@ def check_for_updates():
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
       
-
+# CLI PACKAGES
+def onNotFound(target):
+  currentcommand = sys.argv[2]
+  
+  allCLIS = getconfig("general", "cli", [])
+  
+  # go through allCLIS and check if target and command matches
+  for i in allCLIS:
+    if i["target"] == target:
+      pass
 
 # ASYNC 
 def cppcompile(r, file):
@@ -823,7 +832,22 @@ Configuring General Settings
         type = item["type"]
         
         if type == "cli":
-          pass
+          if True:
+            print(colortext.red("roblox-pyc: CLI packages are not supported on this build!"))
+            return
+          # git clone the files to this scripts path
+          print(colortext.green("Installing "+sys.argv[2]+" ..."))
+          selfpath = os.path.dirname(os.path.realpath(__file__))
+          # create new dir in selfpath called sys.argv[2]
+          os.mkdir(os.path.join(selfpath, sys.argv[2]))
+          
+          subprocess.call(["git", "clone", item["url"], os.path.join(selfpath, sys.argv[2])])
+          
+          # add to config
+          newlist = getconfig("general", "cli", [])
+          newlist.append({"name": sys.argv[2], "path": os.path.join(selfpath, sys.argv[2]), "mainscript": item["mainscript"], "target": item["target"], "command": item["command"]})
+          
+          
         elif type == "luaext":
           # save to config the name and url data after request
           print(colortext.green("Fetching "+sys.argv[2]+" ..."))
@@ -844,6 +868,30 @@ Configuring General Settings
           # Gitclone item["url"] to dependencies folder
           subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
           print(colortext.green("Installed "+sys.argv[2]+"!"))
+      else:
+        print(colortext.yellow("roblox-pyc: Package not in registry!")+" install from one of these other package managers:")
+        print("""
+              1 - luarocks
+              2 - pip (compiles to lua)
+              3 - pip3 (compiles to lua)
+              4 - None
+              """)
+        returnval = input("Select which package manager to use: ")
+        if returnval == "1":
+          # install to dependencies folder
+          if not check_luarocks():
+            install_luarocks()
+          subprocess.call(["luarocks", "install", sys.argv[2], "--tree=dependencies"])
+        elif returnval == "2":
+          # install to dependencies folder
+          subprocess.call(["pip", "install", sys.argv[2], "--target=dependencies"])
+        elif returnval == "3":
+          # install to dependencies folder
+          subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies"])
+        else:
+          print("Invalid option or exited.")
+          return
+        
     elif sys.argv[1] == "uninstall":
       # Find out how to install, cli or package
         item = registry[sys.argv[2]]
@@ -884,7 +932,7 @@ Configuring General Settings
       # First list all items in config
       print(colortext.green("Extensions:"))
       for i in getconfig("general", "luaext", []):
-        print(colortext.green("  - "+i["name"]))
+        print(("  - "+i["name"]))
       
       print(colortext.green("Packages:"))
       # Then list all items in dependencies folder
@@ -894,7 +942,7 @@ Configuring General Settings
         os.mkdir(dependenciesPath)
         return
       for i in os.listdir(dependenciesPath):
-        print(colortext.green("  - "+i))
+        print(("  - "+i))
     else:
       raise IndexError
   except IndexError:
