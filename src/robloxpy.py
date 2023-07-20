@@ -950,6 +950,10 @@ Configuring General Settings
               sepratedbydot = filename.split(".")
               ending = sepratedbydot[sepratedbydot.__len__()-1]
               newfilename = filename.replace("."+ending, ".lua")
+              # if newfilename == oldfilename, add .lua to the end. For files without endings
+              if filename == newfilename:
+                newfilename = newfilename+".lua"
+                
               os.rename(os.path.join(r, file), os.path.join(r, newfilename))
               with open(os.path.join(r, newfilename), "w") as f:
                 f.write(contents)
