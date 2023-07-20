@@ -287,6 +287,7 @@ def cppcompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
+        global count
         count += 1
         
     except Exception as e:
@@ -321,6 +322,7 @@ def ccompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
+        global count
         count += 1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
@@ -354,6 +356,7 @@ def pycompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
+        global count
         count += 1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
@@ -386,6 +389,7 @@ def lunarcompile(r, file, pluscount=False):
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
+          global count
           count += 1
       except Exception as e:
           print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
