@@ -898,16 +898,24 @@ Configuring General Settings
           return
         print("Compiling to luau...")
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
+          # if dir name is __pycache__ delete it
+          if os.path.basename(r) == "__pycache__":
+            os.rmdir(r)
+            
           for file in f:
             if file.endswith(".py"):
-              threading.Thread(target=pycompile, args=(r, file)).start()
-                
+              pycompile(r, file)
+              # once thread is over add 1 to sofar
+              
               # delete old file
               os.remove(os.path.join(r, file))
             elif file.endswith(".moon"):
-              threading.Thread(target=lunarcompile, args=(r, file)).start()
+              lunarcompile(r, file)
                 
               # delete old file
+              os.remove(os.path.join(r, file))
+            elif file.endswith(".pyc"):
+              # Delete it
               os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
