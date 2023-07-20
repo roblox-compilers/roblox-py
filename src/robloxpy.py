@@ -901,11 +901,11 @@ Configuring General Settings
           subprocess.call(["luarocks", "install", sys.argv[2], "--tree=dependencies"])
         elif returnval == "2":
           # install to dependencies folder
-          subprocess.call(["pip", "install", sys.argv[2], "--target=dependencies"])
+          subprocess.call(["pip", "install", sys.argv[2], "--target=dependencies", "--upgrade"])
           # compile the newly added directory to lua
         elif returnval == "3":
           # install to dependencies folder
-          subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies"])
+          subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies", "--upgrade"])
           # compile the newly added directory to lua   
         else:
           print("Invalid option or exited.")
@@ -919,8 +919,14 @@ Configuring General Settings
           if os.path.basename(r) == "__pycache__":
             # clear children
             for child in os.listdir(r):
-              os.remove(os.path.join(r, child))
-            os.rmdir(r)
+              try:
+                os.remove(os.path.join(r, child))
+              except:
+                pass
+            try:
+              os.rmdir(r)
+            except:
+              pass
           
     
           for file in f:
