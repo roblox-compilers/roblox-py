@@ -244,7 +244,7 @@ def onNotFound(target):
 
 ## TODO: Add pluscount for C and C++ later
 
-def cppcompile(r, file):
+def cppcompile(r, file, pluscount=False):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -269,11 +269,14 @@ def cppcompile(r, file):
         newctranslator.output(relative_path, out)
                   
         print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+      if pluscount:
+        global count
+        count+=1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def ccompile(r, file):
+def ccompile(r, file, pluscount=False):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -298,6 +301,9 @@ def ccompile(r, file):
         newctranslator.output(relative_path, out)
                   
         print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+      if pluscount:
+        global count
+        count+=1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
@@ -406,8 +412,6 @@ def p():
 def w():
   try:
     def incli():
-      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
-
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 
@@ -492,8 +496,6 @@ def cw():
   try:
     print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
-      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
-
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 
@@ -580,8 +582,6 @@ def cpw():
   try:
     print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
-      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
-
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 
@@ -664,8 +664,6 @@ def lunar():
   try:
     checkboth() # install luarocks and moonscript if not installed
     def incli():
-      # NOTE: Since this isnt packaged yet, using this will only check files inside of the test folder
-
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 

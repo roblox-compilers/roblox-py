@@ -860,7 +860,9 @@ class NodeVisitor(ast.NodeVisitor):
 
         self.emit("return result")
         self.emit("end)()")
-    
+    def visit_YieldFrom(self, node):
+        """Visit yield from"""
+        self.emit("coroutine.yield({})".format(self.visit_all(node.value, True)))
     def visit_With(self, node):
         """Visit with"""
         self.emit("do")
@@ -882,12 +884,41 @@ class NodeVisitor(ast.NodeVisitor):
             body.insert(0, line)
 
         self.emit("end")
+    def visit_SetComp(self, node):
+        """Visit set comprehension"""
+        self.emit("(function()")
+        self.emit("local result = set {}")
 
+        ends_count = 0
+
+        for comp in node.generators:
+            line = "for {target} in {iterator} do"
+            values = {
+                "target": self.visit_all(comp.target, inline=True),
+                "iterator": self.visit_all(comp.iter, inline=True),
+            }
+            line = line.format(**values)
+            self.emit(line)
+            ends_count += 1
+
+            for if_ in comp.ifs:
+                line = "if {} then".format(self.visit_all(if_, inline=True))
+                self.emit(line)
+                ends_count += 1
+
+        line = "result.add({})"
+        line = line.format(self.visit_all(node.elt, inline=True))
+        self.emit(line)
+
+        self.emit(" ".join(["end"] * ends_count))
+
+        self.emit("return result")
+        self.emit("end)()")
     def generic_visit(self, node):
         """Unknown nodes handler"""
         if node is None:
             return
-        raise RuntimeError("Unknown node: {}".format(node))
+        raise RuntimeError("{} is unsupported".format(node))
 
     def visit_all(self, nodes, inline=False):
         """Visit all nodes in the given list"""
