@@ -15,6 +15,7 @@ import requests
 from packaging import version
 import pkg_resources
 import time
+from tqdm import tqdm
 
 class Reporter:
     """
@@ -93,6 +94,19 @@ except json.JSONDecodeError:
   print(colortext.red("roblox-py: Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
   registry = {} 
 
+# LOADING
+class loader:
+  self = {}
+  def __init__(self, max):
+    self.max = max
+    self.tqdm = tqdm(total=max)
+    
+  def yielduntil(self):
+    global count
+    while self.max != count:
+      yield
+    self.tqdm.close()
+    
 # ERROR
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
@@ -416,6 +430,7 @@ def w():
       global count
       count = 0
       localcount = 0
+      
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".py"):
@@ -423,8 +438,8 @@ def w():
             threading.Thread(target=pycompile, args=(r, file, True)).start()
             #pycompile(r, file)
               
-      while count != localcount:
-          time.sleep(0.1)
+      newloader = loader(localcount)
+      newloader.yielduntil()
           
       action = input("")
       if action == "exit":
@@ -513,8 +528,9 @@ def cw():
             localcount += 1
             threading.Thread(target=ccompile, args=(r, file, True)).start()
             #ccompile(r, file)
-      while count != localcount:
-          time.sleep(0.1)
+      newloader = loader(localcount)
+      newloader.yielduntil()
+      
       action = input("")
       if action == "exit":
         exit(0)
@@ -602,8 +618,8 @@ def cpw():
               localcount += 1
               threading.Thread(target=cppcompile, args=(r, file, True)).start()
               #cppcompile(r, file)
-      while count != localcount:
-          time.sleep(0.1)    
+      newloader = loader(localcount)
+      newloader.yielduntil()
 
       action = input("")
       if action == "exit":
@@ -687,8 +703,8 @@ def lunar():
             localcount += 1
             threading.Thread(target=lunarcompile, args=(r, file)).start()
             #lunarcompile(r, file)
-      while count != localcount:
-          time.sleep(0.1)  
+      newloader = loader(localcount)
+      newloader.yielduntil()  
 
       action = input("")
       if action == "exit":
@@ -977,8 +993,8 @@ Configuring General Settings
                 f.write(contents)
               
                 
-        while count != endcount:
-          time.sleep(0.1)
+        newloader = loader(endcount)
+        newloader.yielduntil()
         print("Successfully installed "+sys.argv[2]+"!")
         print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
         
