@@ -291,6 +291,7 @@ def cppcompile(r, file, pluscount=False, path = None):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(traceback.format_exc())
 def ccompile(r, file, pluscount=False, path=None):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
@@ -328,6 +329,7 @@ def ccompile(r, file, pluscount=False, path=None):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(traceback.format_exc())
 def pycompile(r, file, pluscount=False, path=None):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -364,6 +366,7 @@ def pycompile(r, file, pluscount=False, path=None):
         count += 1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(traceback.format_exc())
 def lunarcompile(r, file, pluscount=False, path=None):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -564,6 +567,7 @@ def w():
     print(colortext.red("roblox-py: Invalid amount of arguments!"))
   except KeyboardInterrupt:
     print(colortext.red("roblox-py: Aborted!"))
+# NOTE: Since C and C++ are disabled, their features are out of sync with python and lunar
 def cw():
   if not check_llvm():
     install_llvm()

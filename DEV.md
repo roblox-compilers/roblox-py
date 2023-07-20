@@ -9,6 +9,7 @@ Contributions would be greatly appreciated!
 - Fix dylib config not saving after using C or C++ compiler 
 - Fix random `nonlocals` error, line 320 robloxpy.py
 - Python speed improvements, currently takes like 10 minutes to compile 400 scripts
+- Add mixed-language support for roblox-pyc which will be general, and robloxts wrapper included.
 
 ## IMPORTANT!! But can wait
 - Add return getfenv() or something like that to the end of pip packages and someway of import * 
