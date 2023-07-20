@@ -106,7 +106,9 @@ class loader:
     global count
     while self.max != self.current:
       yield
+    self.tqdm.update(self.max-self.current )
     self.tqdm.close()
+    os.system("clear")
   def update(self, amount):
     self.tqdm.update(amount)
 
@@ -453,10 +455,9 @@ def w():
           if file.endswith(".py"):
             threading.Thread(target=pycompile, args=(r, file, newloader)).start()
             #pycompile(r, file)
-      print("Preparing to compile "+str(localcount)+" files...")
       
       newloader.yielduntil()
-          
+      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -549,9 +550,9 @@ def cw():
             localcount += 1
             threading.Thread(target=ccompile, args=(r, file, newloader)).start()
             #ccompile(r, file)
-      print("Preparing to compile "+str(localcount)+" files...")
-      newloader.yielduntil()
       
+      newloader.yielduntil()
+      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -643,9 +644,10 @@ def cpw():
               # compile the file to a file with the same name and path but .lua
               threading.Thread(target=cppcompile, args=(r, file, newloader)).start()
               #cppcompile(r, file)
-      print("Preparing to compile "+str(localcount)+" files...")
+      
       newloader.yielduntil()
-
+      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      
       action = input("")
       if action == "exit":
         exit(0)
@@ -733,9 +735,8 @@ def lunar():
             localcount += 1
             threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
             #lunarcompile(r, file)
-      print("Preparing to compile "+str(localcount)+" files...")
       newloader.yielduntil()  
-
+      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -1028,7 +1029,7 @@ Configuring General Settings
               with open(os.path.join(r, newfilename), "w") as f:
                 f.write(contents)
               
-        print("Preparing to compile "+str(endcount)+" files...")
+        
         
         newloader.yielduntil()
         print("Successfully installed "+sys.argv[2]+"!")

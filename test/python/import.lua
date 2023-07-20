@@ -1,4 +1,4 @@
---// Compiled using roblox-pyc \--
+--/ Compiled using roblox-pyc | Python compiler \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
@@ -11,5 +11,5 @@ local submodule = import("examplelib.submodule")
 local mysubsubmodule = import("examplelib.submodule.subsubmodule")
 local submodule = import("examplefromlib", "submodule")
 local mysubsubmodule = import("examplefromlib.submodule", "mysubsubmodule")
-local mysubmodule2 = import("examplefromlib", "mysubmodule2")
-local mysubsubmodule3 = import("examplefromlib.submodule", "mysubsubmodule3")
+local mysubmodule2 = import("examplefromlib", "submodule")
+local mysubsubmodule3 = import("examplefromlib.submodule", "subsubmodule")

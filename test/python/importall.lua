@@ -1,4 +1,4 @@
---// Compiled using roblox-pyc \--
+--/ Compiled using roblox-pyc | Python compiler \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
@@ -6,6 +6,6 @@ local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])
 
 
 -----------------------------------------------------------------------------
-local newspring = import("spring", "newspring")
+local newspring = import("spring", "new")
 local b = import("a")
 local newSpring = newspring()
