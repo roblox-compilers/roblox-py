@@ -278,9 +278,13 @@ class NodeVisitor(ast.NodeVisitor):
                     module=module,
                 ))
             else:
-                self.emit("local {name} = import(\"{module}\", \"{name}\")".format(
+                name = ""
+                if name.asname == "*":
+                    print("roblox-pyc: Importing all from a module is not supported yet.")
+                self.emit("local {name} = import(\"{module}\", \"{realname}\")".format(
                     name=name.asname,
                     module=module,
+                    realname=name.name,
                 ))
 
     def visit_Assert(self, node):

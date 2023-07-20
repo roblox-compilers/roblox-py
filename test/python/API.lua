@@ -14,7 +14,7 @@ local min = builtin.min
 
 -----------------------------------------------------------------------------
 local examplelibrary = import("example")
-local newSignal = import(signal., newSignal)
+local newSignal = import("signal", "newSignal")
 local ValidPlayers = list {stringmeta "builderman"}
 local function onTouch(touch)
     print(stringmeta "Spawn has been touched by", touch.Name)

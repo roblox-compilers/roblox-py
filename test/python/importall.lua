@@ -6,5 +6,6 @@ local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])
 
 
 -----------------------------------------------------------------------------
-local x = 10
-local y = 20
+local newspring = import("spring", "newspring")
+local b = import("a")
+local newSpring = newspring()
