@@ -1,4 +1,4 @@
---// Compiled using roblox-pyc \--
+--/ Compiled using roblox-pyc | Python compiler \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------

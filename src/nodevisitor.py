@@ -278,9 +278,8 @@ class NodeVisitor(ast.NodeVisitor):
                     module=module,
                 ))
             else:
-                name = ""
-                if name.asname == "*":
-                    print("roblox-pyc: Importing all from a module is not supported yet.")
+                if name.name == "*":
+                    print("roblox-pyc: Importing all from a module is not supported yet. Issues will occur.")
                 self.emit("local {name} = import(\"{module}\", \"{realname}\")".format(
                     name=name.asname,
                     module=module,
