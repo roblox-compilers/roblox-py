@@ -900,17 +900,20 @@ Configuring General Settings
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
           # if dir name is __pycache__ delete it
           if os.path.basename(r) == "__pycache__":
+            # clear children
+            for child in os.listdir(r):
+              os.remove(os.path.join(r, child))
             os.rmdir(r)
             
           for file in f:
             if file.endswith(".py"):
-              pycompile(r, file)
+              threading.Thread(target=pycompile, args=(r, file)).start()
               # once thread is over add 1 to sofar
               
               # delete old file
               os.remove(os.path.join(r, file))
             elif file.endswith(".moon"):
-              lunarcompile(r, file)
+              threading.Thread(target=lunarcompile, args=(r, file)).start()
                 
               # delete old file
               os.remove(os.path.join(r, file))
