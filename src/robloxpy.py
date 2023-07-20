@@ -870,6 +870,7 @@ def lunar():
       localcount = 0
       for r, d, f in os.walk(path):
         if not os.path.exists(os.path.join(newpath, r.replace(path, ""))):
+          print("Creating "+os.path.join(newpath, r.replace(path, "")))
           os.mkdir(os.path.join(newpath, r.replace(path, "")))
         for file in f:
           if file.endswith(".moon"):
