@@ -328,6 +328,7 @@ def pycompile(r, file, pluscount=False):
         f.write(lua_code)
       
       if pluscount:
+        global count
         count+=1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
@@ -358,6 +359,7 @@ def lunarcompile(r, file, pluscount=False):
         else:
           print(colortext.red("File error for "+os.path.join(r, file)+"!"))
         if pluscount:
+          global count
           count+=1
       except Exception as e:
           print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
@@ -909,6 +911,7 @@ Configuring General Settings
           print("Invalid option or exited.")
           return
         print("Compiling to luau...")
+        global count
         count = 0
         endcount = 0
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
