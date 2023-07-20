@@ -942,9 +942,6 @@ Configuring General Settings
                 
               # delete old file
               os.remove(os.path.join(r, file))
-            elif file.endswith(".pyc"):
-              # Delete it
-              os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
         while count != endcount:
