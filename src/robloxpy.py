@@ -487,6 +487,8 @@ def w():
       newloader = loader(localcount)
       
       for r, d, f in os.walk(path):
+        if not os.path.exists(os.path.join(newpath, r.replace(path, ""))):
+          os.mkdir(os.path.join(newpath, r.replace(path, "")))
         for file in f:
           if file.endswith(".py"):
             threading.Thread(target=pycompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".py", ".lua")))).start()
@@ -614,6 +616,8 @@ def cw():
       newloader = loader(localcount)
     
       for r, d, f in os.walk(path):
+        if not os.path.exists(os.path.join(newpath, r.replace(path, ""))):
+          os.mkdir(os.path.join(newpath, r.replace(path, "")))
         for file in f:
           if file.endswith(".c"):
             localcount += 1
@@ -745,6 +749,8 @@ def cpw():
       newloader = loader(localcount)
     
       for r, d, f in os.walk(path):
+        if not os.path.exists(os.path.join(newpath, r.replace(path, ""))):
+          os.mkdir(os.path.join(newpath, r.replace(path, "")))
         for file in f:
           if file.endswith(".cpp"):
             localcount += 1
@@ -863,6 +869,8 @@ def lunar():
       count = 0
       localcount = 0
       for r, d, f in os.walk(path):
+        if not os.path.exists(os.path.join(newpath, r.replace(path, ""))):
+          os.mkdir(os.path.join(newpath, r.replace(path, "")))
         for file in f:
           if file.endswith(".moon"):
             localcount += 1
