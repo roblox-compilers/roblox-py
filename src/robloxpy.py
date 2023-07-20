@@ -940,7 +940,7 @@ Configuring General Settings
               os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
-            elif not file.endswith(".lua"):
+            elif (not file.endswith(".lua")) and (not file.endswith(".pyc")): #pyc files are autodeleted line 915
               contents = ""
               with open(os.path.join(r, file), "r") as f:
                 contents = f.read()
