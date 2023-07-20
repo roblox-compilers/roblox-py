@@ -291,7 +291,8 @@ def cppcompile(r, file, pluscount=False, path = None):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-      print(traceback.format_exc())
+      if getconfig("general", "traceback", None) != None:
+        print(traceback.format_exc())
 def ccompile(r, file, pluscount=False, path=None):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
@@ -329,7 +330,8 @@ def ccompile(r, file, pluscount=False, path=None):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-      print(traceback.format_exc())
+      if getconfig("general", "traceback", None) != None:
+        print(traceback.format_exc())
 def pycompile(r, file, pluscount=False, path=None):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -354,7 +356,7 @@ def pycompile(r, file, pluscount=False, path=None):
       relative_path = backwordreplace(path,".py", ".lua", 1)
                 
       if not os.path.exists(os.path.dirname(relative_path)):
-        open(os.path.dirname(relative_path), "x").close()
+        os.makedirs(os.path.dirname(relative_path))
       
       with open(relative_path, "w") as f:
         f.write(lua_code)
@@ -366,7 +368,8 @@ def pycompile(r, file, pluscount=False, path=None):
         count += 1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
-      print(traceback.format_exc())
+      if getconfig("general", "traceback", None) != None:
+        print(traceback.format_exc())
 def lunarcompile(r, file, pluscount=False, path=None):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -1029,6 +1032,7 @@ Configuring General Settings
 2 - Change C and C++ dylib
 3 - Change LLVM Home Path (only for C and C++)
 4 - Change LD-LIBRARY-PATH (only for C and C++)
+5 - Traceback on error (Reccomended off, for roblox-pyc developers)
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
@@ -1045,6 +1049,9 @@ Configuring General Settings
           returned = input("Enter the LD-LIBRARY-PATH, it currently is %s: " % getconfig("general", "ldlibrarypath", "None"))
           setconfig("general", "ldlibrarypath", returned, "")
           config_llvm(None, getconfig("general", "ldlibrarypath", ""))
+        elif inputval == "5":
+          returned = input("Click enter to confirm, CTRL+C to cancel: ")
+          setconfig("general", "traceback", returned, None)
       else:
         print(colortext.red("Invalid option!"))
     elif sys.argv[1] == "devforum":
