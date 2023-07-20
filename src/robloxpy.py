@@ -242,8 +242,6 @@ def onNotFound(target):
 
 # ASYNC 
 
-## TODO: Add pluscount for C and C++ later
-
 def cppcompile(r, file, pluscount=False):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
@@ -942,6 +940,20 @@ Configuring General Settings
               os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
+            elif not file.endswith(".lua"):
+              contents = ""
+              with open(os.path.join(r, file), "r") as f:
+                contents = f.read()
+              contents = contents.replace("]]", "]\]")
+              contents = "return [["+contents+"]]"
+              filename = os.path.basename(file)
+              sepratedbydot = filename.split(".")
+              ending = sepratedbydot[sepratedbydot.__len__()-1]
+              newfilename = filename.replace("."+ending, ".lua")
+              os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+              
+              
+                
         while count != endcount:
           time.sleep(0.1)
         print("Successfully installed "+sys.argv[2]+"!")

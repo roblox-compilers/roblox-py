@@ -1287,7 +1287,7 @@ end
 local slicefun = function (sequence, start, stop, step) -- slice
 	local sliced = { }
 	local len = #sequence
-
+	
 	-- Set default values for start, stop, and step
 	start = start or 1
 	stop = stop or len
@@ -1362,7 +1362,11 @@ function string_meta(input)
 					-- if it start with SLICE! then it is a slice, get the start, stop, and step values. sometimes the 3rd value is not there, so we need to check for that
 					if string.sub(index, 1, 6) == "SLICE!" then
 						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-						if not step then
+						if (not stop) and (not step) and start then -- 1 value
+							start = string.match(index, "SLICE!%((%d+), (%d+)%)")
+							step = 1
+							stop = -1
+						elseif not step then
 							start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
 							step = 1
 						end
@@ -1514,7 +1518,11 @@ function list(input)
 							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
 							if string.sub(index, 1, 6) == "SLICE!" then
 								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-								if not step then
+								if (not stop) and (not step) and start then -- 1 value
+									start = string.match(index, "SLICE!%((%d+), (%d+)%)")
+									step = 1
+									stop = -1
+								elseif not step then
 									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
 									step = 1
 								end
@@ -1651,7 +1659,11 @@ function dict(input)
 							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
 							if string.sub(index, 1, 6) == "SLICE!" then
 								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-								if not step then
+								if (not stop) and (not step) and start then -- 1 value
+									start = string.match(index, "SLICE!%((%d+), (%d+)%)")
+									step = 1
+									stop = -1
+								elseif not step then -- 2 values
 									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
 									step = 1
 								end
