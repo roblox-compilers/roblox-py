@@ -107,6 +107,8 @@ class loader:
     while self.max != self.current:
       yield
     self.tqdm.close()
+  def update(self, amount):
+    self.tqdm.update(amount)
 
 # ERROR
 def candcpperror():
