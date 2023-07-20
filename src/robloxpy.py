@@ -14,6 +14,7 @@ import json
 import requests 
 from packaging import version
 import pkg_resources
+import time
 
 class Reporter:
     """
@@ -83,6 +84,8 @@ class Reporter:
 
 app = Flask(__name__)
 registryrawurl = "https://raw.githubusercontent.com/roblox-pyc/registry/main/registry.json"
+global count
+count = 0
 
 try:
   registry = json.loads(requests.get(registryrawurl).text)
@@ -238,6 +241,9 @@ def onNotFound(target):
       pass
 
 # ASYNC 
+
+## TODO: Add pluscount for C and C++ later
+
 def cppcompile(r, file):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
@@ -296,7 +302,7 @@ def ccompile(r, file):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def pycompile(r, file):
+def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
     contents = ""
@@ -320,9 +326,12 @@ def pycompile(r, file):
         open(os.path.dirname(relative_path), "x").close()
       with open(relative_path, "w") as f:
         f.write(lua_code)
+      
+      if pluscount:
+        count+=1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def lunarcompile(r, file):
+def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
     # Run command and check if anything is outputted to stderr, stdout, or stdin
@@ -348,6 +357,8 @@ def lunarcompile(r, file):
             f.write(newheader+contents)
         else:
           print(colortext.red("File error for "+os.path.join(r, file)+"!"))
+        if pluscount:
+          count+=1
       except Exception as e:
           print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
 
@@ -389,6 +400,7 @@ def p():
   port=5555 
   )
 
+# TODO: Add thread count system to 
 def w():
   try:
     def incli():
@@ -897,6 +909,8 @@ Configuring General Settings
           print("Invalid option or exited.")
           return
         print("Compiling to luau...")
+        count = 0
+        endcount = 0
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
           # if dir name is __pycache__ delete it
           if os.path.basename(r) == "__pycache__":
@@ -904,16 +918,18 @@ Configuring General Settings
             for child in os.listdir(r):
               os.remove(os.path.join(r, child))
             os.rmdir(r)
-            
+          
+    
           for file in f:
             if file.endswith(".py"):
-              threading.Thread(target=pycompile, args=(r, file)).start()
-              # once thread is over add 1 to sofar
+              endcount+=1
+              threading.Thread(target=pycompile, args=(r, file, True)).start()
               
               # delete old file
               os.remove(os.path.join(r, file))
             elif file.endswith(".moon"):
-              threading.Thread(target=lunarcompile, args=(r, file)).start()
+              endcount+=1
+              threading.Thread(target=lunarcompile, args=(r, file, True)).start()
                 
               # delete old file
               os.remove(os.path.join(r, file))
@@ -922,6 +938,8 @@ Configuring General Settings
               os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
+        while count != endcount:
+          time.sleep(0.1)
         print("Successfully installed "+sys.argv[2]+"!")
         print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
         
