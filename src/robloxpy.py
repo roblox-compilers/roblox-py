@@ -99,14 +99,27 @@ class loader:
   self = {}
   def __init__(self, max):
     self.max = max
+    self.current = 0
     self.tqdm = tqdm(total=max)
     
   def yielduntil(self):
     global count
-    while self.max != count:
+    while self.max != self.current:
       yield
     self.tqdm.close()
-    
+  def sync(self):
+    global count
+    self.tqdm.update(count-self.current)
+    self.current = count
+  
+  def autosync(self):
+    while self.max != self.current:
+      self.tqdm.update(count-self.current)
+      self.current = count
+      time.sleep(.1)
+      
+  def beginautosync(self):
+    threading.Thread(target=self.autosync).start()
 # ERROR
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
@@ -280,7 +293,7 @@ def cppcompile(r, file, pluscount=False):
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
-        print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+        #print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
       if pluscount:
         global count
         count+=1
@@ -312,7 +325,7 @@ def ccompile(r, file, pluscount=False):
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
-        print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+        #print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
       if pluscount:
         global count
         count+=1
@@ -336,7 +349,7 @@ def pycompile(r, file, pluscount=False):
     try:
       translator = pytranslator.Translator()
       lua_code = translator.translate(contents)
-      print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
+      #print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
       # get the relative path of the file and replace .py with .lua
       relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
                 
@@ -369,7 +382,7 @@ def lunarcompile(r, file, pluscount=False):
                     
         # check if the new file has been created
         if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-          print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))          
+          #print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))          
           with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
             contents = f.read()
           with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
@@ -437,8 +450,9 @@ def w():
             localcount += 1
             threading.Thread(target=pycompile, args=(r, file, True)).start()
             #pycompile(r, file)
-              
+      print("Preparing to compile "+str(localcount)+" files...")
       newloader = loader(localcount)
+      newloader.beginautosync()
       newloader.yielduntil()
           
       action = input("")
@@ -528,7 +542,9 @@ def cw():
             localcount += 1
             threading.Thread(target=ccompile, args=(r, file, True)).start()
             #ccompile(r, file)
+      print("Preparing to compile "+str(localcount)+" files...")
       newloader = loader(localcount)
+      newloader.beginautosync()
       newloader.yielduntil()
       
       action = input("")
@@ -618,7 +634,9 @@ def cpw():
               localcount += 1
               threading.Thread(target=cppcompile, args=(r, file, True)).start()
               #cppcompile(r, file)
+      print("Preparing to compile "+str(localcount)+" files...")
       newloader = loader(localcount)
+      newloader.beginautosync()
       newloader.yielduntil()
 
       action = input("")
@@ -703,7 +721,9 @@ def lunar():
             localcount += 1
             threading.Thread(target=lunarcompile, args=(r, file)).start()
             #lunarcompile(r, file)
+      print("Preparing to compile "+str(localcount)+" files...")
       newloader = loader(localcount)
+      newloader.beginautosync()
       newloader.yielduntil()  
 
       action = input("")
@@ -992,8 +1012,9 @@ Configuring General Settings
               with open(os.path.join(r, newfilename), "w") as f:
                 f.write(contents)
               
-                
+        print("Preparing to compile "+str(endcount)+" files...")
         newloader = loader(endcount)
+        newloader.beginautosync()
         newloader.yielduntil()
         print("Successfully installed "+sys.argv[2]+"!")
         print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
