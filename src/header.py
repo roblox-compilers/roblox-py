@@ -1,4 +1,4 @@
-headertemplate = """--// Compiled using roblox-pyc \\--
+headertemplate = """--/ Compiled using roblox-pyc | Python compiler \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------
@@ -7,7 +7,7 @@ local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])
 {}
 -----------------------------------------------------------------------------
 """
-lunarheadertemplate = """--// Compiled using roblox-pyc \\--
+lunarheadertemplate = """--/ Compiled using roblox-pyc | Lunar compiler \--
 		
 		
 ------------------------------------ BUILT IN -------------------------------

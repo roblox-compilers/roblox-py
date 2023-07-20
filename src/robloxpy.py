@@ -413,13 +413,19 @@ def w():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 
+      global count
+      count = 0
+      localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".py"):
-            threading.Thread(target=pycompile, args=(r, file)).start()
+            localcount += 1
+            threading.Thread(target=pycompile, args=(r, file, True)).start()
             #pycompile(r, file)
               
-
+      while count != localcount:
+          time.sleep(0.1)
+          
       action = input("")
       if action == "exit":
         exit(0)
@@ -494,7 +500,9 @@ def cw():
   try:
     print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
-      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      global count
+      count = 0
+      localcount = 0
       path = os.getcwd()
 
       for r, d, f in os.walk(path):
@@ -502,9 +510,11 @@ def cw():
             # check if it ENDS with .c, not if it CONTAINS .c
             # Run use threading 
           if file.endswith(".c"):
-            threading.Thread(target=ccompile, args=(r, file)).start()
+            localcount += 1
+            threading.Thread(target=ccompile, args=(r, file, True)).start()
             #ccompile(r, file)
-
+      while count != localcount:
+          time.sleep(0.1)
       action = input("")
       if action == "exit":
         exit(0)
@@ -582,14 +592,18 @@ def cpw():
     def incli():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
-
+      global count
+      count = 0
+      localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
-              threading.Thread(target=cppcompile, args=(r, file)).start()
+              localcount += 1
+              threading.Thread(target=cppcompile, args=(r, file, True)).start()
               #cppcompile(r, file)
-              
+      while count != localcount:
+          time.sleep(0.1)    
 
       action = input("")
       if action == "exit":
@@ -664,13 +678,17 @@ def lunar():
     def incli():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
-
+      global count
+      count = 0
+      localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".moon"):
+            localcount += 1
             threading.Thread(target=lunarcompile, args=(r, file)).start()
             #lunarcompile(r, file)
-              
+      while count != localcount:
+          time.sleep(0.1)  
 
       action = input("")
       if action == "exit":
@@ -945,7 +963,7 @@ Configuring General Settings
               with open(os.path.join(r, file), "r") as f:
                 contents = f.read()
               contents = contents.replace("]]", "]\]")
-              contents = "return [["+contents+"]]"
+              contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nreturn [["+contents+"]]"
               filename = os.path.basename(file)
               sepratedbydot = filename.split(".")
               ending = sepratedbydot[sepratedbydot.__len__()-1]
