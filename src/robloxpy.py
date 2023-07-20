@@ -1,21 +1,14 @@
-import os
+# PYPI 
 from flask import Flask, request
 from pyflakes import api
-import re
-import sys
-import webbrowser
-import pickle
-from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
-import subprocess
-import shutil
-import sys
-import threading
-import json
-import requests 
 from packaging import version
-import pkg_resources
-import time
 from tqdm import tqdm
+
+# FILES
+from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+
+# BUILTIN
+import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os
 
 class Reporter:
     """
@@ -115,6 +108,7 @@ class loader:
 # ERROR
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
+
 # INSTALL SEALANG
 def check_llvm():
   return True # Add LLVM check/installs later
@@ -261,7 +255,7 @@ def onNotFound(target):
 
 # ASYNC 
 
-def cppcompile(r, file, pluscount=False):
+def cppcompile(r, file, pluscount=False, path = None):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -279,9 +273,10 @@ def cppcompile(r, file, pluscount=False):
         '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
       ]
       )
-                
+      if path == None:
+        path = os.path.join(r, file)  
       newctranslator.diagnostics(sys.stderr)
-      relative_path = backwordreplace(os.path.join(r, file),".cpp", ".lua", 1)
+      relative_path = backwordreplace(path,".cpp", ".lua", 1)
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
@@ -295,8 +290,8 @@ def cppcompile(r, file, pluscount=False):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def ccompile(r, file, pluscount=False):
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def ccompile(r, file, pluscount=False, path=None):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -314,9 +309,12 @@ def ccompile(r, file, pluscount=False):
         '-stdlib=%s' % getconfig("c", "stdlib", "libc")
       ]
       )
+      if path == None:
+        path = os.path.join(r, file)  
                 
       newctranslator.diagnostics(sys.stderr)
-      relative_path = backwordreplace(os.path.join(r, file),".c", ".lua", 1)
+      relative_path = backwordreplace(path,".c", ".lua", 1)
+      
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
@@ -329,8 +327,8 @@ def ccompile(r, file, pluscount=False):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def pycompile(r, file, pluscount=False):
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def pycompile(r, file, pluscount=False, path=None):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
     contents = ""
@@ -348,10 +346,14 @@ def pycompile(r, file, pluscount=False):
       lua_code = translator.translate(contents)
       #print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
       # get the relative path of the file and replace .py with .lua
-      relative_path = backwordreplace(os.path.join(r, file),".py", ".lua", 1)
+      if path == None:
+        path = os.path.join(r, file)  
+        
+      relative_path = backwordreplace(path,".py", ".lua", 1)
                 
       if not os.path.exists(os.path.dirname(relative_path)):
         open(os.path.dirname(relative_path), "x").close()
+      
       with open(relative_path, "w") as f:
         f.write(lua_code)
       
@@ -361,8 +363,8 @@ def pycompile(r, file, pluscount=False):
         global count
         count += 1
     except Exception as e:
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
-def lunarcompile(r, file, pluscount=False):
+      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+def lunarcompile(r, file, pluscount=False, path=None):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
     # Run command and check if anything is outputted to stderr, stdout, or stdin
@@ -386,6 +388,10 @@ def lunarcompile(r, file, pluscount=False):
             contents = f.read()
           with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
             f.write(newheader+contents)
+          
+          if path != None:
+            # Move the file to the path
+            os.rename(os.path.join(r, file.replace(".moon", ".lua")), path)
         else:
           print(colortext.red("File error for "+os.path.join(r, file)+"!"))
         if pluscount:
@@ -394,7 +400,7 @@ def lunarcompile(r, file, pluscount=False):
           global count
           count += 1
       except Exception as e:
-          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
+          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -464,6 +470,35 @@ def w():
       else:
         incli()
     
+    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
+      # same parent dir, but with a new name
+      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
+      if not os.path.exists(newpath):
+        os.mkdir(newpath)
+      global count
+      count = 0
+      localcount = 0
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".py"):
+            localcount += 1
+      newloader = loader(localcount)
+      
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".py"):
+            threading.Thread(target=pycompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".py", ".lua")))).start()
+            #pycompile(r, file)
+      
+      newloader.yielduntil()
+      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      action = input("")
+      if action == "exit":
+        exit(0)
+      else:
+        incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         p()
@@ -514,6 +549,9 @@ def w():
       elif sys.argv[1] == "w":
         print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
+      elif sys.argv[1] == "d":
+        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli2()
       else:
         print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -558,7 +596,40 @@ def cw():
         exit(0)
       else:
         incli()
+    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
+      # same parent dir, but with a new name
+      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
+      if not os.path.exists(newpath):
+        os.mkdir(newpath)
+      
+      global count
+      count = 0
+      localcount = 0
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".c"):
+            localcount += 1
+      newloader = loader(localcount)
     
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".c"):
+            localcount += 1
+            threading.Thread(target=ccompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".c", ".lua")))).start()
+            #ccompile(r, file)
+          
+      newloader.yielduntil()
+    
+      print(colortext.green("roblox-c: Compiled "+str(count)+" files!"))
+      action = input("")
+      
+      if action == "exit":
+        exit(0)
+      else:
+        incli2()
+        
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         print(colortext.red("roblox-c: Plugins are only supported for python!"))
@@ -609,6 +680,9 @@ def cw():
       elif sys.argv[1] == "w":
         print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
+      elif sys.argv[1] == "d":
+        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli2()
       else:
         print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -653,7 +727,39 @@ def cpw():
         exit(0)
       else:
         incli()
+    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
+      # same parent dir, but with a new name
+      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
+      if not os.path.exists(newpath):
+        os.mkdir(newpath)
+      
+      global count
+      count = 0
+      localcount = 0
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".cpp"):
+            localcount += 1
+      newloader = loader(localcount)
     
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".cpp"):
+            localcount += 1
+            threading.Thread(target=cppcompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".cpp", ".lua")))).start()
+            #ccompile(r, file)
+          
+      newloader.yielduntil()
+    
+      print(colortext.green("roblox-cpp: Compiled "+str(count)+" files!"))
+      action = input("")
+      
+      if action == "exit":
+        exit(0)
+      else:
+        incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
@@ -705,6 +811,9 @@ def cpw():
       elif sys.argv[1] == "w":
         print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
+      elif sys.argv[1] == "d":
+        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli2()
       else:
         print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -742,7 +851,39 @@ def lunar():
         exit(0)
       else:
         incli()
+    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
+      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+      path = os.getcwd()
+      # same parent dir, but with a new name
+      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
+      if not os.path.exists(newpath):
+        os.mkdir(newpath)
+      
+      global count
+      count = 0
+      localcount = 0
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".moon"):
+            localcount += 1
+      newloader = loader(localcount)
     
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".moon"):
+            localcount += 1
+            threading.Thread(target=lunarcompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".moon", ".lua")))).start()
+            #ccompile(r, file)
+          
+      newloader.yielduntil()
+    
+      print(colortext.green("roblox-lunar: Compiled "+str(count)+" files!"))
+      action = input("")
+      
+      if action == "exit":
+        exit(0)
+      else:
+        incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         print(colortext.red("roblox-lunar: Plugins are only supported for python!"))
@@ -793,6 +934,9 @@ def lunar():
       elif sys.argv[1] == "w":
         print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
+      elif sys.argv[1] == "d":
+        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        incli2()
       else:
         print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1012,22 +1156,26 @@ Configuring General Settings
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
             elif (not file.endswith(".lua")) and (not file.endswith(".pyc")): #pyc files are autodeleted line 915
-              contents = ""
-              with open(os.path.join(r, file), "r") as f:
-                contents = f.read()
-              contents = contents.replace("]]", "]\]")
-              contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nreturn [["+contents+"]]"
-              filename = os.path.basename(file)
-              sepratedbydot = filename.split(".")
-              ending = sepratedbydot[sepratedbydot.__len__()-1]
-              newfilename = filename.replace("."+ending, ".lua")
-              # if newfilename == oldfilename, add .lua to the end. For files without endings
-              if filename == newfilename:
-                newfilename = newfilename+".lua"
-                
-              os.rename(os.path.join(r, file), os.path.join(r, newfilename))
-              with open(os.path.join(r, newfilename), "w") as f:
-                f.write(contents)
+              try:
+                contents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  contents = f.read()
+                contents = contents.replace("]]", "]\]")
+                contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nreturn [["+contents+"]]"
+                filename = os.path.basename(file)
+                sepratedbydot = filename.split(".")
+                ending = sepratedbydot[sepratedbydot.__len__()-1]
+                newfilename = filename.replace("."+ending, ".lua")
+                # if newfilename == oldfilename, add .lua to the end. For files without endings
+                if filename == newfilename:
+                  newfilename = newfilename+".lua"
+                  
+                os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+                with open(os.path.join(r, newfilename), "w") as f:
+                  f.write(contents)
+              except UnicodeDecodeError:
+                # Just delete the file
+                os.remove(os.path.join(r, file))
               
         
         

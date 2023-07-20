@@ -7,7 +7,8 @@ setup(install_requires=[
           'flask',
           'pyflakes',
           'pyyaml',
-          'tqdm'
+          'tqdm',
+          'requests'
       ],
       name = 'roblox-pyc',
       description='A Python, Lunar, C, C++ to Roblox Lua compiler',
