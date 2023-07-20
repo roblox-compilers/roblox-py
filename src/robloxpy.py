@@ -975,6 +975,11 @@ Configuring General Settings
         count = 0
         endcount = 0
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
+          for file in f:
+              if file.endswith(".py") or file.endswith(".moon"):
+                endcount+=1
+        newloader = loader(endcount)
+        for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
           # if dir name is __pycache__ delete it
           if os.path.basename(r) == "__pycache__":
             # clear children
@@ -989,10 +994,7 @@ Configuring General Settings
               pass
           
           
-          for file in f:
-            if file.endswith(".py") or file.endswith(".moon"):
-              endcount+=1
-          newloader = loader(endcount)
+    
           for file in f:
             if file.endswith(".py"):
               endcount+=1
