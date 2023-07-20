@@ -107,19 +107,7 @@ class loader:
     while self.max != self.current:
       yield
     self.tqdm.close()
-  def sync(self):
-    global count
-    self.tqdm.update(count-self.current)
-    self.current = count
-  
-  def autosync(self):
-    while self.max != self.current:
-      self.tqdm.update(count-self.current)
-      self.current = count
-      time.sleep(.1)
-      
-  def beginautosync(self):
-    threading.Thread(target=self.autosync).start()
+
 # ERROR
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
@@ -295,8 +283,10 @@ def cppcompile(r, file, pluscount=False):
                   
         #print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
       if pluscount:
-        global count
-        count+=1
+        pluscount.update(1)
+        pluscount.current += 1
+        count += 1
+        
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
@@ -327,8 +317,9 @@ def ccompile(r, file, pluscount=False):
                   
         #print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
       if pluscount:
-        global count
-        count+=1
+        pluscount.update(1)
+        pluscount.current += 1
+        count += 1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
@@ -359,8 +350,9 @@ def pycompile(r, file, pluscount=False):
         f.write(lua_code)
       
       if pluscount:
-        global count
-        count+=1
+        pluscount.update(1)
+        pluscount.current += 1
+        count += 1
     except Exception as e:
       print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
 def lunarcompile(r, file, pluscount=False):
@@ -390,8 +382,9 @@ def lunarcompile(r, file, pluscount=False):
         else:
           print(colortext.red("File error for "+os.path.join(r, file)+"!"))
         if pluscount:
-          global count
-          count+=1
+          pluscount.update(1)
+          pluscount.current += 1
+          count += 1
       except Exception as e:
           print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)+" \n\nDEBUG: roblox-pyc error from line "+str(e.__traceback__.tb_lineno)))
 
@@ -443,16 +436,19 @@ def w():
       global count
       count = 0
       localcount = 0
-      
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".py"):
             localcount += 1
-            threading.Thread(target=pycompile, args=(r, file, True)).start()
+      newloader = loader(localcount)
+      
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".py"):
+            threading.Thread(target=pycompile, args=(r, file, newloader)).start()
             #pycompile(r, file)
       print("Preparing to compile "+str(localcount)+" files...")
-      newloader = loader(localcount)
-      newloader.beginautosync()
+      
       newloader.yielduntil()
           
       action = input("")
@@ -532,6 +528,11 @@ def cw():
       global count
       count = 0
       localcount = 0
+      for r, d, f in os.walk(path):
+        for file in f:
+          if file.endswith(".c"):
+            localcount += 1
+      newloader = loader(localcount)
       path = os.getcwd()
 
       for r, d, f in os.walk(path):
@@ -540,11 +541,9 @@ def cw():
             # Run use threading 
           if file.endswith(".c"):
             localcount += 1
-            threading.Thread(target=ccompile, args=(r, file, True)).start()
+            threading.Thread(target=ccompile, args=(r, file, newloader)).start()
             #ccompile(r, file)
       print("Preparing to compile "+str(localcount)+" files...")
-      newloader = loader(localcount)
-      newloader.beginautosync()
       newloader.yielduntil()
       
       action = input("")
@@ -629,14 +628,16 @@ def cpw():
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
+          if file.endswith(".py"):
+            localcount += 1
+      newloader = loader(localcount)
+      for r, d, f in os.walk(path):
+        for file in f:
             if file.endswith(".cpp"):
               # compile the file to a file with the same name and path but .lua
-              localcount += 1
-              threading.Thread(target=cppcompile, args=(r, file, True)).start()
+              threading.Thread(target=cppcompile, args=(r, file, newloader)).start()
               #cppcompile(r, file)
       print("Preparing to compile "+str(localcount)+" files...")
-      newloader = loader(localcount)
-      newloader.beginautosync()
       newloader.yielduntil()
 
       action = input("")
@@ -717,13 +718,16 @@ def lunar():
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
+          if file.endswith(".py"):
+            localcount += 1
+      newloader = loader(localcount)
+      for r, d, f in os.walk(path):
+        for file in f:
           if file.endswith(".moon"):
             localcount += 1
-            threading.Thread(target=lunarcompile, args=(r, file)).start()
+            threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
             #lunarcompile(r, file)
       print("Preparing to compile "+str(localcount)+" files...")
-      newloader = loader(localcount)
-      newloader.beginautosync()
       newloader.yielduntil()  
 
       action = input("")
@@ -978,17 +982,21 @@ Configuring General Settings
             except:
               pass
           
-    
+          
+          for file in f:
+            if file.endswith(".py") or file.endswith(".moon"):
+              endcount+=1
+          newloader = loader(endcount)
           for file in f:
             if file.endswith(".py"):
               endcount+=1
-              threading.Thread(target=pycompile, args=(r, file, True)).start()
+              threading.Thread(target=pycompile, args=(r, file, newloader)).start()
               
               # delete old file
               os.remove(os.path.join(r, file))
             elif file.endswith(".moon"):
               endcount+=1
-              threading.Thread(target=lunarcompile, args=(r, file, True)).start()
+              threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
                 
               # delete old file
               os.remove(os.path.join(r, file))
@@ -1013,8 +1021,7 @@ Configuring General Settings
                 f.write(contents)
               
         print("Preparing to compile "+str(endcount)+" files...")
-        newloader = loader(endcount)
-        newloader.beginautosync()
+        
         newloader.yielduntil()
         print("Successfully installed "+sys.argv[2]+"!")
         print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
