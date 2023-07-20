@@ -5,9 +5,6 @@ Contributions would be greatly appreciated!
 - More built in libraries
 - Playground
 
-## Add soon
-- Loading bar
-
 ## Add later
 - Fix dylib config not saving after using C or C++ compiler 
 - Fix random `nonlocals` error, line 320 robloxpy.py
@@ -16,3 +13,4 @@ Contributions would be greatly appreciated!
 ## IMPORTANT!! But can wait
 - Add return getfenv() or something like that to the end of pip packages and someway of import * 
 - Dual directory compilation (one directory for target lang, one more for source lang). Thinking of using `d` command for this
+- Enable C/C++ and add loader for install and uninstall
