@@ -951,7 +951,8 @@ Configuring General Settings
               ending = sepratedbydot[sepratedbydot.__len__()-1]
               newfilename = filename.replace("."+ending, ".lua")
               os.rename(os.path.join(r, file), os.path.join(r, newfilename))
-              
+              with open(os.path.join(r, newfilename), "w") as f:
+                f.write(contents)
               
                 
         while count != endcount:
