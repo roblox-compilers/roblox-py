@@ -889,19 +889,6 @@ Configuring General Settings
           # install to dependencies folder
           subprocess.call(["pip", "install", sys.argv[2], "--target=dependencies"])
           # compile the newly added directory to lua
-          for file in f:
-            if file.endswith(".py"):
-              threading.Thread(target=pycompile, args=(r, file)).start()
-              
-              # delete old file
-              os.remove(os.path.join(r, file))
-            elif file.endswith(".moon"):
-              threading.Thread(target=lunarcompile, args=(r, file)).start()
-                
-              # delete old file
-              os.remove(os.path.join(r, file))
-            elif file.endswith(".c") or file.endswith(".cpp"):
-              candcpperror()
         elif returnval == "3":
           # install to dependencies folder
           subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies"])
