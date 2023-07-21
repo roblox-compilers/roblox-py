@@ -287,7 +287,14 @@ def onNotFound(target):
       pass
 
 # ASYNC 
-
+def filtercompiledfolder():
+  cwd = os.getcwd()
+  compiled = os.path.join(cwd, "-compiled")
+  for r, d, f in os.walk(compiled):
+    for file in f:
+      if not file.endswith(".lua"):
+        os.remove(os.path.join(r, file))
+        
 def cppcompile(r, file, pluscount=False, path = None):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
@@ -319,7 +326,7 @@ def cppcompile(r, file, pluscount=False, path = None):
         pluscount.current += 1
         global count
         count += 1
-        
+      filtercompiledfolder()
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
@@ -359,6 +366,7 @@ def ccompile(r, file, pluscount=False, path=None):
         pluscount.current += 1
         global count
         count += 1
+      filtercompiledfolder()
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
@@ -399,6 +407,7 @@ def pycompile(r, file, pluscount=False, path=None):
         pluscount.current += 1
         global count
         count += 1
+      filtercompiledfolder()
     except Exception as e:
       print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
@@ -438,6 +447,7 @@ def lunarcompile(r, file, pluscount=False, path=None):
           pluscount.current += 1
           global count
           count += 1
+        filtercompiledfolder()
       except Exception as e:
           print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
 
