@@ -84,7 +84,7 @@ count = 0
 try:
   registry = json.loads(requests.get(registryrawurl).text)
 except json.JSONDecodeError:
-  print(colortext.red("roblox-py: Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
+  print(colortext.white("Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
   registry = {} 
 
 # LOADING
@@ -108,7 +108,14 @@ class loader:
 # ERROR
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
-
+def error(errormessage, source=""):
+  if source != "":
+    source = colortext.white("("+source+")")
+  return(colortext.red("error ")+source+errormessage)
+def warn(warnmessage):
+  return(colortext.yellow("warning ")+warnmessage)
+def info(infomessage):
+  return(colortext.blue("info ")+infomessage)
 # INSTALL ROBLOX-TS
 def check_npms():
   try:
@@ -131,7 +138,7 @@ def install_npms():
   elif sys.platform == "win32":
     subprocess.call(["choco", "install", "npm"])
   else:
-    print(colortext.red("Could not auto-install npm, please install it manually."))
+    print(error("Could not auto-install npm, please install it manually."))
 def install_roblox_ts():
   print("Installing roblox-ts...")
   subprocess.call(["npm", "install", "-g", "roblox-ts"])
@@ -147,7 +154,7 @@ def install_llvm():
   elif sys.platform == "win32":
     subprocess.call(["choco", "install", "llvm"])
   else:
-    print(colortext.red("Could not auto-install llvm, please install it manually."))
+    print(error("Could not auto-install llvm, please install it manually."))
 def config_llvm(home=None, lib=None):
   if home and home != "None":
     subprocess.call(["export", "LLVM_HOME="+home])
@@ -179,10 +186,10 @@ def install_moonscript():
 
 def checkboth():
     if check_luarocks() == False:
-        print(colortext.yellow("LuaRocks is not installed, installing..."))
+        print(warn("LuaRocks is not installed, installing..."))
         install_luarocks()
     if check_moonscript() == False:
-        print(colortext.yellow("MoonScript is not installed, installing..."))
+        print(warn("MoonScript is not installed, installing..."))
         install_moonscript()
         
 # CONFIG
@@ -210,17 +217,17 @@ def getconfig(lang, key, default=None):
           except KeyError:
             bugged = "key"
         if bugged == "": 
-          print(colortext.red("roblox-py: Config file KeyError!"))
+          print(error("Config file KeyError!", "roblox-py"))
           return default
     
         # Write the missing lang or key in and return the default
         if bugged == "lang":
-          #print(colortext.yellow("roblox-py: Adding missing language %s to config file..." % lang))
+          #print(warn("Adding missing language %s to config file..." % lang))
           new = pickle.load(file)
           new[lang] = {}
           pickle.dump(new, file)
         if bugged == "key":
-          #print(colortext.yellow("roblox-py: Adding missing key %s to config file..." % key))
+          #print(warn("Adding missing key %s to config file..." % key))
           new = pickle.load(file)
           new[lang][key] = default
           pickle.dump(new, file)
@@ -306,7 +313,7 @@ def cppcompile(r, file, pluscount=False, path = None):
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
-        #print(colortext.green("roblox-cpp: Compiled "+os.path.join(r, file)))
+        #print(colortext.green("Compiled "+os.path.join(r, file)))
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
@@ -315,8 +322,8 @@ def cppcompile(r, file, pluscount=False, path = None):
         
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-        print(colortext.red("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+        print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
+      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def ccompile(r, file, pluscount=False, path=None):
@@ -346,7 +353,7 @@ def ccompile(r, file, pluscount=False, path=None):
       with open(relative_path, 'w') as out:
         newctranslator.output(relative_path, out)
                   
-        #print(colortext.green("roblox-c: Compiled "+os.path.join(r, file)))
+        #print(colortext.green("Compiled "+os.path.join(r, file)))
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
@@ -354,8 +361,8 @@ def ccompile(r, file, pluscount=False, path=None):
         count += 1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-        print(colortext.red("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+        print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
+      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def pycompile(r, file, pluscount=False, path=None):
@@ -367,14 +374,14 @@ def pycompile(r, file, pluscount=False, path=None):
       with open(os.path.join(r, file)) as rf:
         contents = rf.read()  
     except Exception as e:
-      print(colortext.red(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+      print(error(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
       # do not compile the file if it cannot be read
       return
               
     try:
       translator = pytranslator.Translator()
       lua_code = translator.translate(contents)
-      #print(colortext.green("roblox-py: Compiled "+os.path.join(r, file)))
+      #print(colortext.green("Compiled "+os.path.join(r, file)))
       # get the relative path of the file and replace .py with .lua
       if path == None:
         path = os.path.join(r, file)  
@@ -393,7 +400,7 @@ def pycompile(r, file, pluscount=False, path=None):
         global count
         count += 1
     except Exception as e:
-      print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def lunarcompile(r, file, pluscount=False, path=None):
@@ -406,16 +413,16 @@ def lunarcompile(r, file, pluscount=False, path=None):
                 
     if stdout or stderr:
       if stdout:     
-        print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
+        print(error("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
       else:
-        print(colortext.red("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
+        print(error("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
     else:
       try:
         newheader = header.lunarheader(luainit.lunarfunctions)
                     
         # check if the new file has been created
         if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-          #print(colortext.green("roblox-lunar: Compiled "+os.path.join(r, file)))          
+          #print(colortext.green("Compiled "+os.path.join(r, file)))          
           with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
             contents = f.read()
           with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
@@ -425,14 +432,14 @@ def lunarcompile(r, file, pluscount=False, path=None):
             # Move the file to the path
             os.rename(os.path.join(r, file.replace(".moon", ".lua")), path)
         else:
-          print(colortext.red("File error for "+os.path.join(r, file)+"!"))
+          print(error("File error for "+os.path.join(r, file)+"!"))
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
           global count
           count += 1
       except Exception as e:
-          print(colortext.red(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+          print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -495,7 +502,7 @@ def w():
             #pycompile(r, file)
       
       newloader.yielduntil()
-      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -527,7 +534,7 @@ def w():
             #pycompile(r, file)
       
       newloader.yielduntil()
-      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -550,7 +557,7 @@ def w():
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(colortext.red("roblox-py: No path specified!"))
+            print(error("No path specified!", "roblox-py"))
           else:
              cwd = os.getcwd()
              # cwd+sys.argv[2]
@@ -562,7 +569,7 @@ def w():
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
+        confirm = input(warn("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
           path = os.getcwd()
           
@@ -579,23 +586,23 @@ def w():
                 open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
                 # write the old file contents as a py comment
                 open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
-                print(colortext.green("roblox-py: Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
+                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
       elif sys.argv[1] == "w":
-        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
       elif sys.argv[1] == "d":
-        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
       else:
-        print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
     else:
-      print(colortext.magenta("roblox-py: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   except IndexError:
-    print(colortext.red("roblox-py: Invalid amount of arguments!"))
+    print(error("Invalid amount of arguments!", "roblox-py"))
   except KeyboardInterrupt:
-    print(colortext.red("roblox-py: Aborted!"))
+    print(colortext.red("Aborted!"))
 # NOTE: Since C and C++ are disabled, their features are out of sync with python and lunar
 def cw():
   if not check_llvm():
@@ -603,7 +610,7 @@ def cw():
   
   config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
   try:
-    print(colortext.yellow("roblox-c: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
+    print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
       global count
       count = 0
@@ -625,7 +632,7 @@ def cw():
             #ccompile(r, file)
       
       newloader.yielduntil()
-      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -659,7 +666,7 @@ def cw():
           
       newloader.yielduntil()
     
-      print(colortext.green("roblox-c: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       
       if action == "exit":
@@ -669,7 +676,7 @@ def cw():
         
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
-        print(colortext.red("roblox-c: Plugins are only supported for python!"))
+        print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         try:
@@ -683,7 +690,7 @@ def cw():
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(colortext.red("roblox-c: No path specified!"))
+            print(error("No path specified!"))
           else:
              cwd = os.getcwd()
              # cwd+sys.argv[2]
@@ -696,7 +703,7 @@ def cw():
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
+        confirm = input(warn("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
           path = os.getcwd()
           
@@ -713,23 +720,23 @@ def cw():
                 open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
                 # write the old file contents as a C comment
                 open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
-                print(colortext.green("roblox-c: Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
+                print(colortext.green("Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
       elif sys.argv[1] == "w":
-        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
       elif sys.argv[1] == "d":
-        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
       else:
-        print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
     else:
-      print(colortext.magenta("roblox-c: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   except IndexError:
-    print(colortext.red("roblox-c: Invalid amount of arguments!"))
+    print(error("Invalid amount of arguments!", "roblox-c"))
   except KeyboardInterrupt:
-    print(colortext.red("roblox-c: Aborted!"))
+    print(colortext.red("Aborted!"))
 def cpw():
   if not check_llvm():
     install_llvm()
@@ -737,7 +744,7 @@ def cpw():
   config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
   
   try:
-    print(colortext.yellow("roblox-cpp: Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
+    print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
@@ -757,7 +764,7 @@ def cpw():
               #cppcompile(r, file)
       
       newloader.yielduntil()
-      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       
       action = input("")
       if action == "exit":
@@ -792,7 +799,7 @@ def cpw():
           
       newloader.yielduntil()
     
-      print(colortext.green("roblox-cpp: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       
       if action == "exit":
@@ -801,7 +808,7 @@ def cpw():
         incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
-        print(colortext.red("roblox-cpp: Plugins are only supported for python!"))
+        print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         try:
@@ -815,7 +822,7 @@ def cpw():
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(colortext.red("roblox-cpp: No path specified!"))
+            print(error("No path specified!"))
           else:
              cwd = os.getcwd()
              # cwd+sys.argv[2]
@@ -828,7 +835,7 @@ def cpw():
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
+        confirm = input(warn("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
           path = os.getcwd()
           
@@ -846,23 +853,23 @@ def cpw():
                 # write the old file contents as a C++ comment
                 open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
-                print(colortext.green("roblox-cpp: Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
+                print(colortext.green("Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
       elif sys.argv[1] == "w":
-        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
       elif sys.argv[1] == "d":
-        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
       else:
-        print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
     else:
-      print(colortext.magenta("roblox-cpp: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   except IndexError:
-    print(colortext.red("roblox-cpp: Invalid amount of arguments!"))
+    print(error("Invalid amount of arguments!", "roblox-cpp"))
   except KeyboardInterrupt:
-    print(colortext.red("roblox-cpp: Aborted!"))   
+    print(colortext.red("Aborted!"))   
 def lunar():
   try:
     checkboth() # install luarocks and moonscript if not installed
@@ -884,7 +891,7 @@ def lunar():
             threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
             #lunarcompile(r, file)
       newloader.yielduntil()  
-      print(colortext.green("roblox-py: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -918,7 +925,7 @@ def lunar():
           
       newloader.yielduntil()
     
-      print(colortext.green("roblox-lunar: Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       
       if action == "exit":
@@ -927,7 +934,7 @@ def lunar():
         incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
-        print(colortext.red("roblox-lunar: Plugins are only supported for python!"))
+        print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         try:
@@ -941,7 +948,7 @@ def lunar():
             f.write(translator.get_luainit(getconfig("general", "luaext", [])))
         except IndexError:
           if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(colortext.red("roblox-lunar: No path specified!"))
+            print(error("No path specified!"))
           else:
              cwd = os.getcwd()
              # cwd+sys.argv[2]
@@ -953,7 +960,7 @@ def lunar():
                f.write(translator.get_luainit(getconfig("general", "luaext", [])))
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
-        confirm = input(colortext.yellow("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
+        confirm = input(warn("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
           path = os.getcwd()
           
@@ -971,23 +978,23 @@ def lunar():
                 # write the old file contents as a C++ comment
                 open(os.path.join(r, file.replace(".lua", ".moon")), "w").write("--[[\n"+luafilecontents+"\n]]")
                 
-                print(colortext.green("roblox-lunar: Converted to lunar "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
+                print(colortext.green("Converted to lunar "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
       elif sys.argv[1] == "w":
-        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
       elif sys.argv[1] == "d":
-        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
       else:
-        print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
     else:
-      print(colortext.magenta("roblox-lunar: Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       incli()
   except IndexError:
-    print(colortext.red("roblox-lunar: Invalid amount of arguments!"))
+    print(error("Invalid amount of arguments!", "roblox-lunar"))
   except KeyboardInterrupt:
-    print(colortext.red("roblox-lunar: Aborted!"))
+    print(colortext.red("Aborted!"))
         
 def pyc():
   title = colortext.magenta("roblox-pyc")
@@ -1079,7 +1086,7 @@ Configuring General Settings
           returned = input("Click enter to confirm, CTRL+C to cancel: ")
           setconfig("general", "traceback", returned, None)
       else:
-        print(colortext.red("Invalid option!"))
+        print(error("Invalid option!"))
     elif sys.argv[1] == "devforum":
       webbrowser.open("https://devforum.com")
     elif sys.argv[1] == "discord":
@@ -1100,7 +1107,7 @@ Configuring General Settings
         
         if type == "cli":
           if True:
-            print(colortext.red("roblox-pyc: CLI packages are not supported on this build!"))
+            print(error("CLI packages are not supported on this build!", "roblox-pyc"))
             return
           # git clone the files to this scripts path
           print(colortext.green("Installing "+sys.argv[2]+" ..."))
@@ -1136,7 +1143,7 @@ Configuring General Settings
           subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
           print(colortext.green("Installed "+sys.argv[2]+"!"))
       else:
-        print(colortext.yellow("roblox-pyc: Package not in registry!")+"\nInstall from one of these other package managers:")
+        print(warn("roblox-pyc: Package not in registry!")+"\nInstall from one of these other package managers:")
         print("""
     1 - luarocks
     2 - pip (compiles to lua)
@@ -1226,7 +1233,7 @@ Configuring General Settings
         
         newloader.yielduntil()
         print("Successfully installed "+sys.argv[2]+"!")
-        print(colortext.yellow("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
+        print(warn("Since these modules are from 3rd party sources, they may not work in the roblox environment and you may encounter errors, this is feauture is experimental and any issues in your code caused by this is not our fault."))
         
     elif sys.argv[1] == "uninstall":
       # Find out how to install, cli or package
@@ -1246,7 +1253,7 @@ Configuring General Settings
               currentlist.remove(i)
               found = True
           if not found:
-            print(colortext.red("roblox-pyc: Module not found!"))
+            print(error("Module not found!", "roblox-pyc"))
           else:
             setconfig("general", "luaext", currentlist, [])
             print(colortext.green("Uninstalled "+sys.argv[2]+"!"))
@@ -1254,12 +1261,12 @@ Configuring General Settings
           dependenciesPath = os.path.join(os.getcwd(), "dependencies")
           # if it doesnt exist error
           if not os.path.exists(dependenciesPath):
-            print(colortext.red("roblox-pyc: Dependencies folder not found! Creating one now..."))
+            print(error("Dependencies folder not found! Creating one now...", "roblox-py"))
             os.mkdir(dependenciesPath)
             return
           # remove, if not found error
           if not os.path.exists(os.path.join(dependenciesPath, sys.argv[2])):
-            print(colortext.red("roblox-pyc: Package not found!"))
+            print(error("Package not found!", "roblox-py"))
           
           if os.path.exists(os.path.join(dependenciesPath, sys.argv[2])):
             shutil.rmtree(os.path.join(dependenciesPath, sys.argv[2]))
@@ -1274,7 +1281,7 @@ Configuring General Settings
       # Then list all items in dependencies folder
       dependenciesPath = os.path.join(os.getcwd(), "dependencies") 
       if not os.path.exists(dependenciesPath):
-        print(colortext.yellow("roblox-pyc: Dependencies folder not found! Creating one now..."))
+        print(warn("roblox-pyc: Dependencies folder not found! Creating one now..."))
         os.mkdir(dependenciesPath)
         return
       for i in os.listdir(dependenciesPath):
@@ -1323,7 +1330,7 @@ Configuring General Settings
 
           """)
   except KeyboardInterrupt:
-    print(colortext.red("roblox-pyc: Aborted!"))  
+    print(colortext.red("Aborted!"))  
   
 
 if __name__ == "__main__":
