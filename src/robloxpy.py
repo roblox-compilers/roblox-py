@@ -109,6 +109,32 @@ class loader:
 def candcpperror():
   print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
 
+# INSTALL ROBLOX-TS
+def check_npms():
+  try:
+    subprocess.call(["npm", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+    return True
+  except FileNotFoundError:
+    return False
+def check_roblox_ts():
+  try:
+    subprocess.call(["rbxtsc", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+    return True
+  except FileNotFoundError:
+    return False
+def install_npms():
+  print("Installing npm...")
+  if sys.platform == "linux":
+    subprocess.call(["apt-get", "install", "-y", "npm"])
+  elif sys.platform == "darwin":
+    subprocess.call(["brew", "install", "npm"])
+  elif sys.platform == "win32":
+    subprocess.call(["choco", "install", "npm"])
+  else:
+    print(colortext.red("Could not auto-install npm, please install it manually."))
+def install_roblox_ts():
+  print("Installing roblox-ts...")
+  subprocess.call(["npm", "install", "-g", "roblox-ts"])
 # INSTALL SEALANG
 def check_llvm():
   return True # Add LLVM check/installs later
