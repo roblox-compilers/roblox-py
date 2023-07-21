@@ -324,15 +324,15 @@ def wallyget(author, name, isDependant=False):
   
   # create new file in cwd/dependencies called author_name_version.zip and unzip it
   print(info("Saving package...", "roblox-pyc wally"))
-  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"), "wb") as file:
+  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "wb") as file:
     file.write(response)
   # unzip
   print(info("Unzipping package...", "roblox-pyc wally"))
-  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"), 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum))
+  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), 'r') as zip_ref:
+    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"))
   # delete the zip
   print(info("Deleting package...", "roblox-pyc wally"))
-  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"))
+  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"))
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]
@@ -1352,7 +1352,8 @@ Configuring General Settings
     1 - luarocks
     2 - pip (compiles to lua)
     3 - pip3 (compiles to lua)
-    4 - None
+    4 - Wally (made for roblox)
+    5 - None
               """)
         returnval = input("Select which package manager to use: ")
         if returnval == "1":
@@ -1367,7 +1368,13 @@ Configuring General Settings
         elif returnval == "3":
           # install to dependencies folder
           subprocess.call(["pip3", "install", sys.argv[2], "--target=dependencies", "--upgrade"])
-          # compile the newly added directory to lua   
+          # compile the newly added directory to lua  
+        elif returnval == "4":
+          # sys.argv[2] should be formatted like @<author>/<name>
+          author = sys.argv[2].split("/")[0].replace("@", "")
+          name = sys.argv[2].split("/")[1]
+          
+          wallyget(author, name) 
         else:
           print("Invalid option or exited.")
           return
