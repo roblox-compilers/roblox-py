@@ -95,7 +95,7 @@ class loader:
     print("\n\n")
     self.max = max
     self.current = 0
-    self.tqdm = tqdm(total=max)
+    self.tqdm = tqdm(total=max, leave=True)
     
   def yielduntil(self):
     global count
