@@ -303,7 +303,6 @@ def wallyget(author, name, isDependant=False):
     print(error("Exiting process", "roblox-pyc wally"))
     sys.exit()
   jsondata = json.loads(data)["versions"]
-  
   #get latest version and dependencies
   latestver = jsondata[0]
   vernum = latestver["package"]["version"]
@@ -320,24 +319,20 @@ def wallyget(author, name, isDependant=False):
     print("Dependencies downloaded, now downloading package...")
     print(info("Downloading @{author}/{name} v{vernum}", "roblox-pyc wally"))
   url = wallyurl+"/package-contents/"+author+"/"+name+"/"+vernum
-  headers = {"Wally-Version": "1.0.0"}
-  response = requests.get(url, headers=headers).text
-  try:
-    jsondata = json.loads(response)
-    if "message" in jsondata:
-      print(error(jsondata["message"]))
-      print(error("Exiting process", "roblox-pyc wally"))
-      sys.exit()
-  except json.JSONDecodeError:
-    pass # is fine
-  print(info("Adding ZIP to /dependencies..."))
-  with open(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum+".zip"), "wb") as file:
-    file.write(response)
-  print(info("Unzipping..."))
-  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum+".zip"), 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum))
+  headers = {"Wally-Version": "1.0.0"} 
+  response = requests.get(url, headers=headers).content
   
-
+  # create new file in cwd/dependencies called author_name_version.zip and unzip it
+  print(info("Saving package...", "roblox-pyc wally"))
+  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"), "wb") as file:
+    file.write(response)
+  # unzip
+  print(info("Unzipping package...", "roblox-pyc wally"))
+  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"), 'r') as zip_ref:
+    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum))
+  # delete the zip
+  print(info("Deleting package...", "roblox-pyc wally"))
+  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+vernum+".zip"))
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]
