@@ -95,7 +95,7 @@ class loader:
     print("\n\n")
     self.max = max
     self.current = 0
-    self.tqdm = tqdm(total=max, leave=True)
+    self.tqdm = tqdm(total=max)
     
   def yielduntil(self):
     global count
@@ -1122,6 +1122,12 @@ Configuring General Settings
       webbrowser.open("https://github.com/AsynchronousAI/roblox-pyc")
     elif sys.argv[1] == "help":
       raise IndexError
+    elif sys.argv[1] == "format":
+      print(warn("Are you sure, this will reformat the compiled directory and delete uncompatible files, this is for when a bug occured.", "roblox-pyc"))
+      if input("Type 'yes' to continue: ") == "yes":
+        # Delete all files that arent .py, .moon, .lua, .c, .cpp
+        filtercompiledfolder()
+        print(colortext.green("Deleted all uncompatible files!"))
     elif sys.argv[1] == "info":
       subprocess.call(["pip", "show", "roblox-pyc"])
       check_for_updates()
