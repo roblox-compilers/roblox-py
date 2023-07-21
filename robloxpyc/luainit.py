@@ -1,6 +1,7 @@
 import os
 import pip
 import sys
+from . import colortext as colortext
 
 initcode = ""
 
@@ -9,7 +10,7 @@ try:
 	with open(os.path.join(os.path.dirname(__file__), "luainitlua.lua")) as f:
 		initcode = f.read()
 except FileNotFoundError:
-    print("roblox-pyc: Due to a bug, lib will not work, please report this issue to the github repo, discord server, or the devforum post\nthanks!")
+    print(colortext.yellow("warning", ["bold"])+" Due to a bug, lib will not work, please report this issue to the github repo, discord server, or the devforum post\nthanks!")
 allfunctions = "stringmeta, list, dict, python, staticmethod, classsmethod, class, range, __name__, len, abs, str, int, sum, max, min, reversed, split, round, all, any, ord, char, callable, zip, float, format, hex, id, map, bool, divmod, slice, operator_in, asynchronousfunction, match, anext, ascii, dir, getattr, globals, hasattr, input, isinstance, issubclass, iter, locals, oct, open, ord, pow, eval, exec, filter, frozenset, aiter, bin, complex, delattr, enumerate, breakpoint, bytearray, bytes, compile, help, memoryview, repr, sorted, vars, __import_, formatmod"
 lunarfunctions = "type, table"
 allfunctions = allfunctions.split(", ")
