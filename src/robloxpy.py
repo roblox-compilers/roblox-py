@@ -111,11 +111,11 @@ def candcpperror():
 def error(errormessage, source=""):
   if source != "":
     source = colortext.white("("+source+")")
-  return(colortext.red("error ")+source+errormessage)
+  return(colortext.red("error ", ["bold"])+source+errormessage)
 def warn(warnmessage):
-  return(colortext.yellow("warning ")+warnmessage)
+  return(colortext.yellow("warning ", ["bold"])+warnmessage)
 def info(infomessage):
-  return(colortext.blue("info ")+infomessage)
+  return(colortext.blue("info ", ["bold"])+infomessage)
 # INSTALL ROBLOX-TS
 def check_npms():
   try:
