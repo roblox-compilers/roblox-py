@@ -270,8 +270,8 @@ def check_for_updates():
   current_version = pkg_resources.get_distribution("roblox-pyc").version
   latest_version = get_latest_version()
   if version.parse(latest_version) > version.parse(current_version):
-    print(f"Update available to {latest_version}, you are currently using {current_version}")
-    choice = input("Do you want to update? (yes/no): ").lower()
+    print(info(f"Update available to {latest_version}, you are currently using {current_version}"))
+    choice = input("\t\tDo you want to update? (yes/no): ").lower()
     if choice == "yes":
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
@@ -593,12 +593,7 @@ def w():
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
-      else:
-        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-        incli()
-    else:
-      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+      
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-py"))
   except KeyboardInterrupt:
@@ -723,12 +718,7 @@ def cw():
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
-      else:
-        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-        incli()
-    else:
-      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+      
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-c"))
   except KeyboardInterrupt:
@@ -853,12 +843,7 @@ def cpw():
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
-      else:
-        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-        incli()
-    else:
-      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+      
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-cpp"))
   except KeyboardInterrupt:
@@ -973,12 +958,7 @@ def lunar():
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
-      else:
-        print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-        incli()
-    else:
-      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
-      incli()
+      
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-lunar"))
   except KeyboardInterrupt:
