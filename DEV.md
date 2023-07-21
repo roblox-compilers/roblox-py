@@ -16,6 +16,7 @@ Contributions would be greatly appreciated!
 ## Big
 - Add return getfenv() or something like that to the end of pip packages and someway of import * 
 - Dual directory compilation (one directory for target lang, one more for source lang). Thinking of using `d` command for this
+- Fix config
 
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall

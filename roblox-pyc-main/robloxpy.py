@@ -3,6 +3,7 @@ from flask import Flask, request
 from pyflakes import api
 from packaging import version
 from tqdm import tqdm
+from time import sleep
 
 # FILES
 from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
@@ -91,6 +92,7 @@ except json.JSONDecodeError:
 class loader:
   self = {}
   def __init__(self, max):
+    print("\n\n")
     self.max = max
     self.current = 0
     self.tqdm = tqdm(total=max)
@@ -98,19 +100,18 @@ class loader:
   def yielduntil(self):
     global count
     while self.max != self.current:
-      yield
+      sleep(.5)
     self.tqdm.update(self.max-self.current )
     self.tqdm.close()
-    os.system("clear")
   def update(self, amount):
     self.tqdm.update(amount)
 
 # ERROR
 def candcpperror():
-  print("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!")
+  print(warn("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!"))
 def error(errormessage, source=""):
   if source != "":
-    source = colortext.white("("+source+")")
+    source = colortext.white("("+source+") ")
   return(colortext.red("error ", ["bold"])+source+errormessage)
 def warn(warnmessage):
   return(colortext.yellow("warning ", ["bold"])+warnmessage)
@@ -200,7 +201,7 @@ def getconfig(lang, key, default=None):
       try:
         returnval = pickle.load(file)[lang][key]
         if returnval == None or returnval == "":
-          print("Returned default because value was None or empty")
+          #print("Returned default because value was None or empty")
           return default
         else:
           return returnval
@@ -289,13 +290,13 @@ def onNotFound(target):
 # ASYNC 
 def filtercompiledfolder():
   cwd = os.getcwd()
-  compiled = os.path.join(cwd, "-compiled")
+  compiled = cwd+"-compiled"
   for r, d, f in os.walk(compiled):
     for file in f:
       if not file.endswith(".lua"):
         os.remove(os.path.join(r, file))
         
-def cppcompile(r, file, pluscount=False, path = None):
+def cppcompile(r, file, pluscount=False):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -313,8 +314,7 @@ def cppcompile(r, file, pluscount=False, path = None):
         '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
       ]
       )
-      if path == None:
-        path = os.path.join(r, file)  
+      path = os.path.join(r, file)  
       newctranslator.diagnostics(sys.stderr)
       relative_path = backwordreplace(path,".cpp", ".lua", 1)
       with open(relative_path, 'w') as out:
@@ -326,14 +326,13 @@ def cppcompile(r, file, pluscount=False, path = None):
         pluscount.current += 1
         global count
         count += 1
-      filtercompiledfolder()
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
-def ccompile(r, file, pluscount=False, path=None):
+def ccompile(r, file, pluscount=False):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
     try:
@@ -351,8 +350,7 @@ def ccompile(r, file, pluscount=False, path=None):
         '-stdlib=%s' % getconfig("c", "stdlib", "libc")
       ]
       )
-      if path == None:
-        path = os.path.join(r, file)  
+      path = os.path.join(r, file)  
                 
       newctranslator.diagnostics(sys.stderr)
       relative_path = backwordreplace(path,".c", ".lua", 1)
@@ -366,14 +364,13 @@ def ccompile(r, file, pluscount=False, path=None):
         pluscount.current += 1
         global count
         count += 1
-      filtercompiledfolder()
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
-def pycompile(r, file, pluscount=False, path=None):
+def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
     contents = ""
@@ -391,11 +388,10 @@ def pycompile(r, file, pluscount=False, path=None):
       lua_code = translator.translate(contents)
       #print(colortext.green("Compiled "+os.path.join(r, file)))
       # get the relative path of the file and replace .py with .lua
-      if path == None:
-        path = os.path.join(r, file)  
+      path = os.path.join(r, file)  
         
       relative_path = backwordreplace(path,".py", ".lua", 1)
-                
+      
       if not os.path.exists(os.path.dirname(relative_path)):
         os.makedirs(os.path.dirname(relative_path))
       
@@ -407,12 +403,11 @@ def pycompile(r, file, pluscount=False, path=None):
         pluscount.current += 1
         global count
         count += 1
-      filtercompiledfolder()
     except Exception as e:
       print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
-def lunarcompile(r, file, pluscount=False, path=None):
+def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
     # Run command and check if anything is outputted to stderr, stdout, or stdin
@@ -437,9 +432,6 @@ def lunarcompile(r, file, pluscount=False, path=None):
           with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
             f.write(newheader+contents)
           
-          if path != None:
-            # Move the file to the path
-            os.rename(os.path.join(r, file.replace(".moon", ".lua")), path)
         else:
           print(error("File error for "+os.path.join(r, file)+"!"))
         if pluscount:
@@ -447,7 +439,6 @@ def lunarcompile(r, file, pluscount=False, path=None):
           pluscount.current += 1
           global count
           count += 1
-        filtercompiledfolder()
       except Exception as e:
           print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
 
@@ -519,13 +510,14 @@ def w():
       else:
         incli()
     
-    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
-      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-      path = os.getcwd()
-      # same parent dir, but with a new name
-      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
-      if not os.path.exists(newpath):
-        os.mkdir(newpath)
+    def incli2():
+      # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
+      path = os.getcwd()+"-compiled"
+      if os.path.exists(path):
+        # delete the folder and child files
+        shutil.rmtree(path)
+      shutil.copytree(os.getcwd(), path)
+
       global count
       count = 0
       localcount = 0
@@ -536,14 +528,12 @@ def w():
       newloader = loader(localcount)
       
       for r, d, f in os.walk(path):
-        if not os.path.exists(r.replace(path, newpath)):
-          os.mkdir(r.replace(path, newpath))
         for file in f:
           if file.endswith(".py"):
-            threading.Thread(target=pycompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".py", ".lua")))).start()
-            #pycompile(r, file)
+            threading.Thread(target=pycompile, args=(r, file, newloader)).start()
       
       newloader.yielduntil()
+      filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
       if action == "exit":
@@ -648,14 +638,14 @@ def cw():
         exit(0)
       else:
         incli()
-    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
-      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-      path = os.getcwd()
-      # same parent dir, but with a new name
-      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
-      if not os.path.exists(newpath):
-        os.mkdir(newpath)
-      
+    def incli2():
+      # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
+      path = os.getcwd()+"-compiled"
+      if os.path.exists(path):
+        # delete the folder and child files
+        shutil.rmtree(path)
+      shutil.copytree(os.getcwd(), path)
+
       global count
       count = 0
       localcount = 0
@@ -664,25 +654,21 @@ def cw():
           if file.endswith(".c"):
             localcount += 1
       newloader = loader(localcount)
-    
+      
       for r, d, f in os.walk(path):
-        if not os.path.exists(r.replace(path, newpath)):
-          os.mkdir(r.replace(path, newpath))
         for file in f:
           if file.endswith(".c"):
-            localcount += 1
-            threading.Thread(target=ccompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".c", ".lua")))).start()
-            #ccompile(r, file)
-          
+            threading.Thread(target=ccompile, args=(r, file, newloader)).start()
+      
       newloader.yielduntil()
-    
+      filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
-      
       if action == "exit":
         exit(0)
       else:
         incli2()
+        
         
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
@@ -763,7 +749,7 @@ def cpw():
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
-          if file.endswith(".py"):
+          if file.endswith(".cpp"):
             localcount += 1
       newloader = loader(localcount)
       for r, d, f in os.walk(path):
@@ -781,14 +767,14 @@ def cpw():
         exit(0)
       else:
         incli()
-    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
-      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-      path = os.getcwd()
-      # same parent dir, but with a new name
-      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
-      if not os.path.exists(newpath):
-        os.mkdir(newpath)
-      
+    def incli2():
+      # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
+      path = os.getcwd()+"-compiled"
+      if os.path.exists(path):
+        # delete the folder and child files
+        shutil.rmtree(path)
+      shutil.copytree(os.getcwd(), path)
+
       global count
       count = 0
       localcount = 0
@@ -797,25 +783,22 @@ def cpw():
           if file.endswith(".cpp"):
             localcount += 1
       newloader = loader(localcount)
-    
+      
       for r, d, f in os.walk(path):
-        if not os.path.exists(r.replace(path, newpath)):
-          os.mkdir(r.replace(path, newpath))
         for file in f:
           if file.endswith(".cpp"):
-            localcount += 1
-            threading.Thread(target=cppcompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".cpp", ".lua")))).start()
-            #ccompile(r, file)
-          
+            threading.Thread(target=cppcompile, args=(r, file, newloader)).start()
+      
       newloader.yielduntil()
-    
+      filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
-      
       if action == "exit":
         exit(0)
       else:
         incli2()
+          
+      
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         print(error("Plugins are only supported for python!"))
@@ -907,37 +890,32 @@ def lunar():
         exit(0)
       else:
         incli()
-    def incli2(): # rather than duplicated the compile script in the same directory this one makes a new directory with the same structure for compiled files
-      # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
-      path = os.getcwd()
-      # same parent dir, but with a new name
-      newpath = os.path.join(os.path.dirname(path), os.path.basename(path)+"-compiled")
-      if not os.path.exists(newpath):
-        os.mkdir(newpath)
-      
+    def incli2():
+      # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
+      path = os.getcwd()+"-compiled"
+      if os.path.exists(path):
+        # delete the folder and child files
+        shutil.rmtree(path)
+      shutil.copytree(os.getcwd(), path)
+
       global count
       count = 0
       localcount = 0
       for r, d, f in os.walk(path):
-        if not os.path.exists(r.replace(path, newpath)):
-          os.mkdir(r.replace(path, newpath))
         for file in f:
           if file.endswith(".moon"):
             localcount += 1
       newloader = loader(localcount)
-    
+      
       for r, d, f in os.walk(path):
         for file in f:
           if file.endswith(".moon"):
-            localcount += 1
-            threading.Thread(target=lunarcompile, args=(r, file, newloader, os.path.join(newpath, file.replace(".moon", ".lua")))).start()
-            #ccompile(r, file)
-          
+            threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
+      
       newloader.yielduntil()
-    
+      filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
-      
       if action == "exit":
         exit(0)
       else:
