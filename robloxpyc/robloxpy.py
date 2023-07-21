@@ -9,7 +9,7 @@ from time import sleep
 from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 
 # BUILTIN
-import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os
+import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile
 
 class Reporter:
     """
@@ -161,7 +161,16 @@ def config_llvm(home=None, lib=None):
     subprocess.call(["export", "LLVM_HOME="+home])
   if lib and lib != "None":
     subprocess.call(["export", "LD_LIBRARY_PATH="+lib])
-    
+
+  # check if wally is installed, if they are in mac use brew otherwise error
+  try:
+    subprocess.call(["wally", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+  except FileNotFoundError:
+    if sys.platform == "darwin":
+      print(info("Installing wally..."))
+      subprocess.call(["brew", "install", "wally"])
+    else:
+      print(error("Wally was not found and could not be auto-installed. Please install it manually."))
 # INSTALL MOONSCRIPT
 def check_luarocks():
     try:
@@ -275,7 +284,60 @@ def check_for_updates():
     if choice == "yes":
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
-      
+
+# Download from wally (unfinished)
+def wallyget(author, name, isDependant=False):
+  # Use wally and download the zip and unpack it
+  print(info(f"Getting @{author}/{name} metadata", "roblox-pyc wally"))
+  wallyurl = "https://api.wally.run/v1/"
+  
+  # first get package metadata should look like:
+  """
+  {"versions":[{"dependencies":{"Comm":"sleitnick/comm@>=0.3.0, <0.4.0","Promise":"evaera/promise@>=4.0.0, <5.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.5.1"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.3.0, <0.4.0","Promise":"evaera/promise@>=4.0.0, <5.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.5.0"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.3.0, <0.4.0","Promise":"evaera/promise@>=4.0.0, <5.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.7"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.3.0, <0.4.0","Promise":"evaera/promise@>=4.0.0, <5.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.6"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=4.0.0, <5.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.5"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=3.0.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.4"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=3.0.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.3"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=3.0.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.2"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.2, <0.3.0","Promise":"evaera/promise@>=3.1.0, <3.2.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.1"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=3.1.0, <3.2.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.4.0"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.2.0, <0.3.0","Promise":"evaera/promise@>=3.1.0, <3.2.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.3.0"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Promise":"evaera/promise@>=3.1.0, <3.2.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.2.1"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Promise":"evaera/promise@>=3.1.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.2.0"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Promise":"evaera/promise@>=3.1.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.1.0-rc.2"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Promise":"evaera/promise@>=3.1.0, <4.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.1.0-rc.1"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.9"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.8"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.7"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.6"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Comm":"sleitnick/comm@>=0.1.0, <0.2.0","Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Ser":"sleitnick/ser@>=1.0.0, <2.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.5"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Loader":"sleitnick/loader@>=1.0.0, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Remote":"sleitnick/remote@>=1.0.0, <2.0.0","Ser":"sleitnick/ser@>=1.0.0, <2.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.4"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Loader":"sleitnick/loader@>=1.0.2, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Remote":"sleitnick/remote@>=1.0.3, <2.0.0","Ser":"sleitnick/ser@>=1.0.2, <2.0.0","Signal":"sleitnick/signal@>=1.0.1, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.1, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.3"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Loader":"sleitnick/loader@>=1.0.2, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Remote":"sleitnick/remote@>=1.0.2, <2.0.0","Ser":"sleitnick/ser@>=1.0.2, <2.0.0","Signal":"sleitnick/signal@>=1.0.1, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.1, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.2"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Loader":"sleitnick/loader@>=1.0.1, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Remote":"sleitnick/remote@>=1.0.1, <2.0.0","Ser":"sleitnick/ser@>=1.0.1, <2.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.1"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}},{"dependencies":{"Loader":"sleitnick/loader@>=1.0.1, <2.0.0","Promise":"evaera/promise@>=3.1.0, <4.0.0","Remote":"sleitnick/remote@>=1.0.1, <2.0.0","Ser":"sleitnick/ser@>=1.0.1, <2.0.0","Signal":"sleitnick/signal@>=1.0.0, <2.0.0","TableUtil":"sleitnick/table-util@>=1.0.0, <2.0.0"},"dev-dependencies":{},"package":{"authors":[],"description":"Knit is a lightweight game framework","exclude":[],"include":[],"license":"MIT","name":"sleitnick/knit","private":false,"realm":"shared","registry":"https://github.com/UpliftGames/wally-index","version":"1.0.0"},"place":{"server-packages":null,"shared-packages":null},"server-dependencies":{}}]}"""
+  metadataurl = wallyurl+"/package-metadata/"+author+"/"+name
+  data = requests.get(metadataurl).text
+  jsondata = json.loads(data)
+  
+  if 'message' in jsondata:
+    print(error(jsondata["message"]))
+    print(error("Exiting process", "roblox-pyc wally"))
+    sys.exit()
+  jsondata = json.loads(data)["versions"]
+  
+  #get latest version and dependencies
+  latestver = jsondata[0]
+  vernum = latestver["package"]["version"]
+  dependencies = latestver["dependencies"]
+  
+  for i in dependencies:
+    dependency = dependencies[i]
+    print("Downloading dependency "+dependency+"...")
+    wallyget(dependency.split("/")[0], dependency.split("/")[1].split("@")[0], True)
+  
+  # Download the package
+  if not isDependant:
+    print("\n"*2)
+    print("Dependencies downloaded, now downloading package...")
+    print(info("Downloading @{author}/{name} v{vernum}", "roblox-pyc wally"))
+  url = wallyurl+"/package-contents/"+author+"/"+name+"/"+vernum
+  headers = {"Wally-Version": "1.0.0"}
+  response = requests.get(url, headers=headers).text
+  try:
+    jsondata = json.loads(response)
+    if "message" in jsondata:
+      print(error(jsondata["message"]))
+      print(error("Exiting process", "roblox-pyc wally"))
+      sys.exit()
+  except json.JSONDecodeError:
+    pass # is fine
+  print(info("Adding ZIP to /dependencies..."))
+  with open(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum+".zip"), "wb") as file:
+    file.write(response)
+  print(info("Unzipping..."))
+  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum+".zip"), 'r') as zip_ref:
+    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"-"+name+"-"+vernum))
+  
+
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]

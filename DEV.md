@@ -10,9 +10,11 @@ Contributions would be greatly appreciated!
 - Add return getfenv() or something like that to the end of pip packages and someway of import * 
 - Fix config
 - File control
+- Alot of library testing
 
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall
 - Fix dylib config not saving after using C or C++ compiler 
 - More built in libraries
 - Playground
+- Slicing
