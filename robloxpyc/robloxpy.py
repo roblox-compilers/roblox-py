@@ -295,7 +295,56 @@ def filtercompiledfolder():
     for file in f:
       if not file.endswith(".lua"):
         os.remove(os.path.join(r, file))
-        
+     
+def unknowncompile(r, file):
+  if file.endswith(".txt") or ("." not in file):
+     # This is for text files and files without a file extension
+    try:
+      contents = ""
+      with open(os.path.join(r, file), "r") as f:
+        contents = f.read()
+        contents = contents.replace("]]", "]\]")
+        contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nreturn {Contents = [["+contents+"]], Type = 'rawtext', Extension = '"+file.split(".")[file.split(".").__len__()-1]+"'}"
+        filename = os.path.basename(file)
+        sepratedbydot = filename.split(".")
+        ending = sepratedbydot[sepratedbydot.__len__()-1]
+        newfilename = filename.replace("."+ending, ".lua")
+        # if newfilename == oldfilename, add .lua to the end. For files without endings
+        if filename == newfilename:
+          newfilename = newfilename+".lua"
+                  
+        os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+        with open(os.path.join(r, newfilename), "w") as f:
+          f.write(contents)
+    except UnicodeDecodeError:
+        # Just delete the file
+        os.remove(os.path.join(r, file))
+def jsoncompile(r, file):
+  if file.endswith(".json"):
+    # compile the file to a file with the same name and path but .lua
+    try:
+      contents = ""
+      with open(os.path.join(r, file), "r") as f:
+        contents = f.read()
+        contents = contents.replace("]]", "]\]")
+        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nreturn {Contents = [["+contents+"]], Type = 'json', Extension = 'json'}"
+        filename = os.path.basename(file)
+        sepratedbydot = filename.split(".")
+        ending = sepratedbydot[sepratedbydot.__len__()-1]
+        newfilename = filename.replace("."+ending, ".lua")
+        # if newfilename == oldfilename, add .lua to the end. For files without endings
+        if filename == newfilename:
+          newfilename = newfilename+".lua"
+                  
+        os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+        with open(os.path.join(r, newfilename), "w") as f:
+          f.write(contents)
+    except UnicodeDecodeError:
+        # Just delete the file
+        os.remove(os.path.join(r, file))
+def othercompile(r, file): # Handles Text files and JSON files, and files without a file extension
+  jsoncompile(r, file)
+  unknowncompile(r, file)
 def cppcompile(r, file, pluscount=False):
   if '.cpp' in file and file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
@@ -318,7 +367,7 @@ def cppcompile(r, file, pluscount=False):
       newctranslator.diagnostics(sys.stderr)
       relative_path = backwordreplace(path,".cpp", ".lua", 1)
       with open(relative_path, 'w') as out:
-        newctranslator.output(relative_path, out)
+        newctranslator.output(relative_path, out)   
                   
         #print(colortext.green("Compiled "+os.path.join(r, file)))
       if pluscount:
@@ -501,6 +550,8 @@ def w():
           if file.endswith(".py"):
             threading.Thread(target=pycompile, args=(r, file, newloader)).start()
             #pycompile(r, file)
+          else:
+            othercompile(r, file)
       
       newloader.yielduntil()
       print(colortext.green("Compiled "+str(count)+" files!"))
@@ -531,7 +582,8 @@ def w():
         for file in f:
           if file.endswith(".py"):
             threading.Thread(target=pycompile, args=(r, file, newloader)).start()
-      
+          else:
+            othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
@@ -625,7 +677,8 @@ def cw():
             localcount += 1
             threading.Thread(target=ccompile, args=(r, file, newloader)).start()
             #ccompile(r, file)
-      
+          else:
+            othercompile(r, file)
       newloader.yielduntil()
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
@@ -654,7 +707,8 @@ def cw():
         for file in f:
           if file.endswith(".c"):
             threading.Thread(target=ccompile, args=(r, file, newloader)).start()
-      
+          else:
+            othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
@@ -748,7 +802,8 @@ def cpw():
               # compile the file to a file with the same name and path but .lua
               threading.Thread(target=cppcompile, args=(r, file, newloader)).start()
               #cppcompile(r, file)
-      
+            else:
+              othercompile(r, file)
       newloader.yielduntil()
       print(colortext.green("Compiled "+str(count)+" files!"))
       
@@ -778,7 +833,8 @@ def cpw():
         for file in f:
           if file.endswith(".cpp"):
             threading.Thread(target=cppcompile, args=(r, file, newloader)).start()
-      
+          else:
+            othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
@@ -868,6 +924,8 @@ def lunar():
             localcount += 1
             threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
             #lunarcompile(r, file)
+          else:
+            othercompile(r, file)
       newloader.yielduntil()  
       print(colortext.green("Compiled "+str(count)+" files!"))
       action = input("")
@@ -896,7 +954,8 @@ def lunar():
         for file in f:
           if file.endswith(".moon"):
             threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
-      
+          else:
+            othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled "+str(count)+" files!"))
@@ -1175,27 +1234,8 @@ Configuring General Settings
               os.remove(os.path.join(r, file))
             elif file.endswith(".c") or file.endswith(".cpp"):
               candcpperror()
-            elif (not file.endswith(".lua")) and (not file.endswith(".pyc")): #pyc files are autodeleted line 915
-              try:
-                contents = ""
-                with open(os.path.join(r, file), "r") as f:
-                  contents = f.read()
-                contents = contents.replace("]]", "]\]")
-                contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nreturn [["+contents+"]]"
-                filename = os.path.basename(file)
-                sepratedbydot = filename.split(".")
-                ending = sepratedbydot[sepratedbydot.__len__()-1]
-                newfilename = filename.replace("."+ending, ".lua")
-                # if newfilename == oldfilename, add .lua to the end. For files without endings
-                if filename == newfilename:
-                  newfilename = newfilename+".lua"
-                  
-                os.rename(os.path.join(r, file), os.path.join(r, newfilename))
-                with open(os.path.join(r, newfilename), "w") as f:
-                  f.write(contents)
-              except UnicodeDecodeError:
-                # Just delete the file
-                os.remove(os.path.join(r, file))
+            else:
+              othercompile(r, file)
               
         
         
