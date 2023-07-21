@@ -378,7 +378,7 @@ def cppcompile(r, file, pluscount=False):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def ccompile(r, file, pluscount=False):
@@ -416,7 +416,7 @@ def ccompile(r, file, pluscount=False):
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def pycompile(r, file, pluscount=False):
@@ -453,7 +453,7 @@ def pycompile(r, file, pluscount=False):
         global count
         count += 1
     except Exception as e:
-      print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       if getconfig("general", "traceback", None) != None:
         print(traceback.format_exc())
 def lunarcompile(r, file, pluscount=False):
@@ -466,9 +466,9 @@ def lunarcompile(r, file, pluscount=False):
                 
     if stdout or stderr:
       if stdout:     
-        print(error("Compile Error for "+os.path.join(r, file)+"!\n\n "+stdout.decode("utf-8")))
+        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       else:
-        print(error("Compile Error for "+os.path.join(r, file)+"!\n\n "+stderr.decode("utf-8")))
+        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
     else:
       try:
         newheader = header.lunarheader(luainit.lunarfunctions)
@@ -489,7 +489,7 @@ def lunarcompile(r, file, pluscount=False):
           global count
           count += 1
       except Exception as e:
-          print(error(f"Compile Error for {os.path.join(r, file)}!\n\n "+str(e)))
+          print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
 
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -915,7 +915,7 @@ def lunar():
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
-          if file.endswith(".py"):
+          if file.endswith(".moon"):
             localcount += 1
       newloader = loader(localcount)
       for r, d, f in os.walk(path):
@@ -1021,21 +1021,77 @@ def lunar():
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-lunar"))
   except KeyboardInterrupt:
-    print(colortext.red("Aborted!"))
-        
+    print(colortext.red("Aborted!"))       
+def globalincli():
+  # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
+  path = os.getcwd()
+  global count
+  count = 0
+  localcount = 0
+  for r, d, f in os.walk(path):
+    for file in f:
+      if file.endswith(".moon") or file.endswith(".py") or file.endswith(".ts") or file.endswith(".tsx"): #or file.endswith(".c") or file.endswith(".cpp"):
+        localcount += 1
+  newloader = loader(localcount)
+  for r, d, f in os.walk(path):
+    for file in f:
+      if file.endswith(".moon"):
+        localcount += 1
+        threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
+        #lunarcompile(r, file)
+      else:
+        othercompile(r, file)
+      newloader.yielduntil()  
+      print(colortext.green("Compiled "+str(count)+" files!"))
+      action = input("")
+  if action == "exit":
+    exit(0)
+  else:
+    globalincli()
+def globalincli2():
+  # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
+  path = os.getcwd()+"-compiled"
+  if os.path.exists(path):
+    # delete the folder and child files
+    shutil.rmtree(path)
+  shutil.copytree(os.getcwd(), path)
+
+  global count
+  count = 0
+  localcount = 0
+  for r, d, f in os.walk(path):
+    for file in f:
+      if file.endswith(".moon") or file.endswith(".py") or file.endswith(".ts") or file.endswith(".tsx"): #or file.endswith(".c") or file.endswith(".cpp"):
+        localcount += 1
+      newloader = loader(localcount)
+      
+  for r, d, f in os.walk(path):
+    for file in f:
+      if file.endswith(".moon"):
+        threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
+      else:
+        othercompile(r, file)
+  newloader.yielduntil()
+  filtercompiledfolder()
+  print(colortext.green("Compiled "+str(count)+" files!"))
+  action = input("")
+  if action == "exit":
+    exit(0)
+  else:
+    globalincli2()
 def pyc():
-  title = colortext.magenta("roblox-pyc")
-  py = colortext.blue("roblox-py")
-  c = colortext.blue("roblox-c")
-  cpp = colortext.blue("roblox-cpp")
-  lunar = colortext.blue("roblox-lunar")
+  title = colortext.magenta("roblox-pyc", ["bold"])
+  py = colortext.blue("roblox-py", ["bold"])
+  c = colortext.blue("roblox-c", ["bold"])
+  cpp = colortext.blue("roblox-cpp", ["bold"])
+  lunar = colortext.blue("roblox-lunar", ["bold"])
   border = colortext.white("--------------------")
-  blank = colortext.blue("roblox-")+colortext.magenta("<lang>")
-  blank2 = colortext.blue("rblx-")+colortext.magenta("<lang>")
+  blank = colortext.blue("roblox-", ["bold"])+colortext.magenta("<lang>")
+  blank2 = colortext.blue("rblx-", ["bold"])+colortext.magenta("<lang>")
   blankpath = colortext.magenta("<path>")
-  selftool = colortext.blue("roblox-pyc")
-  shortselftool = colortext.blue("rblx-pyc")
-  shorterselftool = colortext.blue("rpyc")
+  selftool = colortext.blue("roblox-pyc", ["bold"])
+  shortselftool = colortext.blue("rblx-pyc", ["bold"])
+  shorterselftool = colortext.blue("rpyc", ["bold"])
   try:
     if sys.argv[1] == "config":
       # Open config menu
@@ -1122,12 +1178,70 @@ Configuring General Settings
       webbrowser.open("https://github.com/AsynchronousAI/roblox-pyc")
     elif sys.argv[1] == "help":
       raise IndexError
+    elif sys.argv[1] == "w":
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      globalincli()
+    elif sys.argv[1] == "d":
+      print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
+      globalincli2()
     elif sys.argv[1] == "format":
       print(warn("Are you sure, this will reformat the compiled directory and delete uncompatible files, this is for when a bug occured.", "roblox-pyc"))
       if input("Type 'yes' to continue: ") == "yes":
         # Delete all files that arent .py, .moon, .lua, .c, .cpp
         filtercompiledfolder()
         print(colortext.green("Deleted all uncompatible files!"))
+    elif sys.argv[1] == "p":
+      print(error("Plugins are only supported for python!", "roblox-pyc"))
+    elif sys.argv[1] == "lib":
+      # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
+        try:
+          cwd = os.getcwd()
+          # cwd+sys.argv[2]
+          dir = os.path.join(cwd, sys.argv[2])
+          if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
+          with open(dir, "w") as f:
+            translator = pytranslator.Translator()
+            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        except IndexError:
+          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
+            print(error("No path specified!"))
+          else:
+             cwd = os.getcwd()
+             # cwd+sys.argv[2]
+             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
+              
+             if not os.path.exists(os.path.dirname(dir)):
+              open(dir, "x").close()
+             with open(dir, "w") as f:
+               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+    elif sys.argv[1] == "c":
+      print(error("Cannot replace all files for a general language, please specify a language by using rbxpy, rbxlun, rbxc, rbxcpp", "roblox-pyc"))
+    elif sys.argv[1] == "tsc":
+      # Pretty much c but for typescript and works
+      if not check_roblox_ts():
+        if not check_npms():
+          install_npms()
+        install_roblox_ts()
+      confirm = input(warn("Are you sure? This will delete all .lua files and add a .ts file with the same name.\n\nType 'yes' to continue."))
+      if confirm == "yes":   
+        path = os.getcwd()
+        
+        for r, d, f in os.walk(path):
+           for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                  
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".ts")), "x").close()
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".ts")), "w").write("/*\n"+luafilecontents+"\n*/")
+                  
+                print(colortext.green("Converted to typescript "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
     elif sys.argv[1] == "info":
       subprocess.call(["pip", "show", "roblox-pyc"])
       check_for_updates()
