@@ -319,13 +319,14 @@ def wallyget(author, name, isDependant=False):
   if not isDependant:
     print("\n"*2)
     print("Dependencies downloaded, now downloading package...")
-    print(info("Downloading @{author}/{name} v{vernum}", "roblox-pyc wally"))
+    print(info(f"Downloading @{author}/{name} v{vernum}", "roblox-pyc wally"))
   url = wallyurl+"/package-contents/"+author+"/"+name+"/"+vernum
   headers = {"Wally-Version": "1.0.0"} 
   response = requests.get(url, headers=headers).content
   
   # create new file in cwd/dependencies called author_name_version.zip and unzip it
   print(info("Saving package...", "roblox-pyc wally"))
+  open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "x").close()
   with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "wb") as file:
     file.write(response)
   # unzip
