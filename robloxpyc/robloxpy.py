@@ -741,7 +741,7 @@ def w():
             othercompile(r, file)
       
       newloader.yielduntil()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -773,7 +773,7 @@ def w():
             othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -880,7 +880,7 @@ def cw():
           else:
             othercompile(r, file)
       newloader.yielduntil()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -911,7 +911,7 @@ def cw():
             othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -1017,7 +1017,7 @@ def cpw():
             else:
               othercompile(r, file)
       newloader.yielduntil()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       
       action = input("")
       if action == "exit":
@@ -1049,7 +1049,7 @@ def cpw():
             othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -1151,7 +1151,7 @@ def lunar():
           else:
             othercompile(r, file)
       newloader.yielduntil()  
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -1182,7 +1182,7 @@ def lunar():
             othercompile(r, file)
       newloader.yielduntil()
       filtercompiledfolder()
-      print(colortext.green("Compiled "+str(count)+" files!"))
+      print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
         exit(0)
@@ -1284,7 +1284,7 @@ def globalincli():
       else:
         othercompile(r, file)
   newloader.yielduntil()  
-  print(colortext.green("Compiled "+str(count)+" files!"))
+  print(colortext.green("Compiled Files!"))
   action = input("")
   if action == "exit":
     exit(0)
@@ -1320,7 +1320,7 @@ def globalincli2():
         othercompile(r, file)
   newloader.yielduntil()
   filtercompiledfolder()
-  print(colortext.green("Compiled "+str(count)+" files!"))
+  print(colortext.green("Compiled Files!"))
   action = input("")
   if action == "exit":
     exit(0)
