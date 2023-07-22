@@ -8,8 +8,6 @@ Contributions would be greatly appreciated!
 - Alot of library testing
 - Redo import
 - Slicing
-- When compiling, if lua script with same name exists, overwrite it
-
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall
 - Fix dylib config not saving after using C or C++ compiler 

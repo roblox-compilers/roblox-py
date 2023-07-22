@@ -786,6 +786,7 @@ def w():
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         lib()
       elif sys.argv[1] == "c":
+        decreapted("c")
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
@@ -925,6 +926,7 @@ def cw():
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         lib()
       elif sys.argv[1] == "c":
+        decreapted("c")
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
@@ -1062,6 +1064,7 @@ def cpw():
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         lib()
       elif sys.argv[1] == "c":
+        decreapted("c")
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
@@ -1192,6 +1195,7 @@ def lunar():
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         lib()
       elif sys.argv[1] == "c":
+        decreapted("c")
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
         if confirm == "yes":   
@@ -1453,6 +1457,7 @@ Configuring General Settings
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
         lib()
     elif sys.argv[1] == "c":
+      decreapted("c")
       print(error("Cannot replace all files for a general language, please specify a language by using rbxpy, rbxlun, rbxc, rbxcpp", "roblox-pyc"))
     elif sys.argv[1] == "tsc":
       # Pretty much c but for typescript and works
