@@ -377,12 +377,11 @@ def unknowncompile(r, file):
         if filename == newfilename:
           newfilename = newfilename+".lua"
                   
-        os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+        open(os.path.join(r, newfilename), "x").close()
         with open(os.path.join(r, newfilename), "w") as f:
           f.write(contents)
     except UnicodeDecodeError:
-        # Just delete the file
-        os.remove(os.path.join(r, file))
+        print(warn("Failed to read "+os.path.join(r, file)+"!"))
 def jsoncompile(r, file):
   if file.endswith(".json"):
     # compile the file to a file with the same name and path but .lua
@@ -400,12 +399,12 @@ def jsoncompile(r, file):
         if filename == newfilename:
           newfilename = newfilename+".lua"
                   
-        os.rename(os.path.join(r, file), os.path.join(r, newfilename))
+        open(os.path.join(r, newfilename), "x").close()
         with open(os.path.join(r, newfilename), "w") as f:
           f.write(contents)
     except UnicodeDecodeError:
         # Just delete the file
-        os.remove(os.path.join(r, file))
+        print(warn("Failed to read "+os.path.join(r, file)+"!"))
 def othercompile(r, file): # Handles Text files and JSON files, and files without a file extension
   jsoncompile(r, file)
   unknowncompile(r, file)
@@ -1103,6 +1102,11 @@ def globalincli():
         localcount += 1
         threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
         #lunarcompile(r, file)
+      elif file.endswith(".py"):
+        localcount += 1
+        threading.Thread(target=pycompile, args=(r, file, newloader)).start()
+      elif file.endswith(".ts") or file.endswith(".tsx"):
+        pass # nrn pls
       else:
         othercompile(r, file)
       newloader.yielduntil()  
@@ -1133,6 +1137,11 @@ def globalincli2():
     for file in f:
       if file.endswith(".moon"):
         threading.Thread(target=lunarcompile, args=(r, file, newloader)).start()
+      elif file.endswith(".py"):
+        localcount += 1
+        threading.Thread(target=pycompile, args=(r, file, newloader)).start()
+      elif file.endswith(".ts") or file.endswith(".tsx"):
+        pass # nrn pls
       else:
         othercompile(r, file)
   newloader.yielduntil()
