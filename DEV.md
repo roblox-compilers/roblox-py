@@ -18,3 +18,4 @@ Contributions would be greatly appreciated!
 - Fix random `nonlocals` error, line 320 robloxpy.py
 - Python speed improvements, currently takes like 10 minutes to compile 400 scripts
 - Update docs
+- TS support (using roblox-ts)

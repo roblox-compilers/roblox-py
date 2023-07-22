@@ -425,7 +425,7 @@ def unknowncompile(r, file):
     except UnicodeDecodeError:
         print(warn("Failed to read "+os.path.join(r, file)+"!"))
 def jsoncompile(r, file):
-  if file.endswith(".json"):
+  if file.endswith(".json") and not(file == "package.json" or file == "tsconfig.json" or file == "default.project.json"):
     # compile the file to a file with the same name and path but .lua
     try:
       contents = ""
@@ -595,6 +595,7 @@ def robloxtscompile(r, file, pluscount=False):
   if file.endswith(".ts") or file.endswith(".tsx"):
     # Just add to pluscount, add later
     try:
+      print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
