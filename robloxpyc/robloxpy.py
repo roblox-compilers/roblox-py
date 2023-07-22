@@ -832,6 +832,8 @@ def w():
                 open(os.path.join(r, file.replace(".lua", ".py")), "w").write("\"\"\"\n"+luafilecontents+"\n\"\"\"")
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".py")))
+          # create a .rpyc file in the non -compiled directory
+          open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -966,6 +968,7 @@ def cw():
                 open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".c")))
+          open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1100,7 +1103,7 @@ def cpw():
                 open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".cpp")))
-          
+          open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1230,6 +1233,7 @@ def lunar():
                 open(os.path.join(r, file.replace(".lua", ".moon")), "w").write("--[[\n"+luafilecontents+"\n]]")
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".moon")))
+          open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
