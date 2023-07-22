@@ -495,8 +495,8 @@ def cppcompile(r, file, pluscount=False):
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
-          global count
-          count += 1
+          #global count
+          #count += 1
         return
         
 def ccompile(r, file, pluscount=False):
@@ -543,8 +543,8 @@ def ccompile(r, file, pluscount=False):
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
-          global count
-          count += 1
+          #global count
+          #count += 1
         return
 def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
@@ -589,8 +589,8 @@ def pycompile(r, file, pluscount=False):
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
-          global count
-          count += 1
+          #global count
+          #count += 1
         return
 def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
@@ -642,8 +642,8 @@ def lunarcompile(r, file, pluscount=False):
         if pluscount:
           pluscount.update(1)
           pluscount.current += 1
-          global count
-          count += 1
+          #global count
+          #count += 1
       except Exception as e:
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
           returnval = input("Do you want to continue? (yes/no): ").lower()
