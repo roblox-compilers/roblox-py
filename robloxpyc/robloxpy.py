@@ -729,6 +729,30 @@ def w():
                 # write the old file contents as a py comment
                 open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
                 print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
+      elif sys.argv[1] == "cd":
+        # Duplicate the cwd directory but with a -compiled "c" there 
+        confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
+        if confirm == "yes":
+          path = os.getcwd()
+          if os.path.exists(path+"-compiled"):
+            shutil.rmtree(path+"-compiled")
+          shutil.copytree(path, path+"-compiled")
+          path = path+"-compiled"
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
+                # write the old file contents as a py comment
+                open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
+                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -836,6 +860,30 @@ def cw():
                 # write the old file contents as a C comment
                 open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
                 print(colortext.green("Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
+      elif sys.argv[1] == "cd":
+        # Duplicate the cwd directory but with a -compiled "c" there 
+        confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
+        if confirm == "yes":
+          path = os.getcwd()
+          if os.path.exists(path+"-compiled"):
+            shutil.rmtree(path+"-compiled")
+          shutil.copytree(path, path+"-compiled")
+          path = path+"-compiled"
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
+                # write the old file contents as a py comment
+                open(os.path.join(r, file.replace(".lua", ".c")), "w").write('"""\n'+luafilecontents+'\n"""')
+                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -943,6 +991,30 @@ def cpw():
                 open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
                 print(colortext.green("Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
+      elif sys.argv[1] == "cd":
+        # Duplicate the cwd directory but with a -compiled "c" there 
+        confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
+        if confirm == "yes":
+          path = os.getcwd()
+          if os.path.exists(path+"-compiled"):
+            shutil.rmtree(path+"-compiled")
+          shutil.copytree(path, path+"-compiled")
+          path = path+"-compiled"
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".cpp")), "x").close()
+                # write the old file contents as a py comment
+                open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write('"""\n'+luafilecontents+'\n"""')
+                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1045,6 +1117,30 @@ def lunar():
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
+      elif sys.argv[1] == "d":
+        # Duplicate the cwd directory but with a -compiled "c" there 
+        confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
+        if confirm == "yes":
+          path = os.getcwd()
+          if os.path.exists(path+"-compiled"):
+            shutil.rmtree(path+"-compiled")
+          shutil.copytree(path, path+"-compiled")
+          path = path+"-compiled"
+          
+          for r, d, f in os.walk(path):
+            for file in f:
+              if '.lua' in file:
+                luafilecontents = ""
+                with open(os.path.join(r, file), "r") as f:
+                  luafilecontents = f.read()
+                  
+                os.remove(os.path.join(r, file))
+                
+                # create new file with same name but  .py and write the lua file contents to it
+                open(os.path.join(r, file.replace(".lua", ".moon")), "x").close()
+                # write the old file contents as a py comment
+                open(os.path.join(r, file.replace(".lua", ".moon")), "w").write('"""\n'+luafilecontents+'\n"""')
+                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()

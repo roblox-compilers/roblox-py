@@ -1,0 +1,20 @@
+{
+    "name": "MyProject",
+    "tree": {
+      "$className": "DataModel",
+      "ReplicatedStorage": {
+        "$className": "ReplicatedStorage"
+      },
+      "ServerStorage": {
+        "$className": "ServerStorage"
+      }
+    },
+    "dependencies": {
+      "rbx-types": {
+        "path": "node_modules/@rbxts"
+      }
+    },
+    "include": [
+      "*.ts"
+    ]
+  }

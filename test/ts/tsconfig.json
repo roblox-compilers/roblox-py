@@ -1,1 +1,18 @@
-{}
+{
+    "compilerOptions": {
+        "noLib": true,
+        "strict": true,
+        "moduleDetection": "force",
+        "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
+        "typeRoots": [
+        "/Users/aaravs/Desktop/roblox.py-1/test/ts/node_modules/@rbxts"
+      ],
+      "rootDir": ".",
+      "outDir": "../out",
+      "module": "commonjs"
+    },
+    "exclude": [
+      "out"
+    ]
+}

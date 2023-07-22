@@ -1,0 +1,8 @@
+{
+    "name": "my-project",
+    "version": "1.0.0",
+    "description": "My project description",
+    "dependencies": {
+      "roblox-ts": "^1.0.0"
+    }
+  }
