@@ -834,6 +834,7 @@ def w():
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".py")))
           # create a .rpyc file in the non -compiled directory
           open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
+          print(info("Completed! You may need to modify the default.package.json or any other equivalent file to make it use the -compiled directory rather than the original."))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -969,6 +970,7 @@ def cw():
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".c")))
           open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
+          print(info("Completed! You may need to modify the default.package.json or any other equivalent file to make it use the -compiled directory rather than the original."))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1104,6 +1106,7 @@ def cpw():
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".cpp")))
           open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
+          print(info("Completed! You may need to modify the default.package.json or any other equivalent file to make it use the -compiled directory rather than the original."))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1234,6 +1237,7 @@ def lunar():
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".moon")))
           open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
+          print(info("Completed! You may need to modify the default.package.json or any other equivalent file to make it use the -compiled directory rather than the original."))
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
