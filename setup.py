@@ -1,5 +1,7 @@
 from setuptools import setup, find_packages
-    
+     
+
+# metadata goes here, =)
 setup(install_requires=[
           'clang',
           'libclang',
