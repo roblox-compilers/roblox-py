@@ -1775,7 +1775,7 @@ local meta = {
 		error("Cannot set " .. index .. " to " .. value)
 	end,
 }
-setmetatable(py, )
+setmetatable(py, meta)
 
 -- Lua's table references
 local sort = table.sort
@@ -2087,7 +2087,7 @@ end
 --{SOURCECODEGOESHERE}--
 
 local libraries = {
-	"example" = function() print("Example library!") end,
+	["example"] = function() print("Example library!") end,
 	--{ITEMSGOHERE}--
 }
 local dependenciesfolder = script.Parent

@@ -112,6 +112,8 @@ def candcpperror():
 def error(errormessage, source=""):
   if source != "":
     source = colortext.white("("+source+") ")
+  if getconfig("general", "goofy", False):
+    subprocess.call(["say", errormessage])
   return(colortext.red("error ", ["bold"])+source+errormessage)
 def warn(warnmessage, source=""):
   if source != "":
@@ -121,6 +123,10 @@ def info(infomessage, source=""):
   if source != "":
     source = colortext.white("("+source+") ")
   return(colortext.blue("info ", ["bold"])+source+infomessage)
+def debug(infomessage):
+  if getconfig("general", "traceback", False):
+    print(colortext.blue("debug ", ["bold"])+infomessage)
+    print(traceback.format_exc())
 # INSTALL ROBLOX-TS
 def check_npms():
   try:
@@ -147,6 +153,7 @@ def install_npms():
 def install_roblox_ts():
   print("Installing roblox-ts...")
   subprocess.call(["npm", "install", "-g", "roblox-ts"])
+
 # INSTALL SEALANG
 def check_llvm():
   return True # Add LLVM check/installs later
@@ -476,8 +483,7 @@ def cppcompile(r, file, pluscount=False):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      if getconfig("general", "traceback", None) != None:
-        print(traceback.format_exc())
+      debug("Compiler error "+str(e))
 def ccompile(r, file, pluscount=False):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
@@ -514,8 +520,7 @@ def ccompile(r, file, pluscount=False):
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      if getconfig("general", "traceback", None) != None:
-        print(traceback.format_exc())
+      debug("Compile error at "+str(e))
 def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -551,8 +556,7 @@ def pycompile(r, file, pluscount=False):
         count += 1
     except Exception as e:
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      if getconfig("general", "traceback", None) != None:
-        print(traceback.format_exc())
+      debug("Compile error at "+str(e))
 def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -1226,7 +1230,7 @@ Configuring General Settings
         print("This contains many developer options and some goofy ones too!")
         print(f"""       
               1 - Traceback on error (Reccomended off, for roblox-pyc developers)
-              2 - Random TTS sounds on error (macOS only)
+              2 - TTS on error (macOS only)
               """)
         print(f"Select which", end=" ")
         colortext.rainbow_text("secret", end=" ")
@@ -1238,7 +1242,7 @@ Configuring General Settings
           if not sys.platform == "darwin":
             print(error("I ALREADY TOLD YOU, THIS IS MACOS ONLY!"))
             return
-          print(warn("Seems like this build doesnt support this feature, please wait for the next release!"))
+          setconfig("general", "goofy", returned, None)
         elif inputval == "3":
           colortext.nil(colortext.rainbow_text("Welcome to the secret secret menu, sadly this is empty for now! :("))
         else:
