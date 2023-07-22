@@ -2106,7 +2106,14 @@ local module = function(scriptname)
 				elseif script.Parent:FindFirstChildOfClass("ModuleScript") then
 					return require(script.Parent:FindFirstChildOfClass("ModuleScript"))
 				elseif script.Parent:FindFirstChildOfClass("Folder") then
-					return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub) or error("No such library called " .. index.." and no init file found either"))
+					if require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub)) then
+						return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub))
+					elseif script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("default.project") and script.Parent:FindFirstAncestorOfClass("Folder"):FindFirstChild("default.project"):IsA("ModuleScript") then
+						local jsondata = require(script.Parent:FindFirstAncestorOfClass("Folder"):FindFirstChild("default.project"))
+						if jsondata["Type"] and jsondata["Type"] == "json" then
+							jsondata = jsondata["Contents"]
+						end
+					end
 				else
 					error("No such library called " .. index)
 				end
@@ -2184,7 +2191,7 @@ local module = function(scriptname)
 					end
 					return tb
 				end,
-				__name__ = script.Name:sub(1,#script.Name-3), -- __name__ 
+				__name__ = if script:IsA("BaseScript") then "__main__" else script.Name , 
 				len = function(x) return #x end, -- len()
 				abs = math.abs, -- abs()
 				str = tostring, -- str()

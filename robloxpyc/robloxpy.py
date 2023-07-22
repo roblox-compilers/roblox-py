@@ -592,39 +592,16 @@ def lunarcompile(r, file, pluscount=False):
       except Exception as e:
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
 def robloxtscompile(r, file, pluscount=False):
-  if file.endswith(".moon"):
-    # compile the file to a file with the same name and path but .lua
-    # Run command and check if anything is outputted to stderr, stdout, or stdin
-                
-    process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-                
-    if stdout or stderr:
-      if stdout:     
+  if file.endswith(".ts") or file.endswith(".tsx"):
+    # Just add to pluscount, add later
+    try:
+      if pluscount:
+        pluscount.update(1)
+        pluscount.current += 1
+        global count
+        count += 1
+    except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      else:
-        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-    else:
-      try:
-        newheader = header.lunarheader(luainit.lunarfunctions)
-                    
-        # check if the new file has been created
-        if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-          #print(colortext.green("Compiled "+os.path.join(r, file)))          
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
-            contents = f.read()
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-            f.write(newheader+contents)
-          
-        else:
-          print(error("File error for "+os.path.join(r, file)+"!"))
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          global count
-          count += 1
-      except Exception as e:
-          print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
 # UTIL
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -1098,7 +1075,7 @@ def globalincli():
         localcount += 1
         threading.Thread(target=pycompile, args=(r, file, newloader)).start()
       elif file.endswith(".ts") or file.endswith(".tsx"):
-        pass # nrn pls
+        threading.Thread(target=robloxtscompile, args=(r, file, newloader)).start()
       else:
         othercompile(r, file)
   newloader.yielduntil()  
@@ -1133,7 +1110,7 @@ def globalincli2():
         localcount += 1
         threading.Thread(target=pycompile, args=(r, file, newloader)).start()
       elif file.endswith(".ts") or file.endswith(".tsx"):
-        pass # nrn pls
+        threading.Thread(target=robloxtscompile, args=(r, file, newloader)).start()
       else:
         othercompile(r, file)
   newloader.yielduntil()
