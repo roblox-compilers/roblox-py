@@ -326,6 +326,10 @@ def wallyget(author, name, isDependant=False):
   
   # create new file in cwd/dependencies called author_name_version.zip and unzip it
   print(info("Saving package...", "roblox-pyc wally"))
+  #### if dependencies folder doesnt exist, create it
+  if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
+    os.makedirs(os.path.join(os.getcwd(), "dependencies"))
+  ####
   open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "x").close()
   with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "wb") as file:
     file.write(response)
@@ -334,7 +338,7 @@ def wallyget(author, name, isDependant=False):
   with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), 'r') as zip_ref:
     zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"))
   # delete the zip
-  print(info("Deleting package...", "roblox-pyc wally"))
+  print(info("Deleting uneeded resources...", "roblox-pyc wally"))
   os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"))
 # CLI PACKAGES
 def onNotFound(target):

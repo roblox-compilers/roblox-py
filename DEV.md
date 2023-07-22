@@ -7,7 +7,7 @@ Contributions would be greatly appreciated!
 - Update docs
 
 ## Big
-- Add return getfenv() or something like that to the end of pip packages and someway of import * 
+- Add return getfenv() or something like that to the end of pip packages //*--#and someway of import */ forget about that
 - Fix config
 - File control
 - Alot of library testing
