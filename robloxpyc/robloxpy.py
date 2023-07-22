@@ -622,8 +622,8 @@ def lunarcompile(r, file, pluscount=False):
           if pluscount:
             pluscount.update(1)
             pluscount.current += 1
-            global count
-            count += 1
+            #global count
+            #count += 1
           return
     else:
       try:
