@@ -481,8 +481,8 @@ def cppcompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
-        global count
-        count += 1
+        #global count
+        #count += 1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
@@ -529,8 +529,8 @@ def ccompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
-        global count
-        count += 1
+        #global count
+        #count += 1
     except Exception as e:
       if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
@@ -577,8 +577,8 @@ def pycompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
-        global count
-        count += 1
+        #global count
+        #count += 1
     except Exception as e:
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
@@ -610,8 +610,8 @@ def lunarcompile(r, file, pluscount=False):
           if pluscount:
             pluscount.update(1)
             pluscount.current += 1
-            global count
-            count += 1
+            #global count
+            #count += 1
           return
       else:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
@@ -653,8 +653,8 @@ def lunarcompile(r, file, pluscount=False):
             if pluscount:
               pluscount.update(1)
               pluscount.current += 1
-              global count
-              count += 1
+              #global count
+              #count += 1
             return
 def robloxtscompile(r, file, pluscount=False):
   if file.endswith(".ts") or file.endswith(".tsx"):
@@ -664,8 +664,8 @@ def robloxtscompile(r, file, pluscount=False):
       if pluscount:
         pluscount.update(1)
         pluscount.current += 1
-        global count
-        count += 1
+        #global count
+        #count += 1
     except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
         returnval = input("Do you want to continue? (yes/no): ").lower()
@@ -675,8 +675,8 @@ def robloxtscompile(r, file, pluscount=False):
           if pluscount:
             pluscount.update(1)
             pluscount.current += 1
-            global count
-            count += 1
+            #global count
+            #count += 1
           return
 # UTIL
 def backwordreplace(s, old, new, occurrence):
@@ -723,8 +723,8 @@ def w():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
 
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -756,8 +756,8 @@ def w():
         shutil.rmtree(path)
       shutil.copytree(os.getcwd(), path)
 
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -856,8 +856,8 @@ def cw():
   try:
     print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -891,8 +891,8 @@ def cw():
         shutil.rmtree(path)
       shutil.copytree(os.getcwd(), path)
 
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -994,8 +994,8 @@ def cpw():
     def incli():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -1026,8 +1026,8 @@ def cpw():
         shutil.rmtree(path)
       shutil.copytree(os.getcwd(), path)
 
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -1125,8 +1125,8 @@ def lunar():
     def incli():
       # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
       path = os.getcwd()
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -1156,8 +1156,8 @@ def lunar():
         shutil.rmtree(path)
       shutil.copytree(os.getcwd(), path)
 
-      global count
-      count = 0
+      #global count
+      #count = 0
       localcount = 0
       for r, d, f in os.walk(path):
         for file in f:
@@ -1250,8 +1250,8 @@ def lunar():
 def globalincli():
   # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
   path = os.getcwd()
-  global count
-  count = 0
+  #global count
+  #count = 0
   localcount = 0
   for r, d, f in os.walk(path):
     for file in f:
@@ -1286,8 +1286,8 @@ def globalincli2():
     shutil.rmtree(path)
   shutil.copytree(os.getcwd(), path)
 
-  global count
-  count = 0
+  #global count
+  #count = 0
   localcount = 0
   for r, d, f in os.walk(path):
     for file in f:
@@ -1595,8 +1595,8 @@ Configuring General Settings
           print("Invalid option or exited.")
           return
         print("Compiling to luau...")
-        global count
-        count = 0
+        #global count
+        #count = 0
         endcount = 0
         for r, d, f in os.walk(os.path.join(os.getcwd(), "dependencies")):
           for file in f:
