@@ -2,7 +2,7 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, import, builtin = unpack(require(game.ReplicatedStorage["roblox.pyc"])(script).py)
+local py, import, builtin = _G.pyc.py
 
 local stringmeta = builtin.stringmeta
 local dict = builtin.dict

@@ -289,7 +289,7 @@ def check_for_updates():
       # Add the pip upgrade command here.
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
 
-# Download from wally (unfinished)
+# Download from wally 
 def wallyget(author, name, isDependant=False):
   # Use wally and download the zip and unpack it
   print(info(f"Getting @{author}/{name} metadata", "roblox-pyc wally"))
@@ -340,6 +340,28 @@ def wallyget(author, name, isDependant=False):
   # delete the zip
   print(info("Deleting uneeded resources...", "roblox-pyc wally"))
   os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"))
+
+# JSON 
+def json_to_lua(json_str):
+    data = json.loads(json_str)
+    return _json_to_lua(data)
+
+def _json_to_lua(data):
+    if isinstance(data, dict):
+        items = []
+        for key, value in data.items():
+            items.append('[{}] = {}'.format(_json_to_lua(key), _json_to_lua(value)))
+        return '{{{}}}'.format(', '.join(items))
+    elif isinstance(data, list):
+        items = []
+        for value in data:
+            items.append(_json_to_lua(value))
+        return '{{{}}}'.format(', '.join(items))
+    elif isinstance(data, str):
+        return '"{}"'.format(data)
+    else:
+        return str(data)
+
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]
@@ -402,8 +424,7 @@ def jsoncompile(r, file):
       contents = ""
       with open(os.path.join(r, file), "r") as f:
         contents = f.read()
-        contents = contents.replace("]]", "]\]")
-        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nreturn {Contents = [["+contents+"]], Type = 'json', Extension = 'json'}"
+        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nreturn {Contents = "+json_to_lua(contents)+", Type = 'json', Extension = 'json'}"
         filename = os.path.basename(file)
         sepratedbydot = filename.split(".")
         ending = sepratedbydot[sepratedbydot.__len__()-1]
@@ -1201,14 +1222,15 @@ Configuring General Settings
           setconfig("general", "ldlibrarypath", returned, "")
           config_llvm(None, getconfig("general", "ldlibrarypath", ""))
       elif returnval == "6":
-        print(colortext.rainbow_text("Welcome to the secret menu!"))
+        colortext.nil(colortext.rainbow_text("Welcome to the secret menu!"))
         print("This contains many developer options and some goofy ones too!")
         print(f"""       
               1 - Traceback on error (Reccomended off, for roblox-pyc developers)
               2 - Random TTS sounds on error (macOS only)
               """)
-        rb = colortext.rainbow_text("secret")
-        inputval = input(f"Select which {rb} config to open: ")
+        print(f"Select which", end=" ")
+        colortext.rainbow_text("secret", end=" ")
+        inputval = input("config to open: ")
         if inputval == "1":
           returned = input("Click enter to confirm, CTRL+C to cancel: ")
           setconfig("general", "traceback", returned, None)
@@ -1218,7 +1240,7 @@ Configuring General Settings
             return
           print(warn("Seems like this build doesnt support this feature, please wait for the next release!"))
         elif inputval == "3":
-          print(colortext.rainbow_text("Welcome to the secret secret menu, sadly this is empty for now! :("))
+          colortext.nil(colortext.rainbow_text("Welcome to the secret secret menu, sadly this is empty for now! :("))
         else:
           print(error("Aw man, you didnt select a valid option!"))
       else:
