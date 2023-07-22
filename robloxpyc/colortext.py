@@ -18,10 +18,9 @@ def rainbow_text(text, end = "\n"):
     colors = ['\033[31m', '\033[33m', '\033[32m', '\033[36m', '\033[34m', '\033[35m']
     i = 0
     for char in text:
-        sys.stdout.write(colors[i % len(colors)] + char)
+        print(colors[i % len(colors)] + char, end='')
         i += 1
-    sys.stdout.write('\033[0m', end=end)
-    sys.stdout.flush()
+    print('\n', end=end)
 def nil(text=""):
     return
 def color(text, color, styles = []):

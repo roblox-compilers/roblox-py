@@ -105,6 +105,12 @@ class loader:
     self.tqdm.close()
   def update(self, amount):
     self.tqdm.update(amount)
+  def error(self):
+    self.tqdm.write(colortext.red("error!", ["bold"]))
+    self.current = self.max
+    self.tqdm.close()
+  
+    
 
 # ERROR
 def candcpperror():
@@ -488,16 +494,14 @@ def cppcompile(r, file, pluscount=False):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compiler error "+str(e))
-      returnval = input("Do you want to continue? (yes/no): ").lower()
-      if returnval == "no":
-        sys.exit()
-      else:
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-        return
+      if pluscount:
+        pluscount.error()
+        pluscount.update(1)
+        pluscount.current += 1
+        #global count
+        #count += 1
+        
+        return 0
         
 def ccompile(r, file, pluscount=False):
   if '.c' in file and file.endswith(".c"):
@@ -536,16 +540,13 @@ def ccompile(r, file, pluscount=False):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
-      returnval = input("Do you want to continue? (yes/no): ").lower()
-      if returnval == "no":
-        sys.exit()
-      else:
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-        return
+      if pluscount:
+        pluscount.error()
+        pluscount.update(1)
+        pluscount.current += 1
+        #global count
+        #count += 1
+        return 0
 def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -575,6 +576,7 @@ def pycompile(r, file, pluscount=False):
         f.write(lua_code)
       
       if pluscount:
+        pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -582,16 +584,13 @@ def pycompile(r, file, pluscount=False):
     except Exception as e:
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
-      returnval = input("Do you want to continue? (yes/no): ").lower()
-      if returnval == "no":
-        sys.exit()
-      else:
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-        return
+      if pluscount:
+        pluscount.error()
+        pluscount.update(1)
+        pluscount.current += 1
+        #global count
+        #count += 1
+        return 0
 def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -603,28 +602,22 @@ def lunarcompile(r, file, pluscount=False):
     if stdout or stderr:
       if stdout:     
         print(error(f"Compile Error!\n\n "+str(stdout), f"{os.path.join(r, file)}"))
-        returnval = input("Do you want to continue? (yes/no): ").lower()
-        if returnval == "no":
-          sys.exit()
-        else:
-          if pluscount:
-            pluscount.update(1)
-            pluscount.current += 1
-            #global count
-            #count += 1
-          return
+        if pluscount:
+          pluscount.error()
+          pluscount.update(1)
+          pluscount.current += 1
+          #global count
+          #count += 1
+          return 0
       else:
         print(error(f"Compile Error!\n\n "+str(stderr), f"{os.path.join(r, file)}"))
-        returnval = input("Do you want to continue? (yes/no): ").lower()
-        if returnval == "no":
-          sys.exit()
-        else:
-          if pluscount:
-            pluscount.update(1)
-            pluscount.current += 1
-            #global count
-            #count += 1
-          return
+        if pluscount:
+          pluscount.error()
+          pluscount.update(1)
+          pluscount.current += 1
+          #global count
+          #count += 1
+          return 0
     else:
       try:
         newheader = header.lunarheader(luainit.lunarfunctions)
@@ -646,38 +639,34 @@ def lunarcompile(r, file, pluscount=False):
           #count += 1
       except Exception as e:
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-          returnval = input("Do you want to continue? (yes/no): ").lower()
-          if returnval == "no":
-            sys.exit()
-          else:
-            if pluscount:
-              pluscount.update(1)
-              pluscount.current += 1
-              #global count
-              #count += 1
-            return
+          
+          if pluscount:
+            pluscount.error()
+            pluscount.update(1)
+            pluscount.current += 1
+            #global count
+            #count += 1
+            return 0
 def robloxtscompile(r, file, pluscount=False):
   if file.endswith(".ts") or file.endswith(".tsx"):
     # Just add to pluscount, add later
     try:
       print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
       if pluscount:
+        pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
         #count += 1
     except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-        returnval = input("Do you want to continue? (yes/no): ").lower()
-        if returnval == "no":
-          sys.exit()
-        else:
-          if pluscount:
-            pluscount.update(1)
-            pluscount.current += 1
-            #global count
-            #count += 1
-          return
+        if pluscount:
+          pluscount.error()
+          pluscount.update(1)
+          pluscount.current += 1
+          #global count
+          #count += 1
+          return 0
 # UTIL
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -741,6 +730,7 @@ def w():
             othercompile(r, file)
       
       newloader.yielduntil()
+      
       print(colortext.green("Compiled Files!"))
       action = input("")
       if action == "exit":
@@ -769,6 +759,7 @@ def w():
         for file in f:
           if file.endswith(".py"):
             threading.Thread(target=pycompile, args=(r, file, newloader)).start()
+            
           else:
             othercompile(r, file)
       newloader.yielduntil()
@@ -1442,7 +1433,7 @@ Configuring General Settings
     elif sys.argv[1] == "w":
       print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       globalincli()
-    elif sys.argv[1] == "d":
+    elif sys.argv[1] == "d" or sys.argv[1] == ".":
       print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
       globalincli2()
     elif sys.argv[1] == "format":
@@ -1458,6 +1449,8 @@ Configuring General Settings
         lib()
     elif sys.argv[1] == "c":
       decreapted("c")
+      print(error("Cannot replace all files for a general language, please specify a language by using rbxpy, rbxlun, rbxc, rbxcpp", "roblox-pyc"))
+    elif sys.argv[1] == "cd":
       print(error("Cannot replace all files for a general language, please specify a language by using rbxpy, rbxlun, rbxc, rbxcpp", "roblox-pyc"))
     elif sys.argv[1] == "tsc":
       # Pretty much c but for typescript and works
