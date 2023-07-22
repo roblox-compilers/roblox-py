@@ -113,10 +113,14 @@ def error(errormessage, source=""):
   if source != "":
     source = colortext.white("("+source+") ")
   return(colortext.red("error ", ["bold"])+source+errormessage)
-def warn(warnmessage):
-  return(colortext.yellow("warning ", ["bold"])+warnmessage)
-def info(infomessage):
-  return(colortext.blue("info ", ["bold"])+infomessage)
+def warn(warnmessage, source=""):
+  if source != "":
+    source = colortext.white("("+source+") ")
+  return(colortext.yellow("warning ", ["bold"])+source+warnmessage)
+def info(infomessage, source=""):
+  if source != "":
+    source = colortext.white("("+source+") ")
+  return(colortext.blue("info ", ["bold"])+source+infomessage)
 # INSTALL ROBLOX-TS
 def check_npms():
   try:
