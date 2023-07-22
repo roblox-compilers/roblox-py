@@ -742,7 +742,7 @@ def w():
           # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
           path = os.getcwd()
 
-          for r, d, f in os.walk(path):
+          for r, d, f in os.walk(backwordreplace(path, "-compiled", "", 1)):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -876,7 +876,7 @@ def cw():
           # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
           path = os.getcwd()
 
-          for r, d, f in os.walk(path):
+          for r, d, f in os.walk(backwordreplace(path, "-compiled", "", 1)):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -1010,7 +1010,7 @@ def cpw():
           # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
           path = os.getcwd()
 
-          for r, d, f in os.walk(path):
+          for r, d, f in os.walk(backwordreplace(path, "-compiled", "", 1)):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -1025,6 +1025,7 @@ def cpw():
                 open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
                 print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".cpp")))
+          
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1139,7 +1140,7 @@ def lunar():
           # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
           path = os.getcwd()
 
-          for r, d, f in os.walk(path):
+          for r, d, f in os.walk(backwordreplace(path, "-compiled", "", 1)):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
