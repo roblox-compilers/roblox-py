@@ -731,15 +731,18 @@ def w():
                 open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
                 print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
       elif sys.argv[1] == "cd":
-        # Duplicate the cwd directory but with a -compiled "c" there 
+        # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
           path = os.getcwd()
-          os.rename(os.getcwd(), path+"-compiled")
-          path = path
-          if not os.path.exists(path):
-            os.mkdir(path)
-          for r, d, f in os.walk(path+"-compiled"):
+          # rename directory to -compiled
+          os.rename(path, path+"-compiled")
+          # duplicate the directory, remove the -compiled from the end
+          shutil.copytree(path+"-compiled", path)
+          # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+          path = os.getcwd()
+
+          for r, d, f in os.walk(path):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -750,13 +753,10 @@ def w():
                 
                 # create new file with same name but  .py and write the lua file contents to it
                 open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
-                # write the old file contents as a py comment
-                open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
-                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
-          
-          # swap the names of the original and compiled
-          os.rename(os.getcwd(), os.getcwd()+"-compiled")
-          os.rename(os.getcwd()+"-compiled", os.getcwd())
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".py")), "w").write("\"\"\"\n"+luafilecontents+"\n\"\"\"")
+                
+                print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".py")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -865,15 +865,18 @@ def cw():
                 open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
                 print(colortext.green("Converted to c "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
       elif sys.argv[1] == "cd":
-        # Duplicate the cwd directory but with a -compiled "c" there 
+        # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
           path = os.getcwd()
-          os.rename(os.getcwd(), path+"-compiled")
-          path = path
-          if not os.path.exists(path):
-            os.mkdir(path)
-          for r, d, f in os.walk(path+"-compiled"):
+          # rename directory to -compiled
+          os.rename(path, path+"-compiled")
+          # duplicate the directory, remove the -compiled from the end
+          shutil.copytree(path+"-compiled", path)
+          # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+          path = os.getcwd()
+
+          for r, d, f in os.walk(path):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -884,13 +887,10 @@ def cw():
                 
                 # create new file with same name but  .py and write the lua file contents to it
                 open(os.path.join(r, file.replace(".lua", ".c")), "x").close()
-                # write the old file contents as a py comment
-                open(os.path.join(r, file.replace(".lua", ".c")), "w").write('"""\n'+luafilecontents+'\n"""')
-                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".c")))
-          
-          # swap the names of the original and compiled
-          os.rename(os.getcwd(), os.getcwd()+"-compiled")
-          os.rename(os.getcwd()+"-compiled", os.getcwd())
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".c")), "w").write("/*\n"+luafilecontents+"\n*/")
+                
+                print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".c")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -999,15 +999,18 @@ def cpw():
                 
                 print(colortext.green("Converted to c++ "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
       elif sys.argv[1] == "cd":
-        # Duplicate the cwd directory but with a -compiled "c" there 
+        # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
           path = os.getcwd()
-          os.rename(os.getcwd(), path+"-compiled")
-          path = path
-          if not os.path.exists(path):
-            os.mkdir(path)
-          for r, d, f in os.walk(path+"-compiled"):
+          # rename directory to -compiled
+          os.rename(path, path+"-compiled")
+          # duplicate the directory, remove the -compiled from the end
+          shutil.copytree(path+"-compiled", path)
+          # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+          path = os.getcwd()
+
+          for r, d, f in os.walk(path):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -1018,13 +1021,10 @@ def cpw():
                 
                 # create new file with same name but  .py and write the lua file contents to it
                 open(os.path.join(r, file.replace(".lua", ".cpp")), "x").close()
-                # write the old file contents as a py comment
-                open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write('"""\n'+luafilecontents+'\n"""')
-                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".cpp")))
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".cpp")), "w").write("/*\n"+luafilecontents+"\n*/")
                 
-          # swap the names of the original and compiled
-          os.rename(os.getcwd(), os.getcwd()+"-compiled")
-          os.rename(os.getcwd()+"-compiled", os.getcwd())
+                print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".cpp")))
       elif sys.argv[1] == "w":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
@@ -1128,15 +1128,18 @@ def lunar():
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli()
       elif sys.argv[1] == "cd":
-        # Duplicate the cwd directory but with a -compiled "c" there 
+        # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
           path = os.getcwd()
-          os.rename(os.getcwd(), path+"-compiled")
-          path = path
-          if not os.path.exists(path):
-            os.mkdir(path)
-          for r, d, f in os.walk(path+"-compiled"):
+          # rename directory to -compiled
+          os.rename(path, path+"-compiled")
+          # duplicate the directory, remove the -compiled from the end
+          shutil.copytree(path+"-compiled", path)
+          # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+          path = os.getcwd()
+
+          for r, d, f in os.walk(path):
             for file in f:
               if '.lua' in file:
                 luafilecontents = ""
@@ -1147,9 +1150,10 @@ def lunar():
                 
                 # create new file with same name but  .py and write the lua file contents to it
                 open(os.path.join(r, file.replace(".lua", ".moon")), "x").close()
-                # write the old file contents as a py comment
-                open(os.path.join(r, file.replace(".lua", ".moon")), "w").write('"""\n'+luafilecontents+'\n"""')
-                print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".moon")))
+                # write the old file contents as a C++ comment
+                open(os.path.join(r, file.replace(".lua", ".moon")), "w").write("--[[\n"+luafilecontents+"\n]]")
+                
+                print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", ".moon")))
       elif sys.argv[1] == "d":
         print(colortext.magenta("Ready to compile ", os.path.join(os.path.dirname(os.path.realpath(__file__)))+" ...\n Type 'exit' to exit, Press enter to compile."))
         incli2()
