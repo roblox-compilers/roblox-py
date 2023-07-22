@@ -1097,9 +1097,9 @@ def globalincli():
         pass # nrn pls
       else:
         othercompile(r, file)
-      newloader.yielduntil()  
-      print(colortext.green("Compiled "+str(count)+" files!"))
-      action = input("")
+  newloader.yielduntil()  
+  print(colortext.green("Compiled "+str(count)+" files!"))
+  action = input("")
   if action == "exit":
     exit(0)
   else:
@@ -1119,7 +1119,7 @@ def globalincli2():
     for file in f:
       if file.endswith(".moon") or file.endswith(".py") or file.endswith(".ts") or file.endswith(".tsx"): #or file.endswith(".c") or file.endswith(".cpp"):
         localcount += 1
-      newloader = loader(localcount)
+  newloader = loader(localcount)
       
   for r, d, f in os.walk(path):
     for file in f:
