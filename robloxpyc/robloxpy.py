@@ -330,16 +330,16 @@ def wallyget(author, name, isDependant=False):
   if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
     os.makedirs(os.path.join(os.getcwd(), "dependencies"))
   ####
-  open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "x").close()
-  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), "wb") as file:
+  open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), "x").close()
+  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), "wb") as file:
     file.write(response)
   # unzip
   print(info("Unzipping package...", "roblox-pyc wally"))
-  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"), 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"))
+  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), 'r') as zip_ref:
+    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name))
   # delete the zip
   print(info("Deleting uneeded resources...", "roblox-pyc wally"))
-  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+"_"+".zip"))
+  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"))
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]
@@ -350,7 +350,20 @@ def onNotFound(target):
   for i in allCLIS:
     if i["target"] == target:
       pass
-
+def lib():
+  # create dependencies folder if it doesnt exist
+    if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
+      os.makedirs(os.path.join(os.getcwd(), "dependencies"))
+  
+    cwd = os.getcwd()
+    # cwd+sys.argv[2]
+    dir = os.path.join(cwd,"dependencies", "stdlib.lua")
+    if not os.path.exists(os.path.dirname(dir)):
+        open(dir, "x").close()
+    with open(dir, "w") as f:
+        translator = pytranslator.Translator()
+        f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+  
 # ASYNC 
 def filtercompiledfolder():
   cwd = os.getcwd()
@@ -553,7 +566,40 @@ def lunarcompile(r, file, pluscount=False):
           count += 1
       except Exception as e:
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-
+def robloxtscompile(r, file, pluscount=False):
+  if file.endswith(".moon"):
+    # compile the file to a file with the same name and path but .lua
+    # Run command and check if anything is outputted to stderr, stdout, or stdin
+                
+    process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+                
+    if stdout or stderr:
+      if stdout:     
+        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+      else:
+        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+    else:
+      try:
+        newheader = header.lunarheader(luainit.lunarfunctions)
+                    
+        # check if the new file has been created
+        if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+          #print(colortext.green("Compiled "+os.path.join(r, file)))          
+          with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
+            contents = f.read()
+          with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
+            f.write(newheader+contents)
+          
+        else:
+          print(error("File error for "+os.path.join(r, file)+"!"))
+        if pluscount:
+          pluscount.update(1)
+          pluscount.current += 1
+          global count
+          count += 1
+      except Exception as e:
+          print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
 # UTIL
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)
@@ -660,28 +706,7 @@ def w():
         p()
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        try:
-          cwd = os.getcwd()
-          # cwd+sys.argv[2]
-          dir = os.path.join(cwd, sys.argv[2])
-          
-          if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-          with open(dir, "w") as f:
-            translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-        except IndexError:
-          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(error("No path specified!", "roblox-py"))
-          else:
-             cwd = os.getcwd()
-             # cwd+sys.argv[2]
-             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-             if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-             with open(dir, "w") as f:
-               translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        lib()
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .py file with the same name.\n\nType 'yes' to continue."))
@@ -713,6 +738,7 @@ def w():
     print(error("Invalid amount of arguments!", "roblox-py"))
   except KeyboardInterrupt:
     print(colortext.red("Aborted!"))
+    sys.exit(0)
 # NOTE: Since C and C++ are disabled, their features are out of sync with python and lunar
 def cw():
   if not check_llvm():
@@ -787,28 +813,7 @@ def cw():
         print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        try:
-          cwd = os.getcwd()
-          # cwd+sys.argv[2]
-          dir = os.path.join(cwd, sys.argv[2])
-          if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-          with open(dir, "w") as f:
-            translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-        except IndexError:
-          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(error("No path specified!"))
-          else:
-             cwd = os.getcwd()
-             # cwd+sys.argv[2]
-             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-              
-             if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-             with open(dir, "w") as f:
-               translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        lib()
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .c file with the same name.\n\nType 'yes' to continue."))
@@ -840,6 +845,7 @@ def cw():
     print(error("Invalid amount of arguments!", "roblox-c"))
   except KeyboardInterrupt:
     print(colortext.red("Aborted!"))
+    sys.exit(0)
 def cpw():
   if not check_llvm():
     install_llvm()
@@ -913,28 +919,7 @@ def cpw():
         print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        try:
-          cwd = os.getcwd()
-          # cwd+sys.argv[2]
-          dir = os.path.join(cwd, sys.argv[2])
-          if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-          with open(dir, "w") as f:
-            translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-        except IndexError:
-          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(error("No path specified!"))
-          else:
-             cwd = os.getcwd()
-             # cwd+sys.argv[2]
-             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-              
-             if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-             with open(dir, "w") as f:
-               translator = pytranslator.Translator()
-               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        lib()
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .cpp file with the same name.\n\nType 'yes' to continue."))
@@ -967,6 +952,7 @@ def cpw():
     print(error("Invalid amount of arguments!", "roblox-cpp"))
   except KeyboardInterrupt:
     print(colortext.red("Aborted!"))   
+    sys.exit(0)
 def lunar():
   try:
     checkboth() # install luarocks and moonscript if not installed
@@ -1032,27 +1018,7 @@ def lunar():
         print(error("Plugins are only supported for python!"))
       elif sys.argv[1] == "lib":
         # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        try:
-          cwd = os.getcwd()
-          # cwd+sys.argv[2]
-          dir = os.path.join(cwd, sys.argv[2])
-          if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-          with open(dir, "w") as f:
-            translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-        except IndexError:
-          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(error("No path specified!"))
-          else:
-             cwd = os.getcwd()
-             # cwd+sys.argv[2]
-             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-              
-             if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-             with open(dir, "w") as f:
-               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        lib()
       elif sys.argv[1] == "c":
         # Go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will delete all .lua files and add a .moon file with the same name.\n\nType 'yes' to continue."))
@@ -1084,7 +1050,8 @@ def lunar():
   except IndexError:
     print(error("Invalid amount of arguments!", "roblox-lunar"))
   except KeyboardInterrupt:
-    print(colortext.red("Aborted!"))       
+    print(colortext.red("Aborted!"))     
+    sys.exit(0)  
 def globalincli():
   # Get all the files inside of the path, look for all of them which are .py and even check inside of folders. If this is happening in the same directory as the script, do it in the sub directory test
   path = os.getcwd()
@@ -1217,30 +1184,42 @@ Configuring {cpp}
         print(f"""
 Configuring General Settings
 {border}
-1 - Change default lib path
-2 - Change C and C++ dylib
-3 - Change LLVM Home Path (only for C and C++)
-4 - Change LD-LIBRARY-PATH (only for C and C++)
-5 - Traceback on error (Reccomended off, for roblox-pyc developers)
+1 - Change C and C++ dylib
+2 - Change LLVM Home Path (only for C and C++)
+3 - Change LD-LIBRARY-PATH (only for C and C++)
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
-          returned = input("Enter the default lib file, it currently is %s: " % getconfig("general", "defaultlibpath"))
-          setconfig("general", "defaultlibpath", returned, "")
-        elif inputval == "2":
           returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
           setconfig("c", "dynamiclibpath", returned, "None")
-        elif inputval == "3":
+        elif inputval == "2":
           returned = input("Enter the LLVM Home Path, it currently is %s: " % getconfig("general", "llvmhomepath", "None"))
           setconfig("general", "llvmhomepath", returned, "")
           config_llvm(getconfig("general", "llvmhomepath", ""))
-        elif inputval == "4":
+        elif inputval == "3":
           returned = input("Enter the LD-LIBRARY-PATH, it currently is %s: " % getconfig("general", "ldlibrarypath", "None"))
           setconfig("general", "ldlibrarypath", returned, "")
           config_llvm(None, getconfig("general", "ldlibrarypath", ""))
-        elif inputval == "5":
+      elif returnval == "6":
+        print(colortext.rainbow_text("Welcome to the secret menu!"))
+        print("This contains many developer options and some goofy ones too!")
+        print(f"""       
+              1 - Traceback on error (Reccomended off, for roblox-pyc developers)
+              2 - Random TTS sounds on error (macOS only)
+              """)
+        inputval = input(f"Select which {colortext.magenta("secret")} config to open: ")
+        if inputval == "1":
           returned = input("Click enter to confirm, CTRL+C to cancel: ")
           setconfig("general", "traceback", returned, None)
+        elif inputval == "2":
+          if not sys.platform == "darwin":
+            print(error("I ALREADY TOLD YOU, THIS IS MACOS ONLY!"))
+            return
+          print(warn("Seems like this build doesnt support this feature, please wait for the next release!"))
+        elif inputval == "3":
+          print(colortext.rainbow_text("Welcome to the secret secret menu, sadly this is empty for now! :("))
+        else:
+          print(error("Aw man, you didnt select a valid option!"))
       else:
         print(error("Invalid option!"))
     elif sys.argv[1] == "devforum":
@@ -1267,27 +1246,7 @@ Configuring General Settings
       print(error("Plugins are only supported for python!", "roblox-pyc"))
     elif sys.argv[1] == "lib":
       # sys.argv[2] is the path to the file, create a new file there with the name robloxpyc.lua, and write the library to it
-        try:
-          cwd = os.getcwd()
-          # cwd+sys.argv[2]
-          dir = os.path.join(cwd, sys.argv[2])
-          if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-          with open(dir, "w") as f:
-            translator = pytranslator.Translator()
-            f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-        except IndexError:
-          if getconfig("general", "defaultlibpath") != "" and getconfig("general", "defaultlibpath") != None:
-            print(error("No path specified!"))
-          else:
-             cwd = os.getcwd()
-             # cwd+sys.argv[2]
-             dir = os.path.join(cwd, getconfig("general", "defaultlibpath"))
-              
-             if not os.path.exists(os.path.dirname(dir)):
-              open(dir, "x").close()
-             with open(dir, "w") as f:
-               f.write(translator.get_luainit(getconfig("general", "luaext", [])))
+        lib()
     elif sys.argv[1] == "c":
       print(error("Cannot replace all files for a general language, please specify a language by using rbxpy, rbxlun, rbxc, rbxcpp", "roblox-pyc"))
     elif sys.argv[1] == "tsc":
@@ -1355,7 +1314,7 @@ Configuring General Settings
           print(colortext.green("Installing "+sys.argv[2]+" ..."))
           exists = os.path.exists(os.path.join(os.getcwd(), "dependencies"))
           if not exists:
-            os.mkdir(os.path.join(os.getcwd(), "dependencies"))
+            lib()
           
           # Gitclone item["url"] to dependencies folder
           subprocess.call(["git", "clone", item["url"], os.path.join(os.getcwd(), "dependencies", sys.argv[2])])
@@ -1411,6 +1370,8 @@ Configuring General Settings
           os.remove(os.path.join(os.getcwd(), "dependencies", "package.json"))
         except:
           pass
+          
+        
       else:
         print(warn("roblox-pyc: Package not in registry!")+"\n\n"+info("If you are trying to install from Wally enter the package name as @<scope>/<package>")+"\n\n"+info("If you are trying to install from roblox-ts enter the package name as @rbxts/<package>")+"\nInstall from one of these other package managers:")
         print("""
@@ -1510,7 +1471,7 @@ Configuring General Settings
           # if it doesnt exist error
           if not os.path.exists(dependenciesPath):
             print(error("Dependencies folder not found! Creating one now...", "roblox-py"))
-            os.mkdir(dependenciesPath)
+            lib()
             return
           # remove, if not found error
           if not os.path.exists(os.path.join(dependenciesPath, sys.argv[2])):
@@ -1530,7 +1491,7 @@ Configuring General Settings
       dependenciesPath = os.path.join(os.getcwd(), "dependencies") 
       if not os.path.exists(dependenciesPath):
         print(warn("roblox-pyc: Dependencies folder not found! Creating one now..."))
-        os.mkdir(dependenciesPath)
+        lib()
         return
       for i in os.listdir(dependenciesPath):
         print(("  - "+i))
@@ -1557,11 +1518,11 @@ Configuring General Settings
   CLI DOCS:
   - {blank} w - Click enter in the terminal to compile all scripts
   - {blank} p - Start the plugin server (only for {py})
-  - {blank} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
+  - {blank} lib - Generate dependencies folder with stdlib
   - {blank} c - Convert all .lua files to targeted language files, it will comment the existing lua code
   - {blank2} w - Click enter in the terminal to compile all scripts
   - {blank2} p - Start the plugin server (only for {py})
-  - {blank2} lib {blankpath} - Get the library file for language and write it to the path (path has to include filename)
+  - {blank2} lib - Generate dependencies folder with stdlib
   - {blank2} c - Convert all .lua files to targeted language files, it will comment the existing lua code
   - {selftool} config - Open the config menu
   - {selftool} devforum - Open the devforum page in a browser
@@ -1579,6 +1540,7 @@ Configuring General Settings
           """)
   except KeyboardInterrupt:
     print(colortext.red("Aborted!"))  
+    sys.exit(0)
   
 
 if __name__ == "__main__":

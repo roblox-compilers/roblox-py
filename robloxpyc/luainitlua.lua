@@ -2090,6 +2090,7 @@ local libraries = {
 	"example" = function() print("Example library!") end,
 	--{ITEMSGOHERE}--
 }
+local dependenciesfolder = script.Parent
 
 local module = function(scriptname)
 	return { 
@@ -2102,34 +2103,12 @@ local module = function(scriptname)
 					else
 						return libraries[index]
 					end
+				elseif script.Parent:FindFirstChildOfClass("ModuleScript") then
+					return require(script.Parent:FindFirstChildOfClass("ModuleScript"))
+				elseif script.Parent:FindFirstChildOfClass("Folder") then
+					return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub) or error("No such library called " .. index.." and no init file found either"))
 				else
-					-- Verify index is formated as so: ".Workspace.Dependency"
-					local split = string.split(index, ".")
-					if #split < 2 then
-						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
-					end
-					local service = game:FindFirstChild(split[2])
-					if not service then
-						error("Could not find service " .. split[2])
-					end
-					local moduleName = service:FindFirstChild(split[3])
-					local found 
-
-					for _, v in ipairs(service:GetDescendants()) do
-						if v.Name == split[3] then
-							found = v
-							break
-						end
-					end
-					if not found then 
-						error("Could not find module " .. split[3].." in service "..split[2])
-					end
-					local module = require(found)
-					if sub then 
-						return module[sub]
-					else
-						return module
-					end
+					error("No such library called " .. index)
 				end
 			end,
 			{ -- python built in
@@ -2668,34 +2647,12 @@ local module = function(scriptname)
 					else
 						return libraries[index]
 					end
+				elseif script.Parent:FindFirstChildOfClass("ModuleScript") then
+					return require(script.Parent:FindFirstChildOfClass("ModuleScript"))
+				elseif script.Parent:FindFirstChildOfClass("Folder") then
+					return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub) or error("No such library called " .. index.." and no init file found either"))
 				else
-					-- Verify index is formated as so: ".Workspace.Dependency"
-					local split = string.split(index, ".")
-					if #split < 2 then
-						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
-					end
-					local service = game:FindFirstChild(split[2])
-					if not service then
-						error("Could not find service " .. split[2])
-					end
-					local moduleName = service:FindFirstChild(split[3])
-					local found 
-
-					for _, v in ipairs(service:GetDescendants()) do
-						if v.Name == split[3] then
-							found = v
-							break
-						end
-					end
-					if not found then 
-						error("Could not find module " .. split[3].." in service "..split[2])
-					end
-					local module = require(found)
-					if sub then 
-						return module[sub]
-					else
-						return module
-					end
+					error("No such library called " .. index)
 				end
 			end,
 			{-- lunar built in
@@ -2711,34 +2668,12 @@ local module = function(scriptname)
 					else
 						return libraries[index]
 					end
+				elseif script.Parent:FindFirstChildOfClass("ModuleScript") then
+					return require(script.Parent:FindFirstChildOfClass("ModuleScript"))
+				elseif script.Parent:FindFirstChildOfClass("Folder") then
+					return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub) or error("No such library called " .. index.." and no init file found either"))
 				else
-					-- Verify index is formated as so: ".Workspace.Dependency"
-					local split = string.split(index, ".")
-					if #split < 2 then
-						error("Invalid package, format like so: '.Workspace.Dependency', it will search descendants for the package.")
-					end
-					local service = game:FindFirstChild(split[2])
-					if not service then
-						error("Could not find service " .. split[2])
-					end
-					local moduleName = service:FindFirstChild(split[3])
-					local found 
-
-					for _, v in ipairs(service:GetDescendants()) do
-						if v.Name == split[3] then
-							found = v
-							break
-						end
-					end
-					if not found then 
-						error("Could not find module " .. split[3].." in service "..split[2])
-					end
-					local module = require(found)
-					if sub then 
-						return module[sub]
-					else
-						return module
-					end
+					error("No such library called " .. index)
 				end
 			end,
 			{-- c and c++ built in
@@ -2749,4 +2684,4 @@ end
 
 
 
-return module
+_G.pyc = module
