@@ -1207,7 +1207,8 @@ Configuring General Settings
               1 - Traceback on error (Reccomended off, for roblox-pyc developers)
               2 - Random TTS sounds on error (macOS only)
               """)
-        inputval = input(f"Select which {colortext.magenta("secret")} config to open: ")
+        rb = colortext.rainbow_text("secret")
+        inputval = input(f"Select which {rb} config to open: ")
         if inputval == "1":
           returned = input("Click enter to confirm, CTRL+C to cancel: ")
           setconfig("general", "traceback", returned, None)
