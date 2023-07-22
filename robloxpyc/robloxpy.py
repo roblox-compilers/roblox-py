@@ -488,6 +488,17 @@ def cppcompile(r, file, pluscount=False):
         print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compiler error "+str(e))
+      returnval = input("Do you want to continue? (yes/no): ").lower()
+      if returnval == "no":
+        sys.exit()
+      else:
+        if pluscount:
+          pluscount.update(1)
+          pluscount.current += 1
+          global count
+          count += 1
+        return
+        
 def ccompile(r, file, pluscount=False):
   if '.c' in file and file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
@@ -525,6 +536,16 @@ def ccompile(r, file, pluscount=False):
         print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
+      returnval = input("Do you want to continue? (yes/no): ").lower()
+      if returnval == "no":
+        sys.exit()
+      else:
+        if pluscount:
+          pluscount.update(1)
+          pluscount.current += 1
+          global count
+          count += 1
+        return
 def pycompile(r, file, pluscount=False):
   if file.endswith(".py"):
     # compile the file to a file with the same name and path but .lua
@@ -561,6 +582,16 @@ def pycompile(r, file, pluscount=False):
     except Exception as e:
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
+      returnval = input("Do you want to continue? (yes/no): ").lower()
+      if returnval == "no":
+        sys.exit()
+      else:
+        if pluscount:
+          pluscount.update(1)
+          pluscount.current += 1
+          global count
+          count += 1
+        return
 def lunarcompile(r, file, pluscount=False):
   if file.endswith(".moon"):
     # compile the file to a file with the same name and path but .lua
@@ -572,8 +603,28 @@ def lunarcompile(r, file, pluscount=False):
     if stdout or stderr:
       if stdout:     
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+        returnval = input("Do you want to continue? (yes/no): ").lower()
+        if returnval == "no":
+          sys.exit()
+        else:
+          if pluscount:
+            pluscount.update(1)
+            pluscount.current += 1
+            global count
+            count += 1
+          return
       else:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+        returnval = input("Do you want to continue? (yes/no): ").lower()
+        if returnval == "no":
+          sys.exit()
+        else:
+          if pluscount:
+            pluscount.update(1)
+            pluscount.current += 1
+            global count
+            count += 1
+          return
     else:
       try:
         newheader = header.lunarheader(luainit.lunarfunctions)
@@ -595,6 +646,16 @@ def lunarcompile(r, file, pluscount=False):
           count += 1
       except Exception as e:
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+          returnval = input("Do you want to continue? (yes/no): ").lower()
+          if returnval == "no":
+            sys.exit()
+          else:
+            if pluscount:
+              pluscount.update(1)
+              pluscount.current += 1
+              global count
+              count += 1
+            return
 def robloxtscompile(r, file, pluscount=False):
   if file.endswith(".ts") or file.endswith(".tsx"):
     # Just add to pluscount, add later
@@ -607,6 +668,16 @@ def robloxtscompile(r, file, pluscount=False):
         count += 1
     except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+        returnval = input("Do you want to continue? (yes/no): ").lower()
+        if returnval == "no":
+          sys.exit()
+        else:
+          if pluscount:
+            pluscount.update(1)
+            pluscount.current += 1
+            global count
+            count += 1
+          return
 # UTIL
 def backwordreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence)

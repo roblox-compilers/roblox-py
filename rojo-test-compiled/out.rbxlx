@@ -1,0 +1,135 @@
+<roblox version="4">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <Color3 name="Ambient">
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+      </Color3>
+      <float name="Brightness">2</float>
+      <bool name="GlobalShadows">true</bool>
+      <bool name="Outlines">false</bool>
+      <token name="Technology">1</token>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="1">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+    <Item class="Folder" referent="2">
+      <Properties>
+        <string name="Name">Shared</string>
+      </Properties>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">Hello</string>
+          <string name="Source">--/ Compiled using roblox-pyc | Python compiler \--
+		
+		
+------------------------------------ BUILT IN -------------------------------
+local py, import, builtin = _G.pyc.py
+
+local int = builtin.int
+local stringmeta = builtin.stringmeta
+local str = builtin.str
+
+-----------------------------------------------------------------------------
+--[[ 
+return function()
+	print("Hello, world!")
+end
+ ]]
+local function returnval()
+    print(stringmeta "Hello, world!")
+end</string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="4">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Script" referent="5">
+      <Properties>
+        <string name="Name">Server</string>
+        <string name="Source">--/ Compiled using roblox-pyc | Python compiler \--
+		
+		
+------------------------------------ BUILT IN -------------------------------
+local py, import, builtin = _G.pyc.py
+
+local int = builtin.int
+local stringmeta = builtin.stringmeta
+local str = builtin.str
+
+-----------------------------------------------------------------------------
+--[[ 
+print("Hello world, from server!")
+ ]]
+print(stringmeta "Hello world, from server!")</string>
+      </Properties>
+    </Item>
+  </Item>
+  <Item class="SoundService" referent="6">
+    <Properties>
+      <string name="Name">SoundService</string>
+      <bool name="RespectFilteringEnabled">true</bool>
+    </Properties>
+  </Item>
+  <Item class="StarterPlayer" referent="7">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="8">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="LocalScript" referent="9">
+        <Properties>
+          <string name="Name">Client</string>
+          <string name="Source">--/ Compiled using roblox-pyc | Python compiler \--
+		
+		
+------------------------------------ BUILT IN -------------------------------
+local py, import, builtin = _G.pyc.py
+
+local int = builtin.int
+local stringmeta = builtin.stringmeta
+local str = builtin.str
+
+-----------------------------------------------------------------------------
+--[[ 
+print("Hello world, from client!")
+ ]]
+print(stringmeta "Hello world, from client!")</string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="Workspace" referent="10">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="FilteringEnabled">true</bool>
+    </Properties>
+    <Item class="Part" referent="11">
+      <Properties>
+        <string name="Name">Baseplate</string>
+        <bool name="Anchored">true</bool>
+        <Color3uint8 name="Color3uint8">6512483</Color3uint8>
+        <bool name="Locked">true</bool>
+        <Vector3 name="Position">
+          <X>0</X>
+          <Y>-10</Y>
+          <Z>0</Z>
+        </Vector3>
+        <Vector3 name="size">
+          <X>512</X>
+          <Y>20</Y>
+          <Z>512</Z>
+        </Vector3>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
