@@ -17,3 +17,4 @@ Contributions would be greatly appreciated!
 - Python speed improvements, currently takes like 10 minutes to compile 400 scripts
 - Update docs
 - TS support (using roblox-ts)
+- Rojo prediction, running cd automatically modifies default.project.json to match the compiled directory

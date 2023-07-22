@@ -435,7 +435,7 @@ def unknowncompile(r, file):
     except UnicodeDecodeError:
         print(warn("Failed to read "+os.path.join(r, file)+"!"))
 def jsoncompile(r, file):
-  if file.endswith(".json") and not(file == "package.json" or file == "tsconfig.json" or file == "default.project.json"):
+  if file.endswith(".json"):
     # compile the file to a file with the same name and path but .lua
     try:
       contents = ""
