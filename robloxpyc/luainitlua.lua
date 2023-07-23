@@ -9,483 +9,145 @@ local module = { }
 
 -- Language used for gamewrapper (from Highlighter by boatbomber)
 local language = {
-	builtin = {
-		-- Luau Functions
-		["assert"] = "function",
-		["error"] = "function",
-		["getfenv"] = "function",
-		["getmetatable"] = "function",
-		["ipairs"] = "function",
-		["loadstring"] = "function",
-		["newproxy"] = "function",
-		["next"] = "function",
-		["pairs"] = "function",
-		["pcall"] = "function",
-		["print"] = "function",
-		["rawequal"] = "function",
-		["rawget"] = "function",
-		["rawlen"] = "function",
-		["rawset"] = "function",
-		["select"] = "function",
-		["setfenv"] = "function",
-		["setmetatable"] = "function",
-		["tonumber"] = "function",
-		["tostring"] = "function",
-		["unpack"] = "function",
-		["xpcall"] = "function",
+	-- Luau Functions
+	["assert"] = "function",
+	["error"] = "function",
+	["getfenv"] = "function",
+	["getmetatable"] = "function",
+	["ipairs"] = "function",
+	["loadstring"] = "function",
+	["newproxy"] = "function",
+	["next"] = "function",
+	["pairs"] = "function",
+	["pcall"] = "function",
+	["print"] = "function",
+	["rawequal"] = "function",
+	["rawget"] = "function",
+	["rawlen"] = "function",
+	["rawset"] = "function",
+	["select"] = "function",
+	["setfenv"] = "function",
+	["setmetatable"] = "function",
+	["tonumber"] = "function",
+	["tostring"] = "function",
+	["unpack"] = "function",
+	["xpcall"] = "function",
 
-		-- Luau Functions (Deprecated)
-		["collectgarbage"] = "function",
+	-- Luau Functions (Deprecated)
+	["collectgarbage"] = "function",
 
-		-- Luau Variables
-		["_G"] = "table",
-		["_VERSION"] = "string",
+	-- Luau Variables
+	["_G"] = "table",
+	["_VERSION"] = "string",
 
-		-- Luau Tables
-		["bit32"] = "table",
-		["coroutine"] = "table",
-		["debug"] = "table",
-		["math"] = "table",
-		["os"] = "table",
-		["string"] = "table",
-		["table"] = "table",
-		["utf8"] = "table",
+	-- Luau Tables
+	["bit32"] = "table",
+	["coroutine"] = "table",
+	["debug"] = "table",
+	["math"] = "table",
+	["os"] = "table",
+	["string"] = "table",
+	["table"] = "table",
+	["utf8"] = "table",
 
-		-- Roblox Functions
-		["DebuggerManager"] = "function",
-		["delay"] = "function",
-		["gcinfo"] = "function",
-		["PluginManager"] = "function",
-		["require"] = "function",
-		["settings"] = "function",
-		["spawn"] = "function",
-		["tick"] = "function",
-		["time"] = "function",
-		["UserSettings"] = "function",
-		["wait"] = "function",
-		["warn"] = "function",
+	-- Roblox Functions
+	["DebuggerManager"] = "function",
+	["delay"] = "function",
+	["gcinfo"] = "function",
+	["PluginManager"] = "function",
+	["require"] = "function",
+	["settings"] = "function",
+	["spawn"] = "function",
+	["tick"] = "function",
+	["time"] = "function",
+	["UserSettings"] = "function",
+	["wait"] = "function",
+	["warn"] = "function",
 
-		-- Roblox Functions (Deprecated)
-		["Delay"] = "function",
-		["ElapsedTime"] = "function",
-		["elapsedTime"] = "function",
-		["printidentity"] = "function",
-		["Spawn"] = "function",
-		["Stats"] = "function",
-		["stats"] = "function",
-		["Version"] = "function",
-		["version"] = "function",
-		["Wait"] = "function",
-		["ypcall"] = "function",
+	-- Roblox Functions (Deprecated)
+	["Delay"] = "function",
+	["ElapsedTime"] = "function",
+	["elapsedTime"] = "function",
+	["printidentity"] = "function",
+	["Spawn"] = "function",
+	["Stats"] = "function",
+	["stats"] = "function",
+	["Version"] = "function",
+	["version"] = "function",
+	["Wait"] = "function",
+	["ypcall"] = "function",
 
-		-- Roblox Variables
-		["game"] = "Instance",
-		["plugin"] = "Instance",
-		["script"] = "Instance",
-		["shared"] = "Instance",
-		["workspace"] = "Instance",
+	-- Roblox Variables
+	["game"] = "Instance",
+	["plugin"] = "Instance",
+	["script"] = "Instance",
+	["shared"] = "Instance",
+	["workspace"] = "Instance",
 
-		-- Roblox Variables (Deprecated)
-		["Game"] = "Instance",
-		["Workspace"] = "Instance",
+	-- Roblox Variables (Deprecated)
+	["Game"] = "Instance",
+	["Workspace"] = "Instance",
 
-		-- Roblox Tables
-		["Axes"] = "table",
-		["BrickColor"] = "table",
-		["CatalogSearchParams"] = "table",
-		["CFrame"] = "table",
-		["Color3"] = "table",
-		["ColorSequence"] = "table",
-		["ColorSequenceKeypoint"] = "table",
-		["DateTime"] = "table",
-		["DockWidgetPluginGuiInfo"] = "table",
-		["Enum"] = "table",
-		["Faces"] = "table",
-		["FloatCurveKey"] = "table",
-		["Font"] = "table",
-		["Instance"] = "table",
-		["NumberRange"] = "table",
-		["NumberSequence"] = "table",
-		["NumberSequenceKeypoint"] = "table",
-		["OverlapParams"] = "table",
-		["PathWaypoint"] = "table",
-		["PhysicalProperties"] = "table",
-		["Random"] = "table",
-		["Ray"] = "table",
-		["RaycastParams"] = "table",
-		["Rect"] = "table",
-		["Region3"] = "table",
-		["Region3int16"] = "table",
-		["RotationCurveKey"] = "table",
-		["SharedTable"] = "table",
-		["task"] = "table",
-		["TweenInfo"] = "table",
-		["UDim"] = "table",
-		["UDim2"] = "table",
-		["Vector2"] = "table",
-		["Vector2int16"] = "table",
-		["Vector3"] = "table",
-		["Vector3int16"] = "table",
-	},
-
-	libraries = {
-
-		-- Luau Libraries
-		bit32 = {
-			arshift = "function",
-			band = "function",
-			bnot = "function",
-			bor = "function",
-			btest = "function",
-			bxor = "function",
-			countlz = "function",
-			countrz = "function",
-			extract = "function",
-			lrotate = "function",
-			lshift = "function",
-			replace = "function",
-			rrotate = "function",
-			rshift = "function",
-		},
-
-		coroutine = {
-			close = "function",
-			create = "function",
-			isyieldable = "function",
-			resume = "function",
-			running = "function",
-			status = "function",
-			wrap = "function",
-			yield = "function",
-		},
-
-		debug = {
-			dumpheap = "function",
-			getmemorycategory = "function",
-			info = "function",
-			loadmodule = "function",
-			profilebegin = "function",
-			profileend = "function",
-			resetmemorycategory = "function",
-			setmemorycategory = "function",
-			traceback = "function",
-		},
-
-		math = {
-			abs = "function",
-			acos = "function",
-			asin = "function",
-			atan2 = "function",
-			atan = "function",
-			ceil = "function",
-			clamp = "function",
-			cos = "function",
-			cosh = "function",
-			deg = "function",
-			exp = "function",
-			floor = "function",
-			fmod = "function",
-			frexp = "function",
-			ldexp = "function",
-			log10 = "function",
-			log = "function",
-			max = "function",
-			min = "function",
-			modf = "function",
-			noise = "function",
-			pow = "function",
-			rad = "function",
-			random = "function",
-			randomseed = "function",
-			round = "function",
-			sign = "function",
-			sin = "function",
-			sinh = "function",
-			sqrt = "function",
-			tan = "function",
-			tanh = "function",
-
-			huge = "number",
-			pi = "number",
-		},
-
-		os = {
-			clock = "function",
-			date = "function",
-			difftime = "function",
-			time = "function",
-		},
-
-		string = {
-			byte = "function",
-			char = "function",
-			find = "function",
-			format = "function",
-			gmatch = "function",
-			gsub = "function",
-			len = "function",
-			lower = "function",
-			match = "function",
-			pack = "function",
-			packsize = "function",
-			rep = "function",
-			reverse = "function",
-			split = "function",
-			sub = "function",
-			unpack = "function",
-			upper = "function",
-		},
-
-		table = {
-			clear = "function",
-			clone = "function",
-			concat = "function",
-			create = "function",
-			find = "function",
-			foreach = "function",
-			foreachi = "function",
-			freeze = "function",
-			getn = "function",
-			insert = "function",
-			isfrozen = "function",
-			maxn = "function",
-			move = "function",
-			pack = "function",
-			remove = "function",
-			sort = "function",
-			unpack = "function",
-		},
-
-		utf8 = {
-			char = "function",
-			codepoint = "function",
-			codes = "function",
-			graphemes = "function",
-			len = "function",
-			nfcnormalize = "function",
-			nfdnormalize = "function",
-			offset = "function",
-
-			charpattern = "string",
-		},
-
-		-- Roblox Libraries
-		Axes = {
-			new = "function",
-		},
-
-		BrickColor = {
-			Black = "function",
-			Blue = "function",
-			DarkGray = "function",
-			Gray = "function",
-			Green = "function",
-			new = "function",
-			New = "function",
-			palette = "function",
-			Random = "function",
-			random = "function",
-			Red = "function",
-			White = "function",
-			Yellow = "function",
-		},
-
-		CatalogSearchParams = {
-			new = "function",
-		},
-
-		CFrame = {
-			Angles = "function",
-			fromAxisAngle = "function",
-			fromEulerAngles = "function",
-			fromEulerAnglesXYZ = "function",
-			fromEulerAnglesYXZ = "function",
-			fromMatrix = "function",
-			fromOrientation = "function",
-			lookAt = "function",
-			new = "function",
-
-			identity = "CFrame",
-		},
-
-		Color3 = {
-			fromHex = "function",
-			fromHSV = "function",
-			fromRGB = "function",
-			new = "function",
-			toHSV = "function",
-		},
-
-		ColorSequence = {
-			new = "function",
-		},
-
-		ColorSequenceKeypoint = {
-			new = "function",
-		},
-
-		DateTime = {
-			fromIsoDate = "function",
-			fromLocalTime = "function",
-			fromUniversalTime = "function",
-			fromUnixTimestamp = "function",
-			fromUnixTimestampMillis = "function",
-			now = "function",
-		},
-
-		DockWidgetPluginGuiInfo = {
-			new = "function",
-		},
-
-		Enum = {},
-
-		Faces = {
-			new = "function",
-		},
-
-		FloatCurveKey = {
-			new = "function",
-		},
-
-		Font = {
-			fromEnum = "function",
-			fromId = "function",
-			fromName = "function",
-			new = "function",
-		},
-
-		Instance = {
-			new = "function",
-		},
-
-		NumberRange = {
-			new = "function",
-		},
-
-		NumberSequence = {
-			new = "function",
-		},
-
-		NumberSequenceKeypoint = {
-			new = "function",
-		},
-
-		OverlapParams = {
-			new = "function",
-		},
-
-		PathWaypoint = {
-			new = "function",
-		},
-
-		PhysicalProperties = {
-			new = "function",
-		},
-
-		Random = {
-			new = "function",
-		},
-
-		Ray = {
-			new = "function",
-		},
-
-		RaycastParams = {
-			new = "function",
-		},
-
-		Rect = {
-			new = "function",
-		},
-
-		Region3 = {
-			new = "function",
-		},
-
-		Region3int16 = {
-			new = "function",
-		},
-
-		RotationCurveKey = {
-			new = "function",
-		},
-
-		SharedTable = {
-			clear = "function",
-			clone = "function",
-			cloneAndFreeze = "function",
-			increment = "function",
-			isFrozen = "function",
-			new = "function",
-			size = "function",
-			update = "function",
-		},
-
-		task = {
-			cancel = "function",
-			defer = "function",
-			delay = "function",
-			desynchronize = "function",
-			spawn = "function",
-			synchronize = "function",
-			wait = "function",
-		},
-
-		TweenInfo = {
-			new = "function",
-		},
-
-		UDim = {
-			new = "function",
-		},
-
-		UDim2 = {
-			fromOffset = "function",
-			fromScale = "function",
-			new = "function",
-		},
-
-		Vector2 = {
-			new = "function",
-
-			one = "Vector2",
-			xAxis = "Vector2",
-			yAxis = "Vector2",
-			zero = "Vector2",
-		},
-
-		Vector2int16 = {
-			new = "function",
-		},
-
-		Vector3 = {
-			fromAxis = "function",
-			FromAxis = "function",
-			fromNormalId = "function",
-			FromNormalId = "function",
-			new = "function",
-
-			one = "Vector3",
-			xAxis = "Vector3",
-			yAxis = "Vector3",
-			zAxis = "Vector3",
-			zero = "Vector3",
-		},
-
-		Vector3int16 = {
-			new = "function",
-		},
-	},
+	-- Roblox Tables
+	["Axes"] = "table",
+	["BrickColor"] = "table",
+	["CatalogSearchParams"] = "table",
+	["CFrame"] = "table",
+	["Color3"] = "table",
+	["ColorSequence"] = "table",
+	["ColorSequenceKeypoint"] = "table",
+	["DateTime"] = "table",
+	["DockWidgetPluginGuiInfo"] = "table",
+	["Enum"] = "table",
+	["Faces"] = "table",
+	["FloatCurveKey"] = "table",
+	["Font"] = "table",
+	["Instance"] = "table",
+	["NumberRange"] = "table",
+	["NumberSequence"] = "table",
+	["NumberSequenceKeypoint"] = "table",
+	["OverlapParams"] = "table",
+	["PathWaypoint"] = "table",
+	["PhysicalProperties"] = "table",
+	["Random"] = "table",
+	["Ray"] = "table",
+	["RaycastParams"] = "table",
+	["Rect"] = "table",
+	["Region3"] = "table",
+	["Region3int16"] = "table",
+	["RotationCurveKey"] = "table",
+	["SharedTable"] = "table",
+	["task"] = "table",
+	["TweenInfo"] = "table",
+	["UDim"] = "table",
+	["UDim2"] = "table",
+	["Vector2"] = "table",
+	["Vector2int16"] = "table",
+	["Vector3"] = "table",
+	["Vector3int16"] = "table",
 }
+local selfcval  = newproxy(true)
 
--- Filling up language.libraries.Enum table
-local enumLibraryTable = language.libraries.Enum
-
-for _, enum in ipairs(Enum:GetEnums()) do
-	--TODO: Remove tostring from here once there is a better way to get the name of an Enum
-	enumLibraryTable[tostring(enum)] = "Enum"
+getmetatable(selfcval).__tostring = function()
+	return "pyc special object: "..(tostring({}):gsub("table: ", ""):split(" ")[1])
 end
-
+function backwordreplace(s, old, new, occurrence) -- Lua implementation of the python function in robloxpy.py line ~600
+	local li = {}
+	local i = 1
+	while true do
+		local j = string.find(s, old, i, true)
+		if not j then
+			break
+		end
+		table.insert(li, string.sub(s, i, j - 1))
+		i = j + #old
+		if #li == occurrence then
+			break
+		end
+	end
+	table.insert(li, string.sub(s, i))
+	return table.concat(li, new)
+end
 local function parse_path(path, start_obj)
 	local obj = start_obj or game
 	local parts = string.split(path, "/")
@@ -497,15 +159,15 @@ local function parse_path(path, start_obj)
 		elseif part == ".." then
 			obj = obj.Parent
 		else
-			obj = obj:FindFirstChild(part)
-			if not obj then
-				error("Object not found: " .. part)
+			if not obj:FindFirstChild(part) then
+				error("Object not found: " .. part .." in "..obj.Name.."\n\n\tDo not add .json, .txt, etc. to the end of file names, this version doesnt support them.")
+				return nil
 			end
+			obj = obj:FindFirstChild(part)
 		end
 	end
 	return obj
 end
-
 
 local slicefun = function (seq, start, stop, step)
 	local sliced = {}
@@ -523,6 +185,94 @@ local slicefun = function (seq, start, stop, step)
 		table.insert(sliced, seq[i])
 	end
 	return sliced
+end
+function endswith(s, suffix) -- like string.endswith in python
+	return string.sub(s, -string.len(suffix)) == suffix
+end
+local wrappercache = setmetatable({}, {__mode = "k"})
+local wrap, unwrap
+unwrap = function(wrapped)
+	if type(wrapped) == "table" then
+		local real = {}
+		for k,v in next,wrapped do
+			real[k] = unwrap(v)
+		end
+		return real
+	else
+		local real = wrappercache[wrapped]
+		if real == nil then
+			return wrapped
+		end
+		return real
+	end
+end
+wrap = function(real, functions) 
+	for w,r in next,wrappercache do
+		if r == real then
+			return w
+		end
+	end
+
+	if type(real) == "userdata" then
+		local fake = newproxy(true)
+		local meta = getmetatable(fake)
+
+		meta.__index = function(s,k)
+
+			if table.find(functions, k) then
+				return functions[k]
+			end
+			if real[k] then
+				if typeof(real[k]) == "RBXScriptSignal" then
+					local newSignal = {}
+					setmetatable(newSignal, {
+						__call = function(func)
+							real:Connect(func)
+						end,
+						__index = function(index) return real[index] end
+					})
+					return newSignal
+				elseif type(real[k]) == "function" then
+					return function(special, ...)
+						if special == selfcval then
+							return wrap(real[k](real[k], ...))
+						end
+						return wrap(real[k](special, ...))
+					end
+				end
+				return wrap(real[k], functions)
+			end
+		end
+
+		meta.__newindex = function(s,k,v)
+			real[k] = v
+		end
+
+		meta.__tostring = function(s)
+			return tostring(real)
+		end
+
+		wrappercache[fake] = real
+		return fake
+
+	elseif type(real) == "function" then
+		return function(special, ...)
+			if special == selfcval then
+				return wrap(real(real, ...))
+			end
+			return wrap(real(special, ...))
+		end
+
+	elseif type(real) == "table" then
+		local fake = {}
+		for k,v in next,real do
+			fake[k] = wrap(v)
+		end
+		return fake
+
+	else
+		return real
+	end
 end
 
 local function set_metatable(var, mt)
@@ -566,303 +316,262 @@ local typeof = gtype
 
 
 
-function list(input)
-	if type(input) == "table" then
-		setmetatable(input, {
-			__call = function(_, t)
-				local result = {}
+function list(t)
+	local result = {}
 
-				result._is_list = true
+	result._is_list = true
 
-				result._data = {}
-				for _, v in ipairs(t) do
-					table.insert(result._data, v)
-				end
-
-				local methods = {}
-
-				methods.append = function(value)
-					table.insert(result._data, value)
-				end
-
-				methods.extend = function(iterable)
-					for value in iterable do
-						table.insert(result._data, value)
-					end
-				end
-
-				methods.insert = function(index, value)
-					table.insert(result._data, index, value)
-				end
-
-				methods.remove = function(value)
-					for i, v in ipairs(result._data) do
-						if value == v then
-							table.remove(result._data, i)
-							break
-						end
-					end
-				end
-
-				methods.pop = function(index)
-					index = index or #result._data
-					local value = result._data[index]
-					table.remove(result._data, index)
-					return value
-				end
-
-				methods.clear = function()
-					result._data = {}
-				end
-
-				methods.index = function(value, start, end_)
-					start = start or 1
-					end_ = end_ or #result._data
-
-					for i = start, end_, 1 do
-						if result._data[i] == value then
-							return i
-						end
-					end
-
-					return nil
-				end
-
-				methods.count = function(value)
-					local cnt = 0
-					for _, v in ipairs(result._data) do
-						if v == value then
-							cnt = cnt + 1
-						end
-					end
-
-					return cnt
-				end
-
-				methods.sort = function(key, reverse)
-					key = key or nil
-					reverse = reverse or false
-
-					table.sort(result._data, function(a, b)
-						if reverse then
-							return a < b
-						end
-
-						return a > b
-					end)
-				end
-
-				methods.reverse = function()
-					local new_data = {}
-					for i = #result._data, 1, -1 do
-						table.insert(new_data, result._data[i])
-					end
-
-					result._data = new_data
-				end
-
-				methods.copy = function()
-					return list(result._data)
-				end
-
-				local iterator_index = nil
-
-				setmetatable(result, {
-					__index = function(self, index)
-						if typeof(index) == "number" then
-							if index < 0 then
-								index = #result._data + index
-							end
-							return rawget(result._data, index + 1)
-						end
-						if typeof(index) == "string" then
-							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
-							if string.sub(index, 1, 6) == "SLICE!" then
-								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-								if (not stop) and (not step) and start then -- 1 value
-									start = string.match(index, "SLICE!%((%d+), (%d+)%)")
-									step = 1
-									stop = -1
-								elseif not step then
-									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
-									step = 1
-								end
-								return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
-							end
-						end
-
-						return methods[index]
-					end,
-					__newindex = function(self, index, value)
-						result._data[index] = value
-					end,
-					__call = function(self, _, idx)
-						if idx == nil and iterator_index ~= nil then
-							iterator_index = nil
-						end
-
-						local v = nil
-						iterator_index, v = next(result._data, iterator_index)
-
-						return v
-					end,
-				})
-
-				return result
-			end,
-		})
-		return input
-	else
-		error("Class mismatch")
-		return input
+	result._data = {}
+	for _, v in ipairs(t) do
+		table.insert(result._data, v)
 	end
-end
-function dict(input)
-	if type(input) == "table" then
-		setmetatable(input, {
-			__call = function(_, t)
-				local result = {}
 
-				result._is_dict = true
+	local methods = {}
 
-				result._data = {}
-				for k, v in pairs(t) do
-					result._data[k] = v
-				end
-
-				local methods = {}
-
-				local key_index = nil
-
-				methods.clear = function()
-					result._data = {}
-				end
-
-				methods.copy = function()
-					return dict(result._data)
-				end
-
-				methods.get = function(key, default)
-					default = default or nil
-					if result._data[key] == nil then
-						return default
-					end
-
-					return result._data[key]
-				end
-
-				methods.items = function()
-					return pairs(result._data)
-				end
-
-				methods.keys = function()
-					return function(self, idx, _) 
-						if idx == nil and key_index ~= nil then
-							key_index = nil
-						end
-
-						key_index, _ = next(result._data, key_index)
-						return key_index
-					end
-				end
-
-				methods.pop = function(key, default)
-					default = default or nil
-					if result._data[key] ~= nil then
-						local value = result._data[key]
-						result._data[key] = nil 
-						return key, value
-					end
-
-					return key, default
-				end
-
-				methods.popitem = function()
-					local key, value = next(result._data)
-					if key ~= nil then
-						result._data[key] = nil
-					end
-
-					return key, value
-				end
-
-				methods.setdefault = function(key, default)
-					if result._data[key] == nil then
-						result._data[key] = default
-					end
-
-					return result._data[key]
-				end
-
-				methods.update = function(t)
-					assert(t._is_dict)
-
-					for k, v in t.items() do
-						result._data[k] = v
-					end
-				end
-
-				methods.values = function()
-					return function(self, idx, _) 
-						if idx == nil and key_index ~= nil then
-							key_index = nil
-						end
-
-						key_index, value = next(result._data, key_index)
-						return value
-					end
-				end
-
-				setmetatable(result, {
-					__index = function(self, index)
-						if typeof(index) == "string" then
-							-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
-							if string.sub(index, 1, 6) == "SLICE!" then
-								local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-								if (not stop) and (not step) and start then -- 1 value
-									start = string.match(index, "SLICE!%((%d+), (%d+)%)")
-									step = 1
-									stop = -1
-								elseif not step then -- 2 values
-									start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
-									step = 1
-								end
-								return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
-							end
-						end
-						if result._data[index] ~= nil then
-							return result._data[index]
-						end
-						return methods[index]
-					end,
-					__newindex = function(self, index, value)
-						result._data[index] = value
-					end,
-					__call = function(self, _, idx)
-						if idx == nil and key_index ~= nil then
-							key_index = nil
-						end
-
-						key_index, _ = next(result._data, key_index)
-
-						return key_index            
-					end,
-				})
-
-				return result
-			end,
-		})
-		return input
-	else
-		error("Class mismatch")
-		return input
+	methods.append = function(value)
+		table.insert(result._data, value)
 	end
-end
-local pymeta = function()
-	local meta = {}
-end
 
+	methods.extend = function(iterable)
+		for value in iterable do
+			table.insert(result._data, value)
+		end
+	end
 
+	methods.insert = function(index, value)
+		table.insert(result._data, index, value)
+	end
+
+	methods.remove = function(value)
+		for i, v in ipairs(result._data) do
+			if value == v then
+				table.remove(result._data, i)
+				break
+			end
+		end
+	end
+
+	methods.pop = function(index)
+		index = index or #result._data
+		local value = result._data[index]
+		table.remove(result._data, index)
+		return value
+	end
+
+	methods.clear = function()
+		result._data = {}
+	end
+
+	methods.index = function(value, start, end_)
+		start = start or 1
+		end_ = end_ or #result._data
+
+		for i = start, end_, 1 do
+			if result._data[i] == value then
+				return i
+			end
+		end
+
+		return nil
+	end
+
+	methods.count = function(value)
+		local cnt = 0
+		for _, v in ipairs(result._data) do
+			if v == value then
+				cnt = cnt + 1
+			end
+		end
+
+		return cnt
+	end
+
+	methods.sort = function(key, reverse)
+		key = key or nil
+		reverse = reverse or false
+
+		table.sort(result._data, function(a, b)
+			if reverse then
+				return a < b
+			end
+
+			return a > b
+		end)
+	end
+
+	methods.reverse = function()
+		local new_data = {}
+		for i = #result._data, 1, -1 do
+			table.insert(new_data, result._data[i])
+		end
+
+		result._data = new_data
+	end
+
+	methods.copy = function()
+		return list(result._data)
+	end
+
+	local iterator_index = nil
+
+	setmetatable(result, {
+		__index = function(self, index)
+			if typeof(index) == "number" then
+				if index < 0 then
+					index = #result._data + index
+				end
+				return rawget(result._data, index + 1)
+			end
+			return methods[index]
+		end,
+		__newindex = function(self, index, value)
+			result._data[index] = value
+		end,
+		__call = function(self, _, idx)
+			if idx == nil and iterator_index ~= nil then
+				iterator_index = nil
+			end
+
+			local v = nil
+			iterator_index, v = next(result._data, iterator_index)
+
+			return v
+		end,
+	})
+
+	return result
+end
+function dict(t)
+	local result = {}
+
+	result._is_dict = true
+
+	result._data = {}
+	for k, v in pairs(t) do
+		result._data[k] = v
+	end
+
+	local methods = {}
+
+	local key_index = nil
+
+	methods.clear = function()
+		result._data = {}
+	end
+
+	methods.copy = function()
+		return dict(result._data)
+	end
+
+	methods.get = function(key, default)
+		default = default or nil
+		if result._data[key] == nil then
+			return default
+		end
+
+		return result._data[key]
+	end
+
+	methods.items = function()
+		return pairs(result._data)
+	end
+
+	methods.keys = function()
+		return function(self, idx, _) 
+			if idx == nil and key_index ~= nil then
+				key_index = nil
+			end
+
+			key_index, _ = next(result._data, key_index)
+			return key_index
+		end
+	end
+
+	methods.pop = function(key, default)
+		default = default or nil
+		if result._data[key] ~= nil then
+			local value = result._data[key]
+			result._data[key] = nil 
+			return key, value
+		end
+
+		return key, default
+	end
+
+	methods.popitem = function()
+		local key, value = next(result._data)
+		if key ~= nil then
+			result._data[key] = nil
+		end
+
+		return key, value
+	end
+
+	methods.setdefault = function(key, default)
+		if result._data[key] == nil then
+			result._data[key] = default
+		end
+
+		return result._data[key]
+	end
+
+	methods.update = function(t)
+		assert(t._is_dict)
+
+		for k, v in t.items() do
+			result._data[k] = v
+		end
+	end
+
+	methods.values = function()
+		return function(self, idx, _) 
+			if idx == nil and key_index ~= nil then
+				key_index = nil
+			end
+
+			key_index, value = next(result._data, key_index)
+			return value
+		end
+	end
+
+	setmetatable(result, {
+		__index = function(self, index)
+			if typeof(index) == "string" then
+				-- If it starts with SLICE! then it is a slice, get the start, stop, and step values. Sometimes the 3rd value is not there, so we need to check for that
+				if string.sub(index, 1, 6) == "SLICE!" then
+					local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
+					if (not stop) and (not step) and start then -- 1 value
+						start = string.match(index, "SLICE!%((%d+), (%d+)%)")
+						step = 1
+						stop = -1
+					elseif not step then -- 2 values
+						start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
+						step = 1
+					end
+					return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
+				end
+			end
+			if result._data[index] ~= nil then
+				return result._data[index]
+			end
+			return methods[index]
+		end,
+		__newindex = function(self, index, value)
+			result._data[index] = value
+		end,
+		__call = function(self, _, idx)
+			if idx == nil and key_index ~= nil then
+				key_index = nil
+			end
+
+			key_index, _ = next(result._data, key_index)
+
+			return key_index            
+		end,
+	})
+
+	return result
+end
 --{SOURCECODEGOESHERE}--
 
 local libraries = {
@@ -871,8 +580,8 @@ local libraries = {
 }
 local dependenciesfolder = script.Parent
 local pythonBuiltIn = function(inScript) -- python built in
-	return {game = pymeta(game),
-		 list = list, dict = dict, -- class meta
+	local items = {selfc = selfcval,
+		list = list, dict = dict, -- class meta
 		staticmethod = function(old_fun) -- staticmethod
 			local wrapper = function(first, ...)
 				return old_fun(...)
@@ -1182,27 +891,27 @@ local pythonBuiltIn = function(inScript) -- python built in
 
 		-- open()
 		open = function (path, mode)
-				local obj = parse_path(path, game)
-				if obj:IsA("ModuleScript") then
-					local source = obj.Source
-					if mode == "r" then
-						return source
-					elseif mode == "w" then
-						return {
-							write = function(self, data)
-								obj:SetSource(data)
-							end,
-							close = function(self)
-								--obj:SaveSource()
-								return -- do nothing
-							end
-						}
-					else
-						error("Invalid mode, at the moment only r and w are supported: " .. mode)
-					end
+			local obj = parse_path(path, inScript)
+			if obj:IsA("ModuleScript") then
+				local source = require(obj)
+				if mode == "r" then
+					return source.Contents or error("File is not in correct roblox-pyc format, cannot be read.")
+				elseif mode == "w" then
+					return {
+						write = function(self, data)
+							obj:SetSource(data)
+						end,
+						close = function(self)
+							--obj:SaveSource()
+							return -- do nothing
+						end
+					}
 				else
-					error("Object is not a LuaSourceContainer: " .. path)
+					error("Invalid mode, at the moment only r and w are supported: " .. mode)
 				end
+			else
+				error("Object is not a LuaSourceContainer: " .. path)
+			end
 		end,
 
 
@@ -1281,11 +990,7 @@ local pythonBuiltIn = function(inScript) -- python built in
 
 		-- breakpoint()
 		breakpoint = function () -- breakpoint
-			-- This function can be left empty or you can add a debug hook to pause execution.
-			-- Here's an example using the debug library to pause execution:
-
-			print("Breakpoint hit, we would reccomend using roblox breakpoints.")
-			--io.read() -- Wait for user input to continue
+			debug.traceback("Breakpoint hit!")
 
 		end,
 
@@ -1413,6 +1118,13 @@ local pythonBuiltIn = function(inScript) -- python built in
 			end
 		end
 	}
+	
+	for i, v in items do
+		items[i] = wrap(v)
+	end
+	for i, v in language do
+		items[i] = wrap(getfenv()[i])
+	end
 end
 local import = function(index, sub) -- import
 	if libraries[index] then
@@ -1436,6 +1148,10 @@ local import = function(index, sub) -- import
 		error("No such library called " .. index)
 	end
 end
+local include = function()
+	error("C and C++ are not complete yet")
+end
+
 local module = function(scriptname)
 	return { 
 		py = {
@@ -1444,11 +1160,11 @@ local module = function(scriptname)
 		},
 		lunar = {
 			import,
-			{-- lunar built in NOTHING
+			{-- lunar built in: NOTHING
 			},
 		},
 		c = {
-			import,
+			include,
 			{-- c and c++ built in
 			}
 		}
