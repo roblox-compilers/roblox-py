@@ -177,13 +177,19 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_BinOp(self, node):
         """Visit binary operation"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
-        line = "({})".format(operation["format"])
+        format = ""
+        if "format" in operation: 
+            format = operation["format"] 
+        else:
+            format = operation["function"](node.left, node.right)
+        line = "({})".format(format)
         values = {
             "left": self.visit_all(node.left, True),
             "right": self.visit_all(node.right, True),
             "operation": operation["value"],
         }
-
+        # remove !!!!!I\\SSTRING!!!!! from line
+        line = line.replace("!!!!!I\\SSTRING!!!!!", "")
         self.emit(line.format(**values))
 
     def visit_BoolOp(self, node):
@@ -231,10 +237,12 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Slice(self, node):
         if node.step is None:
-            line = '"SLICE!({start}, {end})"'
+            line = 'slice({sequence}, "{start}", "{end}")'
         else:
-            line = '"SLICE!({start}, {end}, {step})"'
+            line = 'slice({sequence}, "{start}", "{end}", "{step}")'
         values = {
+            # Use context for sequence
+            "sequence": self.visit_all(self.context.last()["subscript"]["value"]["id"], True),
             "start": self.visit_all(node.lower, True),
             "end": self.visit_all(node.upper, True),
             "step": self.visit_all(node.step, True),
@@ -783,7 +791,7 @@ class NodeVisitor(ast.NodeVisitor):
         elif self.context.last()["docstring"]:
             self.emit('--[[ {} ]]'.format(node.s))
         else:
-            self.emit('stringmeta "{}"'.format(node.s))
+            self.emit('!!!!!I\\SSTRING!!!!! "{}"'.format(node.s))
 
     def visit_Subscript(self, node):
         """Visit subscript"""
@@ -792,6 +800,8 @@ class NodeVisitor(ast.NodeVisitor):
             "name": self.visit_all(node.value, inline=True),
             "index": self.visit_all(node.slice, inline=True),
         }
+        # append to context
+        self.context.last()["subscript"] = node
 
         self.emit(line.format(**values))
 

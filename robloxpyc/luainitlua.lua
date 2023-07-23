@@ -529,13 +529,8 @@ local function set_metatable(var, mt)
 	local var_type = typeof(var)
 	if var_type == "Instance" then
 		var:SetAttribute("__metatable", mt)
-	elseif var_type == "table" or var_type == "userdata" then
+	elseif var_type == "table" then
 		setmetatable(var, mt)
-	elseif var_type == "number" or var_type == "string" or var_type == "boolean" then
-		local proxy = newproxy(true)
-		getmetatable(proxy).__index = function() return var end
-		setmetatable(proxy, mt)
-		var = proxy
 	end
 	return var
 end
@@ -570,60 +565,7 @@ end
 local typeof = gtype
 
 
-function string_meta(input)
-	if type(input) == "string" then
-		return set_metatable(input, {
-			__add = function(v1, v2)
-				if typeof(v1) == "string" and typeof(v2) == "string" then
-					return v1 .. v2
-				end
-				return v1 + v2
-			end,
-			__index = function(self, index)
-				if typeof(index) == "string" then
-					-- if it start with SLICE! then it is a slice, get the start, stop, and step values. sometimes the 3rd value is not there, so we need to check for that
-					if string.sub(index, 1, 6) == "SLICE!" then
-						local start, stop, step = string.match(index, "SLICE!%((%d+), (%d+), (%d+)%)")
-						if (not stop) and (not step) and start then -- 1 value
-							start = string.match(index, "SLICE!%((%d+), (%d+)%)")
-							step = 1
-							stop = -1
-						elseif not step then
-							start, stop = string.match(index, "SLICE!%((%d+), (%d+)%)")
-							step = 1
-						end
-						return slicefun(self, tonumber(start), tonumber(stop), tonumber(step))
-					end
-				end
-				return input:split()[index]
-			end,
-			__newindex = function(self, index, value)
-				input:split()[index] = value
-			end,
-			__tostring = function(self)
-				return input
-			end,
-			__call = function(self, ...)
-				return string.format(input, ...)
-			end,
-			__sub = function(v1, v2)
-				if typeof(v1) == "string" and typeof(v2) == "string" then
-					return string.gsub(v1, v2, "")
-				end
-				return v1 - v2
-			end,
-			__mul = function(v1, v2)
-				if typeof(v1) == "string" then
-					return string.rep(v1, v2)
-				end
-				return v1 * v2
-			end,
 
-		})
-	else
-		return input
-	end
-end
 function list(input)
 	if type(input) == "table" then
 		setmetatable(input, {
@@ -930,7 +872,7 @@ local libraries = {
 local dependenciesfolder = script.Parent
 local pythonBuiltIn = function(inScript) -- python built in
 	return {game = pymeta(game),
-		stringmeta = string_meta, list = list, dict = dict, -- class meta
+		 list = list, dict = dict, -- class meta
 		staticmethod = function(old_fun) -- staticmethod
 			local wrapper = function(first, ...)
 				return old_fun(...)

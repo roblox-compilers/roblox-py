@@ -4,14 +4,20 @@ import ast
 
 _DEFAULT_FORMAT = "{left} {operation} {right}"
 
-
+def addfunc(left, right):
+    if ("!!!!!I\\SSTRING!!!!!" in left) and ("!!!!!I\\SSTRING!!!!!" in right):
+        return "{left} .. {right}"
+    elif ("!!!!!I\\SSTRING!!!!!" in left) or ("!!!!!I\\SSTRING!!!!!" in right):
+        return "tostring({left}) .. tostring({right})" 
+    else :
+        return "{left} + {right}"
 class BinaryOperationDesc:
     """Binary operation description"""
 
     OPERATION = {
         ast.Add: {
             "value": "+",
-            "format": _DEFAULT_FORMAT,
+            "function": addfunc
         },
         ast.Sub: {
             "value": "-",
