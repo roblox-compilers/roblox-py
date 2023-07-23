@@ -4,10 +4,9 @@ Contributions would be greatly appreciated!
 ## Big
 - Add return getfenv() or something like that to the end of pip packages 
 - Fix config
-- File control
 - Alot of library testing
 - Redo import
-- Slicing
+
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall
 - Fix dylib config not saving after using C or C++ compiler 
