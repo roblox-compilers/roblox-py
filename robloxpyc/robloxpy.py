@@ -420,7 +420,7 @@ def unknowncompile(r, file):
       with open(os.path.join(r, file), "r") as f:
         contents = f.read()
         contents = contents.replace("]]", "]\]")
-        contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nlocal file\nfile = {Contents = [["+contents+"]], Type = 'rawtext', Extension = '"+file.split(".")[file.split(".").__len__()-1]+"', SetSource = function(input) file.Contents = input end}"
+        contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nlocal file\nfile = {Contents = [["+contents+"]], Type = 'rawtext', Extension = '"+file.split(".")[file.split(".").__len__()-1]+"', SetSource = function(self, input) self.Contents = input end}"
         filename = os.path.basename(file)
         sepratedbydot = filename.split(".")
         ending = sepratedbydot[sepratedbydot.__len__()-1]
@@ -441,7 +441,7 @@ def jsoncompile(r, file):
       contents = ""
       with open(os.path.join(r, file), "r") as f:
         contents = f.read()
-        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nlocal file\nfile = {Contents = "+json_to_lua(contents)+", Type = 'json', Extension = 'json', SetSource = function(input) file.Contents = input end}"
+        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nreturn {Contents = "+json_to_lua(contents)+", Type = 'json', Extension = 'json', SetSource = function(self, input) self.Contents = input end}"
         filename = os.path.basename(file)
         sepratedbydot = filename.split(".")
         ending = sepratedbydot[sepratedbydot.__len__()-1]
