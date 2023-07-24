@@ -249,7 +249,7 @@ def getconfig(arg1, arg2, default="None"):
       return value
     except EOFError:
       # The file is empty, write a {} to it
-      with open("cfg.pkl", "wb") as f:
+      with open(cfgPath, "wb") as f:
         pickle.dump({}, f)
       return getconfig(arg1, arg2, default)
 
@@ -270,7 +270,7 @@ def setconfig(arg1, arg2, value, ignore=None):
           pickle.dump(cfg, f)
     except EOFError:
       # The file is empty, write a {} to it
-      with open("cfg.pkl", "wb") as f:
+      with open(cfgPath, "wb") as f:
         pickle.dump({}, f)
       return setconfig(arg1, arg2, value, ignore=ignore)
 # UPDATES
