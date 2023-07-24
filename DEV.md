@@ -3,9 +3,8 @@ Contributions would be greatly appreciated!
 
 ## Big
 - Add return getfenv() or something like that to the end of pip packages 
-- Fix config
-- Alot of library testing
 - Redo import
+- Fix the slicing bug
 
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall

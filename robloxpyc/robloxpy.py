@@ -224,71 +224,41 @@ def checkboth():
         install_moonscript()
         
 # CONFIG
-def getconfig(lang, key, default=None):
-  script_dir = os.path.dirname(os.path.realpath(__file__))
-  try:
-    with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-      try:
-        returnval = pickle.load(file)[lang][key]
-        if returnval == None or returnval == "":
-          #print("Returned default because value was None or empty")
-          return default
-        else:
-          return returnval
-      except KeyError:
-        # find which one doesnt exist, lang or key
-        bugged = ""
-        try:
-          test = pickle.load(file)[lang]
-        except KeyError:
-          bugged = "lang"
-        if bugged == "":
-          try:
-            test = pickle.load(file)[lang][key]
-          except KeyError:
-            bugged = "key"
-        if bugged == "": 
-          print(error("Config file KeyError!", "roblox-py"))
-          return default
-    
-        # Write the missing lang or key in and return the default
-        if bugged == "lang":
-          #print(warn("Adding missing language %s to config file..." % lang))
-          new = pickle.load(file)
-          new[lang] = {}
-          pickle.dump(new, file)
-        if bugged == "key":
-          #print(warn("Adding missing key %s to config file..." % key))
-          new = pickle.load(file)
-          new[lang][key] = default
-          pickle.dump(new, file)
-        
-        print("Returned default because key or lang was missing and I added it")
-        return default
-  except EOFError:
-    # the file is empty, write {} to it
-    with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-      pickle.dump({}, file)
+def getconfig(arg1, arg2, default="None"):
+    # Load the config file if it exists, or create a new one if it doesn't
+    if os.path.exists("cfg.pkl"):
+        with open("cfg.pkl", "rb") as f:
+            cfg = pickle.load(f)
+    else:
+        cfg = {}
 
-    return default
-def setconfig(lang, key, value, default=None):
-  script_dir = os.path.dirname(os.path.realpath(__file__))
-  try:
-    with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-      cfg = pickle.load(file)
-      if not lang in cfg:
-        cfg[lang] = {}
-      cfg[lang][key] = value
-      with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-        pickle.dump(cfg, file)
-  except EOFError:
-    # the file is empty, write {} to it
-    with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-      pickle.dump({}, file)
-  except KeyError:
-    # this is now getconfigs problem i dont give a shit no more
-    getconfig(lang, key, default)
+    # Get the value from the config file, or use the default value if it doesn't exist
+    value = cfg.get(arg1, {}).get(arg2, default)
 
+    # Update the config file with the default value if it doesn't exist
+    if arg1 not in cfg:
+        cfg[arg1] = {}
+    if arg2 not in cfg[arg1]:
+        cfg[arg1][arg2] = default
+        with open("cfg.pkl", "wb") as f:
+            pickle.dump(cfg, f)
+
+    return value
+
+def setconfig(arg1, arg2, value, ignore=None):
+    # Load the config file if it exists, or create a new one if it doesn't
+    if os.path.exists("cfg.pkl"):
+        with open("cfg.pkl", "rb") as f:
+            cfg = pickle.load(f)
+    else:
+        cfg = {}
+
+    # Set the value in the config file and save it
+    if arg1 not in cfg:
+        cfg[arg1] = {}
+    cfg[arg1][arg2] = value
+    with open("cfg.pkl", "wb") as f:
+        pickle.dump(cfg, f)
 # UPDATES
 def get_latest_version():
     url = f"https://pypi.org/pypi/roblox-pyc/json"
