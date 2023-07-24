@@ -6,7 +6,8 @@ _DEFAULT_FORMAT = "{left} {operation} {right}"
 
 def addfunc(left, right):
     # check if left and right have anything other than 0-9
-    if not left.isdigit() or not right.isdigit():
+    # left and right are name objects, so we need to get the id
+    if not left.id.isdigit() or not right.id.isdigit():
         return "tostring({left}) .. tostring({right})"
     else :
         return "{left} + {right}"

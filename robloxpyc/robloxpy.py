@@ -243,7 +243,7 @@ def getconfig(arg1, arg2, default="None"):
           cfg[arg1] = {}
       if arg2 not in cfg[arg1]:
           cfg[arg1][arg2] = default
-          with open("cfg.pkl", "wb") as f:
+          with open(cfgPath, "wb") as f:
               pickle.dump(cfg, f)
 
       return value
@@ -266,7 +266,7 @@ def setconfig(arg1, arg2, value, ignore=None):
       if arg1 not in cfg:
           cfg[arg1] = {}
       cfg[arg1][arg2] = value
-      with open("cfg.pkl", "wb") as f:
+      with open(cfgPath, "wb") as f:
           pickle.dump(cfg, f)
     except EOFError:
       # The file is empty, write a {} to it
