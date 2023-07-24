@@ -90,20 +90,18 @@
     </footer>
 
       <script>
-        const flask = new CodeFlask('.code-editor', { language: 'py' });
-flask.updateCode(`import roblox-pyc from 'roblox-pyc';
-
-const flask = new roblox-pyc('#my-selector', { language: 'js' });
-
-// How to listen for changes on your editor
-flask.onUpdate((code) => {
-  //...
-});
-
-// How to update your editor with custom content:
-const new_content = 'let it = "go"';
-
-flask.updateCode(new_content);`);
+        const flask = new CodeFlask('.code-editor', { language: 'python' });
+flask.updateCode(`@game.PlayerAdded
+def onPlayerAdded(player):
+    print("Hello, " + player.Name + "!")
+    player.Chatted.connect(onChatted)
+  
+@game.PlayerRemoving
+def onPlayerRemoving(player):
+    print("Goodbye, " + player.Name + "!")
+    
+for i in range(1, 10):
+    print(i)`);
 </script>
 </body>
 </html>
