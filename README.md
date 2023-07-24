@@ -26,8 +26,6 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 
 > C/C++ is still in progress.
 
-> Lunar is a language based on MoonScript made for Roblox, at the moment they are identical.
-
 > Python is fully implemented, all code should work because it supports the dev build of Python 3.13.
 
 ***
@@ -56,16 +54,6 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
   If you dont what to use VScode, python supports a roblox plugin which can be hosted in the terminal with all the features listed above!
 * 🌙 **Lunar**\
   roblox-pyc comes with a custom language called lunar with amazing syntax features and an extended standard library, which is a modified version of MoonScript for roblox
-
-***
-
-### Todo:
-
-* Extend py api to support all objects
-* Config for `lib` to avoid repeating writing file path
-* Finish C/C++
-* Add types in lunar
-* Lunar roblox plugin
 
 ***
 
