@@ -281,7 +281,7 @@ def check_for_updates():
       returnval = ""
       try:
         with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-          returnval = file
+          returnval = file.read()
       except:
         print(error("Failed to safe-update, data is corrupted. Would you like to force-update, you may lose configuration data.", "auto-updater"))
         choice = input("\t\tDo you want to force-update? (yes/no): ").lower()
