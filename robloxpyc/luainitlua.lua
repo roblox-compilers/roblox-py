@@ -1120,6 +1120,34 @@ local pythonBuiltIn = function(inScript) -- python built in
 			else
 				error("Invalid argument type for %")
 			end
+		end,
+
+		safeadd = function(left, right)
+			if type(left) ~= type(right) then
+				error("Cannot add values of different types")
+			end
+			local chosentype = type(left)
+			if chosentype == "string" then
+				return left .. right
+			elseif chosentype == "number" then
+				return left + right
+			elseif chosentype == "table" then
+				local result = {}
+				for i, v in ipairs(left) do
+					table.insert(result, v)
+				end
+				for i, v in ipairs(right) do
+					table.insert(result, v)
+				end
+				return result
+			elseif chosentype == "function" then
+				return function(...)
+					left(...)
+					right(...)
+				end
+			else
+				error("Invalid argument type for +")
+			end
 		end
 	}
 	
