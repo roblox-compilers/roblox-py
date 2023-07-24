@@ -930,7 +930,7 @@ local pythonBuiltIn = function(inScript) -- python built in
 
 		-- eval()
 		eval = function (expr, env)
-			return loadstring(expr)
+			return loadstring(expr)()
 		end,
 
 		-- exec()
