@@ -19,6 +19,21 @@ local import, builtin = _G.pyc(script).lunar
 -----------------------------------------------------------------------------
 """
 
+pyfooter = """
+
+------------------------------------ END ------------------------------------
+if script:IsA("ModuleScript") then 
+	return getfenv()
+else
+	repeat task.wait() until _G.pyc.libs
+	if not _G.pyc.libs then
+		_G.pyc.libs = {}
+	end
+	_G.pyc.libs[script] = getfenv()
+end
+------------------------------------ END ------------------------------------
+
+"""
 
 def header(functions):
     code = ""

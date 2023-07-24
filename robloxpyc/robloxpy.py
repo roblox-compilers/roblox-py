@@ -224,10 +224,12 @@ def checkboth():
         install_moonscript()
         
 # CONFIG
+# CFG will be in the same directory as this file
+cfgPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cfg.pkl")
 def getconfig(arg1, arg2, default="None"):
     # Load the config file if it exists, or create a new one if it doesn't
-    if os.path.exists("cfg.pkl"):
-        with open("cfg.pkl", "rb") as f:
+    if os.path.exists(cfgPath):
+        with open(cfgPath, "rb") as f:
             cfg = pickle.load(f)
     else:
         cfg = {}
@@ -247,8 +249,8 @@ def getconfig(arg1, arg2, default="None"):
 
 def setconfig(arg1, arg2, value, ignore=None):
     # Load the config file if it exists, or create a new one if it doesn't
-    if os.path.exists("cfg.pkl"):
-        with open("cfg.pkl", "rb") as f:
+    if os.path.exists(cfgPath):
+        with open(cfgPath, "rb") as f:
             cfg = pickle.load(f)
     else:
         cfg = {}

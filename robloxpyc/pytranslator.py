@@ -5,7 +5,7 @@ import os
 from .config import Config
 from .nodevisitor import NodeVisitor
 
-from .header import header
+from .header import header, pyfooter
 from .luainit import initcode, allfunctions, generatewithlibraries, robloxfunctions
 
 class Translator:
@@ -41,7 +41,7 @@ class Translator:
         # create header for function calls
         newheader = header(functions)
     
-        return newheader+self.to_code()
+        return newheader+self.to_code()+pyfooter
 
     def to_code(self, code=None, indent=0):
         """Create a lua code from the compiler output"""
