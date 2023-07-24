@@ -6,7 +6,7 @@ from .config import Config
 from .nodevisitor import NodeVisitor
 
 from .header import header
-from .luainit import initcode, allfunctions, generatewithlibraries
+from .luainit import initcode, allfunctions, generatewithlibraries, robloxfunctions
 
 class Translator:
     """Python to lua main class translator"""
@@ -39,7 +39,7 @@ class Translator:
                     
                     
         # create header for function calls
-        newheader = header(functions)
+        newheader = header(functions+robloxfunctions)
     
         return newheader+self.to_code()
 
