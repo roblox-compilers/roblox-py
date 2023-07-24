@@ -2,7 +2,7 @@
 Contributions would be greatly appreciated!
 
 ## Big
-- Redo import
+- Add item to content.json in dependencies folder
 
 ## Post-release
 - Enable C/C++ and add loader for install and uninstall
