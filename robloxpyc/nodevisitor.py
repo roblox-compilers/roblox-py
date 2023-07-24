@@ -188,8 +188,6 @@ class NodeVisitor(ast.NodeVisitor):
             "right": self.visit_all(node.right, True),
             "operation": operation["value"],
         }
-        # remove !!!!!I\\SSTRING!!!!! from line
-        line = line.replace("!!!!!I\\SSTRING!!!!!", "")
         self.emit(line.format(**values))
 
     def visit_BoolOp(self, node):
@@ -782,7 +780,8 @@ class NodeVisitor(ast.NodeVisitor):
         elif self.context.last()["docstring"]:
             self.emit('--[[ {} ]]'.format(node.s))
         else:
-            self.emit('!!!!!I\\SSTRING!!!!! "{}"'.format(node.s))
+            # Add to context
+            self.emit('"{}"'.format(node.s))
 
     def visit_Subscript(self, node):
         """Visit subscript"""

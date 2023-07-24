@@ -5,10 +5,9 @@ import ast
 _DEFAULT_FORMAT = "{left} {operation} {right}"
 
 def addfunc(left, right):
-    if ("!!!!!I\\SSTRING!!!!!" in left) and ("!!!!!I\\SSTRING!!!!!" in right):
-        return "{left} .. {right}"
-    elif ("!!!!!I\\SSTRING!!!!!" in left) or ("!!!!!I\\SSTRING!!!!!" in right):
-        return "tostring({left}) .. tostring({right})" 
+    # check if left and right have anything other than 0-9
+    if not left.isdigit() or not right.isdigit():
+        return "tostring({left}) .. tostring({right})"
     else :
         return "{left} + {right}"
 class BinaryOperationDesc:
