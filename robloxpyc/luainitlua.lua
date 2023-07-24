@@ -126,11 +126,6 @@ local language = {
 	["Vector3"] = "table",
 	["Vector3int16"] = "table",
 }
-local selfcval  = newproxy(true)
-
-getmetatable(selfcval).__tostring = function()
-	return "pyc special object: "..(tostring({}):gsub("table: ", ""):split(" ")[1])
-end
 function backwordreplace(s, old, new, occurrence) -- Lua implementation of the python function in robloxpy.py line ~600
 	local li = {}
 	local i = 1
@@ -207,6 +202,7 @@ unwrap = function(wrapped)
 	end
 end
 wrap = function(real, functions) 
+	functions = functions or {}
 	for w,r in next,wrappercache do
 		if r == real then
 			return w
@@ -233,11 +229,19 @@ wrap = function(real, functions)
 					})
 					return newSignal
 				elseif type(real[k]) == "function" then
-					return function(special, ...)
-						if special == selfcval then
-							return wrap(real[k](real[k], ...))
+					return function(...)
+						local returnval
+						local items = unpack(table.pack(...))
+						local s, e = pcall(function()
+							returnval = wrap(real[k](items))
+						end)
+						if (not s) then 
+							local rawcall = real[k](real, items)
+							returnval = wrap(rawcall)
+						elseif not s then
+							error(e)
 						end
-						return wrap(real[k](special, ...))
+						return returnval
 					end
 				end
 				return wrap(real[k], functions)
@@ -580,7 +584,7 @@ local libraries = {
 }
 local dependenciesfolder = script.Parent
 local pythonBuiltIn = function(inScript) -- python built in
-	local items = {selfc = selfcval,
+	local items = {
 		list = list, dict = dict, -- class meta
 		staticmethod = function(old_fun) -- staticmethod
 			local wrapper = function(first, ...)
@@ -1125,6 +1129,7 @@ local pythonBuiltIn = function(inScript) -- python built in
 	for i, v in language do
 		items[i] = wrap(getfenv()[i])
 	end
+	return items
 end
 local import = function(index, sub) -- import
 	if libraries[index] then
