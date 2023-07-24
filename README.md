@@ -55,7 +55,13 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 * 🌙 **Lunar**\
   roblox-pyc comes with a custom language called lunar with amazing syntax features and an extended standard library, which is a modified version of MoonScript for roblox
 
-
+***
+## Unsupported features
+- Import * (python)
+- Syntax based slicing (python) (workaround: use slice builtin function)
+- C/C++ (not implemented yet)
+- _\_slots_\_ (python) (adding soon)
+- _\_dict_\_ (python) (adding soon)
 ***
 
 ### Credits

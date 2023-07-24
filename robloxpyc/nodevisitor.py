@@ -10,7 +10,7 @@ from .unaryopdesc import UnaryOperationDesc
 from .context import Context
 from .loopcounter import LoopCounter
 from .tokenendmode import TokenEndMode
-
+from .colortext import *
 
 class NodeVisitor(ast.NodeVisitor):
     LUACODE = "[[lua]]"
@@ -236,18 +236,9 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("coroutine.yield({})".format(self.visit_all(node.value, True)))
 
     def visit_Slice(self, node):
-        if node.step is None:
-            line = 'slice({sequence}, "{start}", "{end}")'
-        else:
-            line = 'slice({sequence}, "{start}", "{end}", "{step}")'
-        values = {
-            # Use context for sequence
-            "sequence": "\"\"", #self.visit_all(self.context.last()["subscript"]["value"]["id"], True)
-            "start": self.visit_all(node.lower, True),
-            "end": self.visit_all(node.upper, True),
-            "step": self.visit_all(node.step, True),
-        }
-        self.emit(line.format(**values))
+        """Visit slice"""
+        print(yellow("warning", ["bold"])+" syntax based slicing is not supported yet. Use slice(<sequence>, <start>, <end>, <step>) instead. This node will not be translated.")
+        
 
     def visit_JoinedStr(self, node):
         """Visit joined string"""
@@ -801,7 +792,7 @@ class NodeVisitor(ast.NodeVisitor):
             "index": self.visit_all(node.slice, inline=True),
         }
         # append to context
-        self.context.last()["subscript"] = node
+        ##self.context.last()["subscript"] = node
 
         self.emit(line.format(**values))
 
