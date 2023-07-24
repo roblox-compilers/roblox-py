@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>roblox-pyc -- The Python, C, C++, and more -> Luau compiler.</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="The Python, C, C++, and more -> Luau compiler.">
+  
+  <link rel="shortcut icon" sizes="16x16" href="favicon.png">
+  <link rel="shortcut icon" sizes="32x32" href="favicon-32.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@kazzkiq">
+  <meta name="twitter:creator" content="@kazzkiq">
+  <meta name="twitter:title" content="roblox-pyc">
+  <meta name="twitter:description" content="The Python, C, C++, and more -> Luau compiler.">
+  <meta name="twitter:image" content="https://asynchronousai.github.io/roblox-pyc/og.png">
+
+  <meta property="og:url" content="https://asynchronousai.github.io/roblox-pyc/">
+  <meta property="og:image" content="https://asynchronousai.github.io/roblox-pyc/og.png">
+  <meta property="og:title" content="roblox-pyc">
+  <meta property="og:description" content="The Python, C, C++, and more -> Luau compiler.">
+  
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet"> 
+  <script src="https://unpkg.com/codeflask/build/codeflask.min.js"></script>
+</head>
+<body>
+  <div class="call-to-action-wrapper">
+    <img src="logo.svg" width="65" alt="roblox-pyc" class="logo animate-up">
+    <h1>roblox-pyc</h1>
+    <h2 class="font-light animate fade-in-up">The Python, C, C++, and more -> Luau compiler.</h2>
+    <div class="actions">
+      <a href="https://robloxpyc.gitbook.io/roblox-pyc" class="btn line animate-up">Documentation</a>
+      <a href="https://github.com/AsynchronousAI/roblox-pyc" class="btn readonly animate-up">Github</a>
+    </div>
+
+    <h3 class="font-light animate-up">Don't be shy, give it a try:</h3>
+    <h4 class="font-light animate-up">(no rhyme intended)</h4>
+    
+    <div class="code-window">
+      <header class="code-header">
+        Example
+      </header>
+      <div class="code-editor"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="container text-center">
+        <h1 class="font-light">Why and where should you use roblox-pyc</h1>
+        <div class="row">
+          <div class="col">
+            <h3 class="font-semi-bold">For complex calculations</h3>
+            <p>Python is the best option if you want to make a game that requires alot of calculations without being super confusing..</p>
+          </div>
+          <div class="col">
+            <h3 class="font-semi-bold">As a way to learn something new</h3>
+            <p>Luau can barely be used outside of roblox, but Python, C, C++ all are used in huge companies and will be super helpful to learn.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <h3 class="font-semi-bold">Simpler code</h3>
+            <p>With Pythons simpler syntax and huge library selection you can write super extensive programs in 10 lines!.</p>
+          </div>
+          <div class="col">
+            <h3 class="font-semi-bold">A better workflow</h3>
+            <p>By switching to roblox-pyc you can write code quicker and more efficiently because of the languages supported, tools, easy use, and more.</p>
+          </div>
+        </div>
+        
+        <hr>
+        
+    
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h1 class="font-light">Documentation</h1>
+            <p>For more info on how to use it you can go to the project’s Github Page and read the README.md.</p>
+            <a href="https://github.com/AsynchronousAI/roblox-pyc" class="button">Check Documentaton</a>
+          </div>
+          <div class="col">
+            <h1 class="font-light">Credit & Thanks</h1>
+            <p>Playground website based of roblox-pyc</p>
+            <p>Read full credits in README.md</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+      <script>
+        const flask = new roblox-pyc('.code-editor', { language: 'py' });
+flask.updateCode(`import roblox-pyc from 'roblox-pyc';
+
+const flask = new roblox-pyc('#my-selector', { language: 'js' });
+
+// How to listen for changes on your editor
+flask.onUpdate((code) => {
+  //...
+});
+
+// How to update your editor with custom content:
+const new_content = 'let it = "go"';
+
+flask.updateCode(new_content);`);
+</script>
+</body>
+</html>
+      

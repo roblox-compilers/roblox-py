@@ -1237,3 +1237,4 @@ end
 
 
 _G.pyc = module
+_G.pyc.libs = {}

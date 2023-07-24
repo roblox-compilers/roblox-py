@@ -25,10 +25,7 @@ pyfooter = """
 if script:IsA("ModuleScript") then 
 	return getfenv()
 else
-	repeat task.wait() until _G.pyc.libs
-	if not _G.pyc.libs then
-		_G.pyc.libs = {}
-	end
+	repeat task.wait() until _G.pyc
 	_G.pyc.libs[script] = getfenv()
 end
 ------------------------------------ END ------------------------------------
