@@ -287,7 +287,7 @@ def check_for_updates():
           sys.exit()
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
       with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-        pickle.dump(returnval, file)
+        file.write(returnval)
 # Download from wally 
 def wallyget(author, name, isDependant=False):
   # Use wally and download the zip and unpack it
