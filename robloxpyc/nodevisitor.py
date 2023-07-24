@@ -242,7 +242,7 @@ class NodeVisitor(ast.NodeVisitor):
             line = 'slice({sequence}, "{start}", "{end}", "{step}")'
         values = {
             # Use context for sequence
-            "sequence": self.visit_all(self.context.last()["subscript"]["value"]["id"], True),
+            "sequence": "\"\"", #self.visit_all(self.context.last()["subscript"]["value"]["id"], True)
             "start": self.visit_all(node.lower, True),
             "end": self.visit_all(node.upper, True),
             "step": self.visit_all(node.step, True),

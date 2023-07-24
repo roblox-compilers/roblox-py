@@ -304,8 +304,20 @@ def check_for_updates():
     choice = input("\t\tDo you want to update? (yes/no): ").lower()
     if choice == "yes":
       # Add the pip upgrade command here.
+      # Get cfg.pkl 
+      script_dir = os.path.dirname(os.path.realpath(__file__))
+      returnval = ""
+      try:
+        with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+          returnval = file
+      except:
+        print(error("Failed to safe-update, data is corrupted. Would you like to force-update, you may lose configuration data.", "auto-updater"))
+        choice = input("\t\tDo you want to force-update? (yes/no): ").lower()
+        if not choice == "yes":
+          sys.exit()
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
-
+      with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
+        pickle.dump(returnval, file)
 # Download from wally 
 def wallyget(author, name, isDependant=False):
   # Use wally and download the zip and unpack it

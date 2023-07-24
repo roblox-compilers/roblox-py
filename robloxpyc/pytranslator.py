@@ -33,13 +33,13 @@ class Translator:
         for i in range(len(self.to_code().split("\n"))):
             # check if a function is being called, like print()
             
-            for function in allfunctions:
+            for function in (allfunctions+robloxfunctions):
                 if function in self.to_code().split("\n")[i] and function not in functions:
                     functions.append(function)
                     
                     
         # create header for function calls
-        newheader = header(functions+robloxfunctions)
+        newheader = header(functions)
     
         return newheader+self.to_code()
 
