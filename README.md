@@ -55,21 +55,6 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 * 🌙 **Lunar**\
   roblox-pyc comes with a custom language called lunar with amazing syntax features and an extended standard library, which is a modified version of MoonScript for roblox
 
-***
-
-### FAQ:
-
-**But why not just use roblox-ts??**
-
-Roblox-ts is best for front-end, if you want to use it you can it offers TSX which makes roact way better, but roblox-pyc also has its perks like more functions in Python, good syntax in lunar, learning way more complicated languages (C/C++), beyond just Rojo+VScode support, cross-language support so you can use Lua libraries and not have to port it, you could even try to use roblox-ts + roblox-pyc.
-
-**What are the general perks of these languages?**
-
-* Syntax (specifically Lunar)
-* Functions (python)
-* You could get a career using these languages
-* Lambda (python)
-* Matches (Python, C, C++) and way way more.
 
 ***
 
@@ -79,6 +64,4 @@ Roblox-ts is best for front-end, if you want to use it you can it offers TSX whi
 * [TextBoxPlus](https://github.com/boatbomber/TextBoxPlus). uses a modified version with autocomplete (plugin usage)
 * [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes. (read licenses in [copyright.txt](COPYRIGHTS.txt))
 * [seasnake](https://github.com/pybee/seasnake). Modified to convert C/C++ to Luau rather than C/C++ to Python 2.7
-* [MoonScript](https://github.com/leafo/moonscript). Modified to lunar
-* [t](https://github.com/osyrisrblx/t). Modified to work for lunar
-* t-util. Modified to work for lunar, and docs were added to the Lunar API section
+* [MoonScript](https://github.com/leafo/moonscript). Modified to work with the Roblox API (Lunar).
