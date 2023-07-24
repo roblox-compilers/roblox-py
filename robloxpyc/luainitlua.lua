@@ -897,7 +897,7 @@ local pythonBuiltIn = function(inScript) -- python built in
 		open = function (path, mode)
 			local obj = parse_path(path, inScript)
 			if obj:IsA("ModuleScript") then
-				local source = require(obj)
+				local source = fromFileImport(obj)
 				if mode == "r" then
 					return source.Contents or error("File is not in correct roblox-pyc format, cannot be read.")
 				elseif mode == "w" then
@@ -1131,28 +1131,58 @@ local pythonBuiltIn = function(inScript) -- python built in
 	end
 	return items
 end
-local import = function(index, sub) -- import
-	if libraries[index] then
-		if sub then
-			return libraries[index][sub]
-		else
-			return libraries[index]
-		end
-	elseif script.Parent:FindFirstChildOfClass("ModuleScript") then
-		return require(script.Parent:FindFirstChildOfClass("ModuleScript"))
-	elseif script.Parent:FindFirstChildOfClass("Folder") then
-		if require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub)) then
-			return require(script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("init") or script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild(sub))
-		elseif script.Parent:FindFirstChildOfClass("Folder"):FindFirstChild("default.project") and script.Parent:FindFirstAncestorOfClass("Folder"):FindFirstChild("default.project"):IsA("ModuleScript") then
-			local jsondata = require(script.Parent:FindFirstAncestorOfClass("Folder"):FindFirstChild("default.project"))
-			if jsondata["Type"] and jsondata["Type"] == "json" then
-				jsondata = jsondata["Contents"]
-			end
-		end
+function fromFileImport(scriptin)
+	if scriptin == nil then error("Cannot import from nil.") end
+	if scriptin:IsA("ModuleScript") then
+		return require(scriptin)
 	else
-		error("No such library called " .. index)
+		return _G.pyc.data[scriptin] or error("Cannot import from script, it is not a module script and is not registered in _G")
 	end
 end
+local import = function(inscript) return function(index, sub) -- import
+	-- IMPORT METHODS:
+	-- Local libraries table - Added
+	-- _G.pyc.data[script], will return all of its return values, for non modulescripts  - Added in fromFileImport
+	-- require(script), for modulescripts  - Added in fromFileImport
+	-- (require/_G.pyc.data).Contents, for open, dont worry about this one  - Added in open
+	-- Index is .<filename>, look for the script/module script from inscript's parent - Added
+	-- Index is /<filename>, look inside of inscript  - Added
+	-- Index is . look for sub inside of inscripts parent - Added
+	-- Index is / look for sub inside of inscript - Added
+	-- Search in dependencies folder, dependencies folder should have a script called "content" use fromFileImport and that will have all of the dependencies - Added
+
+
+	if index == "." then
+		if sub then
+			return fromFileImport(inscript.Parent:FindFirstChild(sub))
+		end
+	elseif index == "/" then
+		if sub then
+			return fromFileImport(inscript:FindFirstChild(sub))
+		end
+	elseif index:sub(1,1) == "." then
+		if sub then
+			return fromFileImport(inscript.Parent:FindFirstChild(index:sub(2)))[sub]
+		end
+	elseif index:sub(1,1) == "/" then
+		if sub then
+			return fromFileImport(inscript:FindFirstChild(index:sub(2)))[sub]
+		end
+	elseif libraries[index] then -- Local libraries table
+		if sub then
+			return libraries[index][sub]
+		end
+		return libraries[index]
+	else
+		local dependencies = fromFileImport(dependenciesfolder:FindFirstChild("content")).Contents -- works just like open
+		if dependencies[index] then
+			if sub then
+				return dependencies[index][sub]
+			end
+			return dependencies[index]
+		end
+	end
+end end
 local include = function()
 	error("C and C++ are not complete yet")
 end
@@ -1160,11 +1190,11 @@ end
 local module = function(scriptname)
 	return { 
 		py = {
-			import,
+			import(scriptname),
 			pythonBuiltIn(scriptname)
 		},
 		lunar = {
-			import,
+			import(scriptname),
 			{-- lunar built in: NOTHING
 			},
 		},

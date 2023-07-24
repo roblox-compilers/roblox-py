@@ -331,16 +331,16 @@ def wallyget(author, name, isDependant=False):
   if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
     os.makedirs(os.path.join(os.getcwd(), "dependencies"))
   ####
-  open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), "x").close()
-  with open(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), "wb") as file:
+  open(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), "x").close()
+  with open(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), "wb") as file:
     file.write(response)
   # unzip
   print(info("Unzipping package...", "roblox-pyc wally"))
-  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"), 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", author+"_"+name))
+  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), 'r') as zip_ref:
+    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name))
   # delete the zip
   print(info("Deleting uneeded resources...", "roblox-pyc wally"))
-  os.remove(os.path.join(os.getcwd(), "dependencies", author+"_"+name+".zip"))
+  os.remove(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"))
 
 # JSON 
 def json_to_lua(json_str):
@@ -386,7 +386,8 @@ def lib():
     with open(dir, "w") as f:
         translator = pytranslator.Translator()
         f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-  
+    # Make a file called content.json in the dependencies folder
+    open(os.path.join(cwd, "dependencies", "content.json"), "x").close()
 # ASYNC 
 def filtercompiledfolder():
   cwd = os.getcwd()
@@ -1512,6 +1513,7 @@ Configuring General Settings
         wallyget(author, name)
       elif sys.argv[2].startswith("@rbxts"):
         # Use NPM
+        print(warn("Fetching from NPM is still not stable, you might get missing files or files in the wrong place."))
         if not check_npms():
           install_npms()
         # Install to /dependencies not /node_modules
