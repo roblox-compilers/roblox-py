@@ -106,7 +106,7 @@ class loader:
   def update(self, amount):
     self.tqdm.update(amount)
   def error(self):
-    self.tqdm.write(colortext.red("error!", ["bold"]))
+    self.tqdm.write(colortext.red("paused!", ["bold"]))
     self.current = self.max
     self.tqdm.close()
   
@@ -492,7 +492,7 @@ def cppcompile(r, file, pluscount=False):
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compiler error "+str(e))
       if pluscount:
-        pluscount.error()
+        #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -538,7 +538,7 @@ def ccompile(r, file, pluscount=False):
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
       if pluscount:
-        pluscount.error()
+        #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -573,7 +573,7 @@ def pycompile(r, file, pluscount=False):
         f.write(lua_code)
       
       if pluscount:
-        pluscount.error()
+        #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -582,7 +582,7 @@ def pycompile(r, file, pluscount=False):
       print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
       debug("Compile error at "+str(e))
       if pluscount:
-        pluscount.error()
+        #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -600,7 +600,7 @@ def lunarcompile(r, file, pluscount=False):
       if stdout:     
         print(error(f"Compile Error!\n\n "+str(stdout), f"{os.path.join(r, file)}"))
         if pluscount:
-          pluscount.error()
+          #pluscount.error()
           pluscount.update(1)
           pluscount.current += 1
           #global count
@@ -609,7 +609,7 @@ def lunarcompile(r, file, pluscount=False):
       else:
         print(error(f"Compile Error!\n\n "+str(stderr), f"{os.path.join(r, file)}"))
         if pluscount:
-          pluscount.error()
+          #pluscount.error()
           pluscount.update(1)
           pluscount.current += 1
           #global count
@@ -638,7 +638,7 @@ def lunarcompile(r, file, pluscount=False):
           print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
           
           if pluscount:
-            pluscount.error()
+            #pluscount.error()
             pluscount.update(1)
             pluscount.current += 1
             #global count
@@ -650,7 +650,7 @@ def robloxtscompile(r, file, pluscount=False):
     try:
       print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
       if pluscount:
-        pluscount.error()
+        #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
@@ -658,7 +658,7 @@ def robloxtscompile(r, file, pluscount=False):
     except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
         if pluscount:
-          pluscount.error()
+          #pluscount.error()
           pluscount.update(1)
           pluscount.current += 1
           #global count
