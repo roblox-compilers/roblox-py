@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/lua/lua.min.js"></script>
-  
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -59,9 +59,9 @@
   <h1>roblox-pyc playground</h1>
   
   <div class="container">
-    <textarea id="readonly-editor" readonly># This editor is read-only</textarea>
-    <br>
     <textarea id="editable-editor"># Write your Python code here...</textarea>
+    <br>
+    <textarea id="readonly-editor" readonly>-- Compiled code will come here once "Copy Code" button is clicked</textarea>
     <br>
     <button onclick="copyCode()">Copy Code</button>
   </div>
