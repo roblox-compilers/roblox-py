@@ -617,7 +617,7 @@ def lunarcompile(r, file, pluscount=False):
           return 0
     else:
       try:
-        newheader = header.lunarheader(luainit.lunarfunctions)
+        newheader = header.lunarheader([])
                     
         # check if the new file has been created
         if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
@@ -625,7 +625,7 @@ def lunarcompile(r, file, pluscount=False):
           with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
             contents = f.read()
           with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-            f.write(newheader+contents)
+            f.write(newheader+contents+header.pyfooter)
           
         else:
           print(error("File error for "+os.path.join(r, file)+"!"))
