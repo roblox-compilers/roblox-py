@@ -13,6 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/lua/lua.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/moonscript/moonscript.min.js"></script>
 
   <style>
     body {
@@ -63,7 +64,7 @@
     <br>
     <textarea id="readonly-editor" readonly>-- Compiled code will come here once "Copy Code" button is clicked</textarea>
     <br>
-    <button onclick="copyCode()">Copy Code</button>
+    <button onclick="copyCode()">Compile Code</button>
   </div>
 
   <script>
@@ -78,7 +79,7 @@
     });
 
     var editableEditor = CodeMirror.fromTextArea(document.getElementById("editable-editor"), {
-      mode: "python",
+      mode: "moonscript",
       lineNumbers: true,
       theme: "default",
       indentUnit: 4,
@@ -90,6 +91,7 @@
       var code = editableEditor.getValue();
       readonlyEditor.setValue(code);
     }
+    
   </script>
 </body>
 </html>
