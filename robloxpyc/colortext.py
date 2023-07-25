@@ -14,13 +14,13 @@ def cyan(text, styles = []):
     return color(text, 36, styles)
 def white(text, styles = []):
     return color(text, 37, styles)
-def rainbow_text(text, end = "\n"):
+def rainbow_text(text, end = ""):
     colors = ['\033[31m', '\033[33m', '\033[32m', '\033[36m', '\033[34m', '\033[35m']
     i = 0
     for char in text:
         print(colors[i % len(colors)] + char, end='')
         i += 1
-    print('\n', end=end)
+    print('\033[0m', end=end)
 def nil(text=""):
     return
 def color(text, color, styles = []):
