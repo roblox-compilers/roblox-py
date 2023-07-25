@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>roblox-pyc</title>
+  <title>roblox-pyc playground</title>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="description" content="CodeMirror Example">
@@ -14,24 +14,60 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/python/python.min.js"></script>
 
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      background-color: #007bff;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
     .CodeMirror {
       height: 300px;
       border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0062cc;
     }
   </style>
 </head>
 <body>
   <h1>roblox-pyc playground</h1>
   
-  <textarea id="readonly-editor" readonly># This editor is read-only</textarea>
-  <br>
-  <textarea id="editable-editor"># Write your Python code here...</textarea>
-  <br>
-  <button onclick="copyCode()">Copy Code</button>
+  <div class="container">
+    <textarea id="readonly-editor" readonly># This editor is read-only</textarea>
+    <br>
+    <textarea id="editable-editor"># Write your Python code here...</textarea>
+    <br>
+    <button onclick="copyCode()">Copy Code</button>
+  </div>
 
   <script>
     var readonlyEditor = CodeMirror.fromTextArea(document.getElementById("readonly-editor"), {
-      mode: "python",
+      mode: "lua",
       lineNumbers: true,
       theme: "default",
       indentUnit: 4,
