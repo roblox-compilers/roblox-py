@@ -742,11 +742,12 @@ def w():
       newloader.yielduntil()
       
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli()
     
     def incli2():
       # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
@@ -775,11 +776,12 @@ def w():
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli2()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         p()
@@ -882,11 +884,12 @@ def cw():
             othercompile(r, file)
       newloader.yielduntil()
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli()
     def incli2():
       # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
       path = os.getcwd()+"-compiled"
@@ -913,11 +916,12 @@ def cw():
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli2()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli2()
         
         
     if sys.argv.__len__() >= 1:
@@ -1020,11 +1024,12 @@ def cpw():
       newloader.yielduntil()
       print(colortext.green("Compiled Files!"))
       
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli()
     def incli2():
       # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
       path = os.getcwd()+"-compiled"
@@ -1051,11 +1056,12 @@ def cpw():
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli2()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli2()
           
       
     if sys.argv.__len__() >= 1:
@@ -1153,11 +1159,12 @@ def lunar():
             othercompile(r, file)
       newloader.yielduntil()  
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli()
     def incli2():
       # Just like incli, but duplicates the direcotry with -compiled and compiles the files in there, also runs filtercompiledfolder() on the directory
       path = os.getcwd()+"-compiled"
@@ -1184,11 +1191,12 @@ def lunar():
       newloader.yielduntil()
       filtercompiledfolder()
       print(colortext.green("Compiled Files!"))
-      action = input("")
-      if action == "exit":
-        exit(0)
-      else:
-        incli2()
+      if getconfig("general", "autocompile", False):
+        action = input("")
+        if action == "exit":
+          exit(0)
+        else:
+          incli2()
     if sys.argv.__len__() >= 1:
       if sys.argv[1] == "p":
         print(error("Plugins are only supported for python!"))
@@ -1395,6 +1403,7 @@ Configuring General Settings
 1 - Change C and C++ dylib
 2 - Change LLVM Home Path (only for C and C++)
 3 - Change LD-LIBRARY-PATH (only for C and C++)
+4 - Enable or diable autocompile
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
@@ -1408,6 +1417,14 @@ Configuring General Settings
           returned = input("Enter the LD-LIBRARY-PATH, it currently is %s: " % getconfig("general", "ldlibrarypath", "None"))
           setconfig("general", "ldlibrarypath", returned, "")
           config_llvm(None, getconfig("general", "ldlibrarypath", ""))
+        elif inputval == "4":
+          returned = input("Would you like to turn autocompile (on/off)")
+          if returned == "on":
+            setconfig("general", "autocompile", True, False)
+          elif returned == "off":
+            setconfig("general", "autocompile", False, True)
+          else:
+            print(error("not a valid option!"))
       elif returnval == "6":
         colortext.nil(colortext.rainbow_text("Welcome to the secret menu!"))
         print("This contains many developer options and some goofy ones too!")
