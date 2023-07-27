@@ -798,7 +798,7 @@ def w():
         # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
-          path = os.getcwd()
+          path = os.getcwd()+"/src"
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
@@ -938,7 +938,7 @@ def cw():
         # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
-          path = os.getcwd()
+          path = os.getcwd()+"/src"
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
@@ -1077,7 +1077,7 @@ def cpw():
         # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
-          path = os.getcwd()
+          path = os.getcwd()+"/src"
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
@@ -1211,7 +1211,7 @@ def lunar():
         # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
-          path = os.getcwd()
+          path = os.getcwd()+"/src"
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
@@ -1457,7 +1457,7 @@ Configuring General Settings
         install_roblox_ts()
       confirm = input(warn("Are you sure? This will delete all .lua files and add a .ts file with the same name.\n\nType 'yes' to continue."))
       if confirm == "yes":   
-        path = os.getcwd()
+        path = os.getcwd()+"/src"
         
         for r, d, f in os.walk(path):
            for file in f:
