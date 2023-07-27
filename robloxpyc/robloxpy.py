@@ -137,66 +137,7 @@ def decreapted(source=""):
   if source != "":
     source = colortext.white(" ("+source+") ")
   print(colortext.yellow("decreapted ", ["bold"])+source+"This feature is decreapted and will be removed in a future version of roblox-pyc")
-# INSTALL ROBLOX-TS
-def check_npms():
-  try:
-    subprocess.call(["npm", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-    return True
-  except FileNotFoundError:
-    return False
-def check_roblox_ts():
-  try:
-    subprocess.call(["rbxtsc", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-    return True
-  except FileNotFoundError:
-    return False
-def install_npms():
-  print("Installing npm...")
-  if sys.platform == "linux":
-    subprocess.call(["apt-get", "install", "-y", "npm"])
-  elif sys.platform == "darwin":
-    subprocess.call(["brew", "install", "npm"])
-  elif sys.platform == "win32":
-    subprocess.call(["choco", "install", "npm"])
-  else:
-    print(error("Could not auto-install npm, please install it manually."))
-def install_roblox_ts():
-  print("Installing roblox-ts...")
-  subprocess.call(["npm", "install", "-g", "roblox-ts"])
 
-# INSTALL SEALANG
-def check_llvm():
-  return True # Add LLVM check/installs later
-def install_llvm():
-  print("Installing LLVM...")
-  if sys.platform == "linux":
-    subprocess.call(["apt-get", "install", "-y", "llvm"])
-  elif sys.platform == "darwin":
-    subprocess.call(["brew", "install", "llvm", "--with-clang", "--with-asan"])
-  elif sys.platform == "win32":
-    subprocess.call(["choco", "install", "llvm"])
-  else:
-    print(error("Could not auto-install llvm, please install it manually."))
-def config_llvm(home=None, lib=None):
-  if home and home != "None":
-    subprocess.call(["export", "LLVM_HOME="+home])
-  if lib and lib != "None":
-    subprocess.call(["export", "LD_LIBRARY_PATH="+lib])
-
-# JSON FORMAT
-def formatdefaultproj(path, old, new):
-  # Read path and turn it into a table from a json
-  with open(path, "r") as f:
-    data = json.loads(f.read())
-  # Go through all keys in data, if is is $path, then replace <old> in it with <new>
-  for i in data:
-    if i == "$path":
-      data[i] = data[i].replace(old, new)
-  # Write the new data to the file
-  with open(path, "w") as f:
-    f.write(json.dumps(data))
-
-  
 # INSTALL MOONSCRIPT
 def check_luarocks():
     try:
