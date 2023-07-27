@@ -446,8 +446,8 @@ def jsoncompile(r, file):
         # if newfilename == oldfilename, add .lua to the end. For files without endings
         if filename == newfilename:
           newfilename = newfilename+".lua"
-                  
-        open(os.path.join(r, newfilename), "x").close()
+        if not os.path.exists(os.path.dirname(os.path.join(r, newfilename))):
+          open(os.path.join(r, newfilename), "x").close()
         with open(os.path.join(r, newfilename), "w") as f:
           f.write(contents)
     except UnicodeDecodeError:
