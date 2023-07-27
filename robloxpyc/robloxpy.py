@@ -1421,8 +1421,8 @@ Configuring General Settings
           returned = input("Would you like to turn autocompile (on/off)")
           if returned == "on":
             setconfig("general", "autocompile", True, False)
-          elif returned == "off":
-            setconfig("general", "autocompile", False, True)
+          elif returned == "off": 
+            setconfig("general", "autocompile", False, False)
           else:
             print(error("not a valid option!"))
       elif returnval == "6":
