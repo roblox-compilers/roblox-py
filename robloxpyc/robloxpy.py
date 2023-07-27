@@ -183,15 +183,20 @@ def config_llvm(home=None, lib=None):
   if lib and lib != "None":
     subprocess.call(["export", "LD_LIBRARY_PATH="+lib])
 
-  # check if wally is installed, if they are in mac use brew otherwise error
-  try:
-    subprocess.call(["wally", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-  except FileNotFoundError:
-    if sys.platform == "darwin":
-      print(info("Installing wally..."))
-      subprocess.call(["brew", "install", "wally"])
-    else:
-      print(error("Wally was not found and could not be auto-installed. Please install it manually."))
+# JSON FORMAT
+def formatdefaultproj(path, old, new):
+  # Read path and turn it into a table from a json
+  with open(path, "r") as f:
+    data = json.loads(f.read())
+  # Go through all keys in data, if is is $path, then replace <old> in it with <new>
+  for i in data:
+    if i == "$path":
+      data[i] = data[i].replace(old, new)
+  # Write the new data to the file
+  with open(path, "w") as f:
+    f.write(json.dumps(data))
+
+  
 # INSTALL MOONSCRIPT
 def check_luarocks():
     try:
@@ -814,6 +819,9 @@ def w():
         confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
         if confirm == "yes":
           path = os.getcwd()+"/src"
+          # check if cwd/default.project.json exists, if it does, then use that as the default project file
+          if os.path.exists(os.getcwd()+"/default.project.json"):
+            formatdefaultproj(os.getcwd()+"/default.project.json")
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
