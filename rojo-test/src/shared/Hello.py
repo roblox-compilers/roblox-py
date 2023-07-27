@@ -1,7 +1,7 @@
 """
 Simple fluid simulation 3d, based on the Navier-Stokes equations.
 """
-from . import metadata as profiles
+from l import metadata as profiles
 class FluidCalculation:
     def __init__(self, width, height, depth, viscosity, density):
         self.width = width or profiles.default.width
