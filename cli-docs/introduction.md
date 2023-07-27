@@ -5,7 +5,7 @@
 The CLI is accessible by using&#x20;
 
 ```
-roblox-pyc <command>
+rpyc <command>
 ```
 
 it has the commands
@@ -22,10 +22,10 @@ Everything else will open the help guide.
 ***
 
 ```
-roblox-pyc config
-roblox-pyc devforum
-roblox-pyc discord
-roblox-pyc github
+rpyc config
+rpyc devforum
+rpyc discord
+rpyc github
 ```
 
 ## Config

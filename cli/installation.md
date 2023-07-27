@@ -14,10 +14,10 @@ The following CLI's will be installed to your device
 
 (You can use one of the equivalents also)
 
-* roblox-py | Python compiler
-* roblox-c | C compiler
-* roblox-cpp | C++ compiler
-* roblox-lunar | Lunar compiler
+* rbxpy | Python compiler
+* rbxc | C compiler
+* rbxcpp | C++ compiler
+* rbxlun | Lunar compiler
 
 #### Primary tools
 

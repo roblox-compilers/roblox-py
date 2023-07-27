@@ -5,19 +5,19 @@
 ## C
 
 ```
-roblox-c c
+rbxc c
 ```
 
 Replaces all Lua scripts with C and comments old code.
 
 ```
-roblox-c w
+rbxc w
 ```
 
 Compile all C scripts, when enter is clicked again in the terminal compile again.
 
 ```
-roblox-c lib <path/to/replicatedstorage/roblox-pyc.lua>
+rbxc lib <path/to/replicatedstorage/roblox-pyc.lua>
 ```
 
 Download the library, Recommended to install in the VsCode equivalent of ReplicatedStorage with the filename, for example, it is src/shared/roblox-pyc.lua in Rojo.
@@ -27,19 +27,19 @@ Download the library, Recommended to install in the VsCode equivalent of Replica
 ## C++
 
 ```
-roblox-cpp c
+rbxcpp c
 ```
 
 Replaces all Lua scripts with C++ and comments old code.
 
 ```
-roblox-cpp w
+rbxcpp w
 ```
 
 Compile all C++ scripts, when enter is clicked again in the terminal compile again.
 
 ```
-roblox-cpp lib <path/to/replicatedstorage/roblox-pyc.lua>
+rbxcpp lib <path/to/replicatedstorage/roblox-pyc.lua>
 ```
 
 Download the library, Recommended to install in the VsCode equivalent of ReplicatedStorage with the filename, for example, it is src/shared/roblox-pyc.lua in Rojo.
