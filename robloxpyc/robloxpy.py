@@ -1401,7 +1401,7 @@ Configuring General Settings
     elif sys.argv[1] == "devforum":
       webbrowser.open("https://devforum.com")
     elif sys.argv[1] == "discord":
-      webbrowser.open("https://discord.gg/jbMFyBcBC2")
+      webbrowser.open("https://discord.gg/RAXYEjj3")
     elif sys.argv[1] == "github":
       webbrowser.open("https://github.com/AsynchronousAI/roblox-pyc")
     elif sys.argv[1] == "help":
