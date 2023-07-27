@@ -386,7 +386,20 @@ def onNotFound(target):
     if i["target"] == target:
       pass
 def lib():
-  # create dependencies folder if it doesnt exist
+    # if /server and /client are found, then error
+    if os.path.exists(os.path.join(os.getcwd(), "server")) and os.path.exists(os.path.join(os.getcwd(), "client")):
+      print(warn("Do not install dependencies inside of the parent folder, rather both the /server and /client folder. Would you like to do this?"))
+      inputval = input("[Y/n]: ").lower()
+      if inputval == "n":
+        sys.exit()
+      elif inputval == "y":
+        # Set cwd to server and run lib
+        os.chdir(os.path.join(os.getcwd(), "server"))
+        lib()
+        # set cwd to client and run lib
+        os.chdir(os.path.join(os.getcwd(), "..", "client"))
+        lib()
+    # create dependencies folder if it doesnt exist
     if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
       os.makedirs(os.path.join(os.getcwd(), "dependencies"))
   
