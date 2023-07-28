@@ -1,12 +1,18 @@
 """Python to lua translator class"""
 import ast
 import os
+import sys
+if 'pip' in sys.modules:
+    from config import Config
+    from nodevisitor import NodeVisitor
+    from header import header, pyfooter
+    from luainit import initcode, allfunctions, generatewithlibraries, robloxfunctions
+else:
+    from .config import Config
+    from .nodevisitor import NodeVisitor
 
-from .config import Config
-from .nodevisitor import NodeVisitor
-
-from .header import header, pyfooter
-from .luainit import initcode, allfunctions, generatewithlibraries, robloxfunctions
+    from .header import header, pyfooter
+    from .luainit import initcode, allfunctions, generatewithlibraries, robloxfunctions
 
 class Translator:
     """Python to lua main class translator"""

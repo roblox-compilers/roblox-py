@@ -1,7 +1,10 @@
 import os
 import pip
 import sys
-from . import colortext as colortext
+if 'pip' in sys.modules:
+    import colortext as colortext
+else:
+	from . import colortext as colortext
 
 initcode = ""
 

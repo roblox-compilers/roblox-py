@@ -1,5 +1,9 @@
 """Error system for robloxpyc"""
-from . import colortext, configmanager
+import sys
+if 'pip' in sys.modules:
+    import colortext, configmanager
+else:
+    from . import colortext, configmanager
 import subprocess, traceback
 
 def candcpperror():

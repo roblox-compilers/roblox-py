@@ -1,8 +1,14 @@
-from . import pytranslator
 import pyflakes.api as api
 import requests
 from flask import Flask, request
-from .reporter import Reporter
+import sys
+if 'pip' in sys.modules:
+    from reporter import Reporter
+    import pytranslator
+else:
+    from .reporter import Reporter
+    from . import pytranslator
+
 def p():
   app = Flask(__name__)
   print("The plugin is decreapted. Please use the CLI alongside a Studio+VSCode sync plugin.")

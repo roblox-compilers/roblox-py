@@ -1,6 +1,11 @@
 """Class to store the python code context"""
-from .symbolsstack import SymbolsStack
-from .tokenendmode import TokenEndMode
+import sys
+if 'pip' in sys.modules:
+    from symbolsstack import SymbolsStack
+    from tokenendmode import TokenEndMode
+else:
+    from .symbolsstack import SymbolsStack
+    from .tokenendmode import TokenEndMode
 
 
 class Context:

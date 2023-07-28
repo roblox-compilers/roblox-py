@@ -20,8 +20,12 @@ from clang.cindex import (
     Config,
 )
 
-from .model import *
-from .writer import CodeWriter
+if 'pip' in sys.modules:
+    from model import *
+    from writer import CodeWriter
+else:
+    from .model import *
+    from .writer import CodeWriter
 
 
 # Python 2 compatibility shims

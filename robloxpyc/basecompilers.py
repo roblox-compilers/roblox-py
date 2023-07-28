@@ -1,8 +1,15 @@
-from . import pytranslator, parser, header
-from .errormanager import *
-from .configmanager import *
 import sys
-from .util import *
+
+if 'pip' in sys.modules:
+    import pytranslator, parser, header
+    from errormanager import *
+    from configmanager import *
+    from util import *
+else:
+    from . import pytranslator, parser, header
+    from .errormanager import *
+    from .configmanager import *
+    from .util import *
 
 
 

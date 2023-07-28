@@ -1,16 +1,28 @@
 """Node visitor"""
-import ast
+import ast, sys
 
-from .binopdesc import BinaryOperationDesc
-from .boolopdesc import BooleanOperationDesc
-from .cmpopdesc import CompareOperationDesc
-from .nameconstdesc import NameConstantDesc
-from .unaryopdesc import UnaryOperationDesc
+if 'pip' in sys.modules:
+    from binopdesc import BinaryOperationDesc
+    from boolopdesc import BooleanOperationDesc
+    from cmpopdesc import CompareOperationDesc
+    from nameconstdesc import NameConstantDesc
+    from unaryopdesc import UnaryOperationDesc
 
-from .context import Context
-from .loopcounter import LoopCounter
-from .tokenendmode import TokenEndMode
-from .colortext import *
+    from context import Context
+    from loopcounter import LoopCounter
+    from tokenendmode import TokenEndMode
+    from colortext import *
+else:
+    from .binopdesc import BinaryOperationDesc
+    from .boolopdesc import BooleanOperationDesc
+    from .cmpopdesc import CompareOperationDesc
+    from .nameconstdesc import NameConstantDesc
+    from .unaryopdesc import UnaryOperationDesc
+
+    from .context import Context
+    from .loopcounter import LoopCounter
+    from .tokenendmode import TokenEndMode
+    from .colortext import *
 
 class NodeVisitor(ast.NodeVisitor):
     LUACODE = "[[lua]]"

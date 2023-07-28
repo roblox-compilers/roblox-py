@@ -8,16 +8,28 @@ from tqdm import tqdm
 from time import sleep
 
 # FILES
-from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+if __name__ == "__main__":
+  from robloxpyc import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 
-# MODULAR
-from .errormanager import *
-from .installationmanager import *
-from .configmanager import *
-from .textcompiler import *
-from .basecompilers import *
-from .util import *
-from .plugin import *
+  # MODULAR
+  from errormanager import *
+  from installationmanager import *
+  from configmanager import *
+  from textcompiler import *
+  from basecompilers import *
+  from util import *
+  from plugin import *
+else:
+  from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+
+  # MODULAR
+  from .errormanager import *
+  from .installationmanager import *
+  from .configmanager import *
+  from .textcompiler import *
+  from .basecompilers import *
+  from .util import *
+  from .plugin import *
 
 # BUILTIN
 import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile

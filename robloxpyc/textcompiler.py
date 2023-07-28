@@ -1,7 +1,12 @@
 import json
-from .errormanager import *
 import os
-from .util import *
+import sys
+if 'pip' in sys.modules:
+    from errormanager import *
+    from util import *
+else:
+    from .errormanager import *
+    from .util import *
 
 
 def json_to_lua(json_str):

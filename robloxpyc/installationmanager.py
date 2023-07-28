@@ -4,10 +4,14 @@
 from packaging import version
 
 # FILES
-from .errormanager import * #ctranslator is old and not used
+import sys
+if 'pip' in sys.modules:
+    from errormanager import *
+else:
+    from .errormanager import * 
 
 # BUILTIN
-import subprocess,sys,requests,pkg_resources,sys, os
+import subprocess,requests,pkg_resources, os
 
 def check_luarocks():
     try:
