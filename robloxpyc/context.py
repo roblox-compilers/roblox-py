@@ -1,5 +1,6 @@
 """Class to store the python code context"""
 import sys
+import os 
 if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from symbolsstack import SymbolsStack
     from tokenendmode import TokenEndMode

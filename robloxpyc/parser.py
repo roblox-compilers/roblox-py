@@ -20,6 +20,7 @@ from clang.cindex import (
     Config,
 )
 
+import os 
 if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from model import *
     from writer import CodeWriter

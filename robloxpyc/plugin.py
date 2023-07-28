@@ -2,6 +2,7 @@ import pyflakes.api as api
 import requests
 from flask import Flask, request
 import sys
+import os 
 if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from reporter import Reporter
     import pytranslator

@@ -1,5 +1,6 @@
 """Holds many useful functions for roblox-pyc"""
 import sys
+import os 
 if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     import colortext, configmanager, pytranslator
 else:
