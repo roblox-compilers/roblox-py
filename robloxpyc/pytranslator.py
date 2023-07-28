@@ -2,7 +2,7 @@
 import ast
 import os
 import sys
-if 'pip' in sys.modules:
+if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from config import Config
     from nodevisitor import NodeVisitor
     from header import header, pyfooter

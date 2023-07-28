@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-if 'pip' in sys.modules:
+if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from errormanager import *
     from util import *
 else:
