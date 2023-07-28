@@ -1,11 +1,23 @@
+# TODO
+
 import sys
 if 'pip' in sys.modules:
     from loader import loader
     from textcompiler import *
     from configmanager import *
     from util import *
+    from basecompilers import *
+else:
+    from .loader import loader
+    from .textcompiler import *
+    from .configmanager import *
+    from .util import *
+    from .basecompilers import *
+import threading
+    
 
-
+def newLanguage(file, func, commentart):
+    pass
 def w():
   try:
     def incli():
