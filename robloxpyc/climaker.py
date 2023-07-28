@@ -13,7 +13,7 @@ else:
     from .configmanager import *
     from .util import *
     from .basecompilers import *
-import threading
+import threading, shutil
     
 
 def newLanguage(file, func, commentart):
