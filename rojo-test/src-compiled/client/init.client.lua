@@ -2,11 +2,21 @@
 		
 		
 ------------------------------------ BUILT IN -------------------------------
-local py, import, builtin = _G.pyc.py
+repeat task.wait() until _G.pyc
+local py, import, builtin = _G.pyc(script).py
 
-local stringmeta = builtin.stringmeta
-local str = builtin.str
 local int = builtin.int
+local print = builtin.print
 
 -----------------------------------------------------------------------------
-print(stringmeta "Hello!")
+print("Hello!")
+
+------------------------------------ END ------------------------------------
+if script:IsA("ModuleScript") then 
+	return getfenv()
+else
+	repeat task.wait() until _G.pyc
+	_G.pyc.libs[script] = getfenv()
+end
+------------------------------------ END ------------------------------------
+
