@@ -8,6 +8,14 @@ from time import sleep
 # FILES
 from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 
+# MODULAR
+from .errormanager import *
+from .installationmanager import *
+from .configmanager import *
+from .textcompiler import *
+from .basecompilers import *
+from .util import *
+
 # BUILTIN
 import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile
 
@@ -109,145 +117,9 @@ class loader:
     self.tqdm.write(colortext.red("paused!", ["bold"]))
     self.current = self.max
     self.tqdm.close()
+
+
   
-    
-
-# ERROR
-def candcpperror():
-  print(warn("C and C++ are not supported in this build, coming soon! \n\n contributions on github will be greatly appreciated!"))
-def error(errormessage, source=""):
-  if source != "":
-    source = colortext.white(" ("+source+") ")
-  if getconfig("general", "goofy", False):
-    subprocess.call(["say", errormessage])
-  return(colortext.red("error ", ["bold"])+source+errormessage)
-def warn(warnmessage, source=""):
-  if source != "":
-    source = colortext.white(" ("+source+") ")
-  return(colortext.yellow("warning ", ["bold"])+source+warnmessage)
-def info(infomessage, source=""):
-  if source != "":
-    source = colortext.white(" ("+source+") ")
-  return(colortext.blue("info ", ["bold"])+source+infomessage)
-def debug(infomessage):
-  if getconfig("general", "traceback", False):
-    print(colortext.blue("debug ", ["bold"])+infomessage)
-    print(traceback.format_exc())
-def decreapted(source=""):
-  if source != "":
-    source = colortext.white(" ("+source+") ")
-  print(colortext.yellow("decreapted ", ["bold"])+source+"This feature is decreapted and will be removed in a future version of roblox-pyc")
-
-# INSTALL MOONSCRIPT
-def check_luarocks():
-    try:
-        subprocess.call(["luarocks", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-        return True
-    except FileNotFoundError:
-        return False
-
-def check_moonscript():
-    try:
-        subprocess.call(["moonc", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
-        return True
-    except FileNotFoundError:
-        return False
-      
-def install_luarocks():
-    print("Installing LuaRocks...")
-    subprocess.call(["apt-get", "install", "-y", "luarocks"])
-
-def install_moonscript():
-    print("Installing MoonScript...")
-    subprocess.call(["luarocks", "install", "moonscript", "--dev"])
-
-def checkboth():
-    if check_luarocks() == False:
-        print(warn("LuaRocks is not installed, installing..."))
-        install_luarocks()
-    if check_moonscript() == False:
-        print(warn("MoonScript is not installed, installing..."))
-        install_moonscript()
-        
-# CONFIG
-# CFG will be in the same directory as this file
-cfgPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cfg.pkl")
-def getconfig(arg1, arg2, default="None"):
-    try:
-      # Load the config file if it exists, or create a new one if it doesn't
-      if os.path.exists(cfgPath):
-          with open(cfgPath, "rb") as f:
-              cfg = pickle.load(f)
-      else:
-          cfg = {}
-
-      # Get the value from the config file, or use the default value if it doesn't exist
-      value = cfg.get(arg1, {}).get(arg2, default)
-
-      # Update the config file with the default value if it doesn't exist
-      if arg1 not in cfg:
-          cfg[arg1] = {}
-      if arg2 not in cfg[arg1]:
-          cfg[arg1][arg2] = default
-          with open(cfgPath, "wb") as f:
-              pickle.dump(cfg, f)
-
-      return value
-    except EOFError:
-      # The file is empty, write a {} to it
-      with open(cfgPath, "wb") as f:
-        pickle.dump({}, f)
-      return getconfig(arg1, arg2, default)
-
-def setconfig(arg1, arg2, value, ignore=None):
-    try:
-      # Load the config file if it exists, or create a new one if it doesn't
-      if os.path.exists(cfgPath):
-          with open(cfgPath, "rb") as f:
-              cfg = pickle.load(f)
-      else:
-          cfg = {}
-
-      # Set the value in the config file and save it
-      if arg1 not in cfg:
-          cfg[arg1] = {}
-      cfg[arg1][arg2] = value
-      with open(cfgPath, "wb") as f:
-          pickle.dump(cfg, f)
-    except EOFError:
-      # The file is empty, write a {} to it
-      with open(cfgPath, "wb") as f:
-        pickle.dump({}, f)
-      return setconfig(arg1, arg2, value, ignore=ignore)
-# UPDATES
-def get_latest_version():
-    url = f"https://pypi.org/pypi/roblox-pyc/json"
-    response = requests.get(url)
-    data = response.json()
-    return data["info"]["version"]
-
-def check_for_updates():
-  current_version = pkg_resources.get_distribution("roblox-pyc").version
-  latest_version = get_latest_version()
-  if version.parse(latest_version) > version.parse(current_version):
-    print(info(f"Update available to {latest_version}, you are currently using {current_version}"))
-    choice = input("\t\tDo you want to update? (yes/no): ").lower()
-    if choice == "yes":
-      # Add the pip upgrade command here.
-      # Get cfg.pkl 
-      script_dir = os.path.dirname(os.path.realpath(__file__))
-      returnval = ""
-      try:
-        with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
-          returnval = file.read()
-      except:
-        print(error("Failed to safe-update, data is corrupted. Would you like to force-update, you may lose configuration data.", "auto-updater"))
-        choice = input("\t\tDo you want to force-update? (yes/no): ").lower()
-        if not choice == "yes":
-          sys.exit()
-      subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
-      with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
-        file.write(returnval)
 # Download from wally 
 def wallyget(author, name, isDependant=False):
   # Use wally and download the zip and unpack it
@@ -300,27 +172,6 @@ def wallyget(author, name, isDependant=False):
   print(info("Deleting uneeded resources...", "roblox-pyc wally"))
   os.remove(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"))
 
-# JSON 
-def json_to_lua(json_str):
-    data = json.loads(json_str)
-    return _json_to_lua(data)
-
-def _json_to_lua(data):
-    if isinstance(data, dict):
-        items = []
-        for key, value in data.items():
-            items.append('[{}] = {}'.format(_json_to_lua(key), _json_to_lua(value)))
-        return '{{{}}}'.format(', '.join(items))
-    elif isinstance(data, list):
-        items = []
-        for value in data:
-            items.append(_json_to_lua(value))
-        return '{{{}}}'.format(', '.join(items))
-    elif isinstance(data, str):
-        return '"{}"'.format(data)
-    else:
-        return str(data)
-
 # CLI PACKAGES
 def onNotFound(target):
   currentcommand = sys.argv[2]
@@ -367,266 +218,6 @@ def filtercompiledfolder():
     for file in f:
       if not file.endswith(".lua"):
         os.remove(os.path.join(r, file))
-     
-def unknowncompile(r, file):
-  if file.endswith(".txt") or ("." not in file):
-     # This is for text files and files without a file extension
-    try:
-      contents = ""
-      with open(os.path.join(r, file), "r") as f:
-        contents = f.read()
-        contents = contents.replace("]]", "]\]")
-        contents = "--/ Compiled using roblox-pyc | Textfile compiler \--\nlocal file\nfile = {Contents = [["+contents+"]], Type = 'rawtext', Extension = '"+file.split(".")[file.split(".").__len__()-1]+"', SetSource = function(self, input) self.Contents = input end}"
-        filename = os.path.basename(file)
-        sepratedbydot = filename.split(".")
-        ending = sepratedbydot[sepratedbydot.__len__()-1]
-        newfilename = filename.replace("."+ending, ".lua")
-        # if newfilename == oldfilename, add .lua to the end. For files without endings
-        if filename == newfilename:
-          newfilename = newfilename+".lua"
-                  
-        open(os.path.join(r, newfilename), "x").close()
-        with open(os.path.join(r, newfilename), "w") as f:
-          f.write(contents)
-    except UnicodeDecodeError:
-        print(warn("Failed to read "+os.path.join(r, file)+"!"))
-def jsoncompile(r, file):
-  if file.endswith(".json"):
-    # compile the file to a file with the same name and path but .lua
-    try:
-      contents = ""
-      with open(os.path.join(r, file), "r") as f:
-        contents = f.read()
-        contents = "--/ Compiled using roblox-pyc | JSON compiler \--\nreturn {Contents = "+json_to_lua(contents)+", Type = 'json', Extension = 'json', SetSource = function(self, input) self.Contents = input end}"
-        filename = os.path.basename(file)
-        sepratedbydot = filename.split(".")
-        ending = sepratedbydot[sepratedbydot.__len__()-1]
-        newfilename = filename.replace("."+ending, ".lua")
-        # if newfilename == oldfilename, add .lua to the end. For files without endings
-        if filename == newfilename:
-          newfilename = newfilename+".lua"
-        if not os.path.exists(os.path.dirname(os.path.join(r, newfilename))):
-          open(os.path.join(r, newfilename), "x").close()
-        with open(os.path.join(r, newfilename), "w") as f:
-          f.write(contents)
-    except UnicodeDecodeError:
-        # Just delete the file
-        print(warn("Failed to read "+os.path.join(r, file)+"!"))
-def othercompile(r, file): # Handles Text files and JSON files, and files without a file extension
-  jsoncompile(r, file)
-  unknowncompile(r, file)
-def cppcompile(r, file, pluscount=False):
-  if '.cpp' in file and file.endswith(".cpp"):
-    # compile the file to a file with the same name and path but .lua
-    try:
-      newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
-      newctranslator.parse(
-      os.path.join(r, file),
-      # C not C++
-      flags=[
-        '-I%s' % inc for inc in []
-      ] + [
-        '-D%s' % define for define in []
-      ] + [
-        '-std=%s' % getconfig("cpp", "std", "c++20")
-      ] + [
-        '-stdlib=%s' % getconfig("cpp", "stdlib", "libc++")
-      ]
-      )
-      path = os.path.join(r, file)  
-      newctranslator.diagnostics(sys.stderr)
-      relative_path = backwordreplace(path,".cpp", ".lua", 1)
-      with open(relative_path, 'w') as out:
-        newctranslator.output(relative_path, out)   
-                  
-        #print(colortext.green("Compiled "+os.path.join(r, file)))
-      if pluscount:
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-    except Exception as e:
-      if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-        print(error("dylib not found, use `roblox-pyc config`, c++, dynamiclibpath, and set the path to the dynamic library."))
-      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      debug("Compiler error "+str(e))
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-        
-        return 0
-        
-def ccompile(r, file, pluscount=False):
-  if '.c' in file and file.endswith(".c"):
-    # compile the file to a file with the same name and path but .lua
-    try:
-      newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
-      newctranslator.parse(
-      os.path.join(r, file),
-      # C not C++
-      flags=[
-        '-I%s' % inc for inc in []
-      ] + [
-        '-D%s' % define for define in []
-      ] + [
-        '-std=%s' % getconfig("c", "std", "c11")
-      ] + [
-        '-stdlib=%s' % getconfig("c", "stdlib", "libc")
-      ]
-      )
-      path = os.path.join(r, file)  
-                
-      newctranslator.diagnostics(sys.stderr)
-      relative_path = backwordreplace(path,".c", ".lua", 1)
-      
-      with open(relative_path, 'w') as out:
-        newctranslator.output(relative_path, out)
-                  
-        #print(colortext.green("Compiled "+os.path.join(r, file)))
-      if pluscount:
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-    except Exception as e:
-      if "To provide a path to libclang use Config.set_library_path() or Config.set_library_file()" in str(e):
-        print(error("dylib not found, use `roblox-pyc config`, c, dynamiclibpath, and set the path to the dynamic library."))
-      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      debug("Compile error at "+str(e))
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-        return 0
-def pycompile(r, file, pluscount=False):
-  if file.endswith(".py"):
-    # compile the file to a file with the same name and path but .lua
-    contents = ""
-              
-    try:
-      with open(os.path.join(r, file)) as rf:
-        contents = rf.read()  
-    except Exception as e:
-      print(error(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
-      # do not compile the file if it cannot be read
-      return
-              
-    try:
-      translator = pytranslator.Translator()
-      lua_code = translator.translate(contents)
-      #print(colortext.green("Compiled "+os.path.join(r, file)))
-      # get the relative path of the file and replace .py with .lua
-      path = os.path.join(r, file)  
-        
-      relative_path = backwordreplace(path,".py", ".lua", 1)
-      
-      if not os.path.exists(os.path.dirname(relative_path)):
-        os.makedirs(os.path.dirname(relative_path))
-      
-      with open(relative_path, "w") as f:
-        f.write(lua_code)
-      
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-    except Exception as e:
-      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      debug("Compile error at "+str(e))
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-        return 0
-def lunarcompile(r, file, pluscount=False):
-  if file.endswith(".moon"):
-    # compile the file to a file with the same name and path but .lua
-    # Run command and check if anything is outputted to stderr, stdout, or stdin
-                
-    process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-                
-    if stdout or stderr:
-      if stdout:     
-        print(error(f"Compile Error!\n\n "+str(stdout), f"{os.path.join(r, file)}"))
-        if pluscount:
-          #pluscount.error()
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-          return 0
-      else:
-        print(error(f"Compile Error!\n\n "+str(stderr), f"{os.path.join(r, file)}"))
-        if pluscount:
-          #pluscount.error()
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-          return 0
-    else:
-      try:
-        newheader = header.lunarheader([])
-                    
-        # check if the new file has been created
-        if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-          #print(colortext.green("Compiled "+os.path.join(r, file)))          
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
-            contents = f.read()
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-            f.write(newheader+contents+header.pyfooter)
-          
-        else:
-          print(error("File error for "+os.path.join(r, file)+"!"))
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-      except Exception as e:
-          print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-          
-          if pluscount:
-            #pluscount.error()
-            pluscount.update(1)
-            pluscount.current += 1
-            #global count
-            #count += 1
-            return 0
-def robloxtscompile(r, file, pluscount=False):
-  if file.endswith(".ts") or file.endswith(".tsx"):
-    # Just add to pluscount, add later
-    try:
-      print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-    except Exception as e:
-        print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-        if pluscount:
-          #pluscount.error()
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-          return 0
-# UTIL
-def backwordreplace(s, old, new, occurrence):
-  li = s.rsplit(old, occurrence)
-  return new.join(li)
 
 
 # INTERFACE
@@ -761,8 +352,8 @@ def w():
         if confirm == "yes":
           path = os.getcwd()+"/src"
           # check if cwd/default.project.json exists, if it does, then use that as the default project file
-          if os.path.exists(os.getcwd()+"/default.project.json"):
-            formatdefaultproj(os.getcwd()+"/default.project.json")
+          #if os.path.exists(os.getcwd()+"/default.project.json"):
+          #  formatdefaultproj(os.getcwd()+"/default.project.json")
           # rename directory to -compiled
           os.rename(path, path+"-compiled")
           # duplicate the directory, remove the -compiled from the end
@@ -804,10 +395,6 @@ def w():
     sys.exit(0)
 # NOTE: Since C and C++ are disabled, their features are out of sync with python and lunar
 def cw():
-  if not check_llvm():
-    install_llvm()
-  
-  config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
   try:
     print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
     def incli():
@@ -944,10 +531,6 @@ def cw():
     print(colortext.red("Aborted!"))
     sys.exit(0)
 def cpw():
-  if not check_llvm():
-    install_llvm()
-  
-  config_llvm(getconfig("c", "llvmhome", "None"), getconfig("c", "libclangpath", "None"))
   
   try:
     print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
