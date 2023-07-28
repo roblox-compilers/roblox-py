@@ -19,6 +19,7 @@ if __name__ == "__main__":
   from basecompilers import *
   from util import *
   from plugin import *
+  from loader import loader
 else:
   from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 
@@ -30,7 +31,7 @@ else:
   from .basecompilers import *
   from .util import *
   from .plugin import *
-
+  from .loader import loader
 # BUILTIN
 import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile
 
@@ -45,28 +46,7 @@ except json.JSONDecodeError:
   print(colortext.white("Import will not work, registry is corrupted. Please report this issue to the github repo, discord server, or the devforum post\nthanks!"))
   registry = {} 
 
-# LOADING
-class loader:
-  self = {}
-  def __init__(self, max):
-    print("\n\n")
-    self.max = max
-    self.current = 0
-    self.tqdm = tqdm(total=max)
-    
-  def yielduntil(self):
-    global count
-    while self.max != self.current:
-      sleep(.5)
-    self.tqdm.update(self.max-self.current )
-    self.tqdm.close()
-  def update(self, amount):
-    self.tqdm.update(amount)
-  def error(self):
-    self.tqdm.write(colortext.red("paused!", ["bold"]))
-    self.current = self.max
-    self.tqdm.close()
-  
+
 # Download from wally 
 def wallyget(author, name, isDependant=False):
   # Use wally and download the zip and unpack it
@@ -120,55 +100,10 @@ def wallyget(author, name, isDependant=False):
   os.remove(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"))
 
 # CLI PACKAGES
-def onNotFound(target):
-  currentcommand = sys.argv[2]
-  
-  allCLIS = getconfig("general", "cli", [])
-  
-  # go through allCLIS and check if target and command matches
-  for i in allCLIS:
-    if i["target"] == target:
-      pass
-def lib():
-    # if /server and /client are found, then error
-    if os.path.exists(os.path.join(os.getcwd(), "server")) and os.path.exists(os.path.join(os.getcwd(), "client")):
-      print(warn("Do not install dependencies inside of the parent folder, rather both the /server and /client folder. Would you like to do this?"))
-      inputval = input("[Y/n]: ").lower()
-      if inputval == "n":
-        sys.exit()
-      elif inputval == "y":
-        # Set cwd to server and run lib
-        os.chdir(os.path.join(os.getcwd(), "server"))
-        lib()
-        # set cwd to client and run lib
-        os.chdir(os.path.join(os.getcwd(), "..", "client"))
-        lib()
-    # create dependencies folder if it doesnt exist
-    if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
-      os.makedirs(os.path.join(os.getcwd(), "dependencies"))
-  
-    cwd = os.getcwd()
-    # cwd+sys.argv[2]
-    dir = os.path.join(cwd,"dependencies", "stdlib.lua")
-    if not os.path.exists(os.path.dirname(dir)):
-        open(dir, "x").close()
-    with open(dir, "w") as f:
-        translator = pytranslator.Translator()
-        f.write(translator.get_luainit(getconfig("general", "luaext", [])))
-    # Make a file called content.json in the dependencies folder
-    open(os.path.join(cwd, "dependencies", "content.json"), "x").close()
 # ASYNC 
-def filtercompiledfolder():
-  cwd = os.getcwd()
-  compiled = cwd+"-compiled"
-  for r, d, f in os.walk(compiled):
-    for file in f:
-      if not file.endswith(".lua"):
-        os.remove(os.path.join(r, file))
 
 
-
-# TODO: Add thread count system to 
+# TODO: Create a template for the 
 def w():
   try:
     def incli():
@@ -309,7 +244,6 @@ def w():
   except KeyboardInterrupt:
     print(colortext.red("Aborted!"))
     sys.exit(0)
-# NOTE: Since C and C++ are disabled, their features are out of sync with python and lunar
 def cw():
   try:
     print(warn("Note, this is not yet completed and will not work and is just a demo to show the AST and very light nodevisitor. A production version will be released soon."))
