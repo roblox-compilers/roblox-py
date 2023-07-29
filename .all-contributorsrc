@@ -8,10 +8,22 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "AsynchronousAI",
+      "name": "aqzp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72946059?v=4",
+      "profile": "https://github.com/AsynchronousAI",
+      
+      "contributions": [
+        "code"
+      ]
+
+    },
+    {
       "login": "tututuana",
       "name": "tututuana",
       "avatar_url": "https://avatars.githubusercontent.com/u/51187395?v=4",
       "profile": "https://github.com/tututuana",
+
       "contributions": [
         "code"
       ]
