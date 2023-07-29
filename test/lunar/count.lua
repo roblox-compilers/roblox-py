@@ -1,13 +1,3 @@
---/ Compiled using roblox-pyc | Lunar compiler \--
-		
-		
------------------------------------- BUILT IN -------------------------------
-repeat task.wait() until _G.pyc
-local import, builtin = _G.pyc(script).lunar
-
-local  = builtin.
-
------------------------------------------------------------------------------
 local count
 count = function(current)
   if current ~= nil then

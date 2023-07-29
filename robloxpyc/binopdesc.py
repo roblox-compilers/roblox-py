@@ -7,7 +7,7 @@ _DEFAULT_FORMAT = "{left} {operation} {right}"
 def addfunc(left, right):
     # check if left and right have anything other than 0-9
     # left and right are name objects, so we need to get the id
-    if (not isinstance(left.left, ast.Num) or not isinstance(right.right, ast.Num)):
+    if (not isinstance(left, ast.Num) or not isinstance(right, ast.Num)):
         return "safeadd({left}, {right})"
     else :
         return "{left} + {right}"

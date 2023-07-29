@@ -7,12 +7,13 @@ local py, import, builtin = _G.pyc(script).py
 
 local str = builtin.str
 local string = builtin.string
+local safeadd = builtin.safeadd
 local int = builtin.int
 local print = builtin.print
 
 -----------------------------------------------------------------------------
 local newstring = "Hello World"
-print(newstring)
+print((safeadd(newstring, "Hi")))
 
 ------------------------------------ END ------------------------------------
 if script:IsA("ModuleScript") then 

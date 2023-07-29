@@ -72,3 +72,15 @@ def check_for_updates():
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
       with open(os.path.join(script_dir, "__communication__/cfg.pkl"), "wb") as file:
         file.write(returnval)
+        
+        
+def check_npm():
+    try:
+        subprocess.call(["npm", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+        return True
+    except FileNotFoundError:
+        return False
+def install_npm():
+    print("Installing NPM...")
+    subprocess.call(["apt-get", "install", "-y", "npm"])
+

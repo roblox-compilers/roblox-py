@@ -20,6 +20,8 @@ if __name__ == "__main__":
   from util import *
   from plugin import *
   from loader import loader
+  from climaker import newIncli, newIncli2, newLanguage
+  from wally import wallyget
 else:
   from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
 
@@ -32,6 +34,8 @@ else:
   from .util import *
   from .plugin import *
   from .loader import loader
+  from .climaker import newIncli, newIncli2, newLanguage
+  from .wally import wallyget
 # BUILTIN
 import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile
 
@@ -47,63 +51,9 @@ except json.JSONDecodeError:
   registry = {} 
 
 
-# Download from wally 
-def wallyget(author, name, isDependant=False):
-  # Use wally and download the zip and unpack it
-  print(info(f"Getting @{author}/{name} metadata", "roblox-pyc wally"))
-  wallyurl = "https://api.wally.run/v1/"
-  
-  # first get package metadata should look like:
-  metadataurl = wallyurl+"/package-metadata/"+author+"/"+name
-  data = requests.get(metadataurl).text
-  jsondata = json.loads(data)
-  
-  if 'message' in jsondata:
-    print(error(jsondata["message"]))
-    print(error("Exiting process", "roblox-pyc wally"))
-    sys.exit()
-  jsondata = json.loads(data)["versions"]
-  #get latest version and dependencies
-  latestver = jsondata[0]
-  vernum = latestver["package"]["version"]
-  dependencies = latestver["dependencies"]
-  
-  for i in dependencies:
-    dependency = dependencies[i]
-    print("Downloading dependency "+dependency+"...")
-    wallyget(dependency.split("/")[0], dependency.split("/")[1].split("@")[0], True)
-  
-  # Download the package
-  if not isDependant:
-    print("\n"*2)
-    print("Dependencies downloaded, now downloading package...")
-    print(info(f"Downloading @{author}/{name} v{vernum}", "roblox-pyc wally"))
-  url = wallyurl+"/package-contents/"+author+"/"+name+"/"+vernum
-  headers = {"Wally-Version": "1.0.0"} 
-  response = requests.get(url, headers=headers).content
-  
-  # create new file in cwd/dependencies called author_name_version.zip and unzip it
-  print(info("Saving package...", "roblox-pyc wally"))
-  #### if dependencies folder doesnt exist, create it
-  if not os.path.exists(os.path.join(os.getcwd(), "dependencies")):
-    os.makedirs(os.path.join(os.getcwd(), "dependencies"))
-  ####
-  open(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), "x").close()
-  with open(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), "wb") as file:
-    file.write(response)
-  # unzip
-  print(info("Unzipping package...", "roblox-pyc wally"))
-  with zipfile.ZipFile(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"), 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name))
-  # delete the zip
-  print(info("Deleting uneeded resources...", "roblox-pyc wally"))
-  os.remove(os.path.join(os.getcwd(), "dependencies", "@"+author+"/"+name+".zip"))
-
-# CLI PACKAGES
-# ASYNC 
-
 
 # TODO: Create a template for the 
+"""
 def w():
   try:
     def incli():
@@ -195,7 +145,7 @@ def w():
                 # create new file with same name but  .py and write the lua file contents to it
                 open(os.path.join(r, file.replace(".lua", ".py")), "x").close()
                 # write the old file contents as a py comment
-                open(os.path.join(r, file.replace(".lua", ".py")), "w").write('"""\n'+luafilecontents+'\n"""')
+                open(os.path.join(r, file.replace(".lua", ".py")), "w").write('\"""\n'+luafilecontents+'\n"\""')
                 print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", ".py")))
       elif sys.argv[1] == "cd":
         # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
@@ -717,6 +667,17 @@ def globalincli2():
     exit(0)
   else:
     globalincli2()
+"""
+
+
+w = newLanguage("py", pycompile, '"""%s"""')
+cw = newLanguage("c", ccompile, '/*%s*/')
+cpw = newLanguage("cpp", cppcompile, '/*%s*/')
+lunar = newLanguage("moon", lunarcompile, '--[[%s]]')
+
+globalincli = newIncli(["py", "c", "cpp", "moon"], allcompile)
+globalincli2 = newIncli2(["py", "c", "cpp", "moon"], allcompile)
+
 def pyc():
   title = colortext.magenta("roblox-pyc", ["bold"])
   py = colortext.blue("roblox-py", ["bold"])
@@ -783,23 +744,13 @@ Configuring {cpp}
 Configuring General Settings
 {border}
 1 - Change C and C++ dylib
-2 - Change LLVM Home Path (only for C and C++)
-3 - Change LD-LIBRARY-PATH (only for C and C++)
-4 - Enable or diable autocompile
+2 - Enable or diable autocompile
               """)
         inputval = input("Select which config to open: ")
         if inputval == "1":
           returned = input("Enter the dynamic library file, it currently is %s: " % getconfig("c", "dynamiclibpath", "None"))
           setconfig("c", "dynamiclibpath", returned, "None")
         elif inputval == "2":
-          returned = input("Enter the LLVM Home Path, it currently is %s: " % getconfig("general", "llvmhomepath", "None"))
-          setconfig("general", "llvmhomepath", returned, "")
-          config_llvm(getconfig("general", "llvmhomepath", ""))
-        elif inputval == "3":
-          returned = input("Enter the LD-LIBRARY-PATH, it currently is %s: " % getconfig("general", "ldlibrarypath", "None"))
-          setconfig("general", "ldlibrarypath", returned, "")
-          config_llvm(None, getconfig("general", "ldlibrarypath", ""))
-        elif inputval == "4":
           returned = input("Would you like to turn autocompile (on/off)")
           if returned == "on":
             setconfig("general", "autocompile", True, False)
@@ -1158,8 +1109,10 @@ Configuring General Settings
 
 if __name__ == "__main__":
   print(colortext.blue("Test mode"))
-  mode = input("Select which module to run (1, 2, 3, 4): ")
-  
+  mode = input("Select which module to run (1, 2, 3, 4, 5): ")
+  if os.environ.get("ENABLE_BETA_RPYC"):
+    print(colortext.magenta("important")+" the following code will be run in beta mode, robloxts support, C(++) support, etc. will all be enabled.")
+    
   if mode == "1":
     w()
   elif mode == "2":
@@ -1170,3 +1123,4 @@ if __name__ == "__main__":
     lunar()
   else:
     pyc()
+  

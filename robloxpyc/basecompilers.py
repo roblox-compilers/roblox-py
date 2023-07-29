@@ -14,9 +14,8 @@ else:
 
 
 
-
 def cppcompile(r, file, pluscount=False):
-  if file.endswith(".cpp"):
+  if file.endswith(".cpp") and os.environ.get("ENABLE_BETA_RPYC") == True:
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
@@ -58,8 +57,17 @@ def cppcompile(r, file, pluscount=False):
         #count += 1
         
         return 0      
+  else:
+    print(error("C is not enabled, please enable it in the config."))
+    if pluscount:
+      #pluscount.error()
+      pluscount.update(1)
+      pluscount.current += 1
+      #global count
+      #count += 1
+      return 0
 def ccompile(r, file, pluscount=False):
-  if file.endswith(".c"):
+  if file.endswith(".c") and os.environ.get("ENABLE_BETA_RPYC") == True:
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
@@ -102,6 +110,15 @@ def ccompile(r, file, pluscount=False):
         #global count
         #count += 1
         return 0
+  else:
+    print(error("C is not enabled, please enable it in the config."))
+    if pluscount:
+      #pluscount.error()
+      pluscount.update(1)
+      pluscount.current += 1
+      #global count
+      #count += 1
+      return 0
 def pycompile(r, file, pluscount=False):
   # compile the file to a file with the same name and path but .lua
   contents = ""
@@ -180,8 +197,7 @@ def lunarcompile(r, file, pluscount=False):
         #print(colortext.green("Compiled "+os.path.join(r, file)))          
         with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
           contents = f.read()
-        with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-          f.write(newheader+contents+header.pyfooter)
+        contents = backwordreplace(contents, "return", "", 1)
         
       else:
         print(error("File error for "+os.path.join(r, file)+"!"))
@@ -219,3 +235,16 @@ def robloxtscompile(r, file, pluscount=False):
         #global count
         #count += 1
         return 0
+def allcompile(r, file, pluscount):
+  # Checks what file it is then redirects to the correct compiler
+  if file.endswith(".py"):
+    pycompile(r, file, pluscount)
+  elif file.endswith(".moon"):
+    lunarcompile(r, file, pluscount)
+  elif file.endswith(".c"): 
+    ccompile(r, file, pluscount)
+  elif file.endswith(".cpp"):
+    cppcompile(r, file, pluscount)
+  elif file.endswith(".ts"):
+    robloxtscompile(r, file, pluscount)
+  
