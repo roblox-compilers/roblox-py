@@ -16,7 +16,7 @@ else:
 
 
 def cppcompile(r, file, pluscount=False):
-  if '.cpp' in file and file.endswith(".cpp"):
+  if '.cpp' in file:
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
@@ -59,7 +59,7 @@ def cppcompile(r, file, pluscount=False):
         
         return 0      
 def ccompile(r, file, pluscount=False):
-  if '.c' in file and file.endswith(".c"):
+  if '.c' in file:
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
@@ -103,42 +103,58 @@ def ccompile(r, file, pluscount=False):
         #count += 1
         return 0
 def pycompile(r, file, pluscount=False):
-  if file.endswith(".py"):
-    # compile the file to a file with the same name and path but .lua
-    contents = ""
+  # compile the file to a file with the same name and path but .lua
+  contents = ""
+            
+  try:
+    with open(os.path.join(r, file)) as rf:
+      contents = rf.read()  
+  except Exception as e:
+    print(error(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
+    # do not compile the file if it cannot be read
+    return
+            
+  try:
+    translator = pytranslator.Translator()
+    lua_code = translator.translate(contents)
+    #print(colortext.green("Compiled "+os.path.join(r, file)))
+    # get the relative path of the file and replace .py with .lua
+    path = os.path.join(r, file)  
+      
+    relative_path = backwordreplace(path,".py", ".lua", 1)
+    
+    if not os.path.exists(os.path.dirname(relative_path)):
+      os.makedirs(os.path.dirname(relative_path))
+    
+    with open(relative_path, "w") as f:
+      f.write(lua_code)
+    
+    if pluscount:
+      #pluscount.error()
+      pluscount.update(1)
+      pluscount.current += 1
+      #global count
+      #count += 1
+  except Exception as e:
+    print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+    debug("Compile error at "+str(e))
+    if pluscount:
+      #pluscount.error()
+      pluscount.update(1)
+      pluscount.current += 1
+      #global count
+      #count += 1
+      return 0
+def lunarcompile(r, file, pluscount=False):
+  # compile the file to a file with the same name and path but .lua
+  # Run command and check if anything is outputted to stderr, stdout, or stdin
               
-    try:
-      with open(os.path.join(r, file)) as rf:
-        contents = rf.read()  
-    except Exception as e:
-      print(error(f"Failed to read {os.path.join(r, file)}!\n\n "+str(e)))
-      # do not compile the file if it cannot be read
-      return
+  process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  stdout, stderr = process.communicate()
               
-    try:
-      translator = pytranslator.Translator()
-      lua_code = translator.translate(contents)
-      #print(colortext.green("Compiled "+os.path.join(r, file)))
-      # get the relative path of the file and replace .py with .lua
-      path = os.path.join(r, file)  
-        
-      relative_path = backwordreplace(path,".py", ".lua", 1)
-      
-      if not os.path.exists(os.path.dirname(relative_path)):
-        os.makedirs(os.path.dirname(relative_path))
-      
-      with open(relative_path, "w") as f:
-        f.write(lua_code)
-      
-      if pluscount:
-        #pluscount.error()
-        pluscount.update(1)
-        pluscount.current += 1
-        #global count
-        #count += 1
-    except Exception as e:
-      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-      debug("Compile error at "+str(e))
+  if stdout or stderr:
+    if stdout:     
+      print(error(f"Compile Error!\n\n "+str(stdout), f"{os.path.join(r, file)}"))
       if pluscount:
         #pluscount.error()
         pluscount.update(1)
@@ -146,75 +162,37 @@ def pycompile(r, file, pluscount=False):
         #global count
         #count += 1
         return 0
-def lunarcompile(r, file, pluscount=False):
-  if file.endswith(".moon"):
-    # compile the file to a file with the same name and path but .lua
-    # Run command and check if anything is outputted to stderr, stdout, or stdin
-                
-    process = subprocess.Popen(["moonc", os.path.join(r, file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-                
-    if stdout or stderr:
-      if stdout:     
-        print(error(f"Compile Error!\n\n "+str(stdout), f"{os.path.join(r, file)}"))
-        if pluscount:
-          #pluscount.error()
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-          return 0
-      else:
-        print(error(f"Compile Error!\n\n "+str(stderr), f"{os.path.join(r, file)}"))
-        if pluscount:
-          #pluscount.error()
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-          return 0
     else:
-      try:
-        newheader = header.lunarheader([])
-                    
-        # check if the new file has been created
-        if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
-          #print(colortext.green("Compiled "+os.path.join(r, file)))          
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
-            contents = f.read()
-          with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
-            f.write(newheader+contents+header.pyfooter)
-          
-        else:
-          print(error("File error for "+os.path.join(r, file)+"!"))
-        if pluscount:
-          pluscount.update(1)
-          pluscount.current += 1
-          #global count
-          #count += 1
-      except Exception as e:
-          print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
-          
-          if pluscount:
-            #pluscount.error()
-            pluscount.update(1)
-            pluscount.current += 1
-            #global count
-            #count += 1
-            return 0
-def robloxtscompile(r, file, pluscount=False):
-  if file.endswith(".ts") or file.endswith(".tsx"):
-    # Just add to pluscount, add later
-    try:
-      print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
+      print(error(f"Compile Error!\n\n "+str(stderr), f"{os.path.join(r, file)}"))
       if pluscount:
         #pluscount.error()
         pluscount.update(1)
         pluscount.current += 1
         #global count
         #count += 1
+        return 0
+  else:
+    try:
+      newheader = header.lunarheader([])
+                  
+      # check if the new file has been created
+      if os.path.exists(os.path.join(r, file.replace(".moon", ".lua"))):
+        #print(colortext.green("Compiled "+os.path.join(r, file)))          
+        with open(os.path.join(r, file.replace(".moon", ".lua")), "r") as f:
+          contents = f.read()
+        with open(os.path.join(r, file.replace(".moon", ".lua")), "w") as f:
+          f.write(newheader+contents+header.pyfooter)
+        
+      else:
+        print(error("File error for "+os.path.join(r, file)+"!"))
+      if pluscount:
+        pluscount.update(1)
+        pluscount.current += 1
+        #global count
+        #count += 1
     except Exception as e:
         print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+        
         if pluscount:
           #pluscount.error()
           pluscount.update(1)
@@ -222,3 +200,22 @@ def robloxtscompile(r, file, pluscount=False):
           #global count
           #count += 1
           return 0
+def robloxtscompile(r, file, pluscount=False):
+  # Just add to pluscount, add later
+  try:
+    print(warn("At the moment roblox-ts is not supported, please wait for a future update."))
+    if pluscount:
+      #pluscount.error()
+      pluscount.update(1)
+      pluscount.current += 1
+      #global count
+      #count += 1
+  except Exception as e:
+      print(error(f"Compile Error!\n\n "+str(e), f"{os.path.join(r, file)}"))
+      if pluscount:
+        #pluscount.error()
+        pluscount.update(1)
+        pluscount.current += 1
+        #global count
+        #count += 1
+        return 0
