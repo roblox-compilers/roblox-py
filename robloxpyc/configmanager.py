@@ -1,7 +1,7 @@
 # CONFIG
 # CFG will be in the same directory as this file
 import pickle, os
-cfgPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cfg.pkl")
+cfgPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "__communication__/cfg.pkl")
 def getconfig(arg1, arg2, default="None"):
     try:
       # Load the config file if it exists, or create a new one if it doesn't

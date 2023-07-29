@@ -62,7 +62,7 @@ def check_for_updates():
       script_dir = os.path.dirname(os.path.realpath(__file__))
       returnval = ""
       try:
-        with open(os.path.join(script_dir, "cfg.pkl"), "rb") as file:
+        with open(os.path.join(script_dir, "__communication__/cfg.pkl"), "rb") as file:
           returnval = file.read()
       except:
         print(error("Failed to safe-update, data is corrupted. Would you like to force-update, you may lose configuration data.", "auto-updater"))
@@ -70,5 +70,5 @@ def check_for_updates():
         if not choice == "yes":
           sys.exit()
       subprocess.run(["pip", "install", f"roblox-pyc=={latest_version}"])
-      with open(os.path.join(script_dir, "cfg.pkl"), "wb") as file:
+      with open(os.path.join(script_dir, "__communication__/cfg.pkl"), "wb") as file:
         file.write(returnval)
