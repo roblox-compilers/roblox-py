@@ -4,6 +4,7 @@
 # Script Path /robloxpyc/bindings.py
 
 # @AsynchronousAI - 2023
+import subprocess
 
 class TypescriptBridge:
     def __init__(path):
