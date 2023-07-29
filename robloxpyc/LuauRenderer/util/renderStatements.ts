@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../LuauAST";
+import { assert } from "../../LuauAST/util/assert";
+import { render, RenderState } from "../../LuauRenderer";
 
 /**
  * Renders the given list of statements.

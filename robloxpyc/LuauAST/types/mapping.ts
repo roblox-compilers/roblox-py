@@ -1,4 +1,4 @@
-import luau from "LuauAST";
+import luau from "../../LuauAST";
 
 export interface IndexableExpressionByKind {
 	[luau.SyntaxKind.None]: luau.None;

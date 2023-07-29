@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
 
 export function renderReturnStatement(state: RenderState, node: luau.ReturnStatement) {
 	const expStr = luau.list.isList(node.expression)

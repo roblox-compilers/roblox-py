@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../../../LuauAST";
+import { render, RenderState } from "../../../../LuauRenderer";
 
 export function renderPropertyAccessExpression(state: RenderState, node: luau.PropertyAccessExpression) {
 	const expStr = render(state, node.expression);

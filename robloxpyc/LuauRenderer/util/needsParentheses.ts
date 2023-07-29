@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
+import luau from "../../LuauAST";
+import { assert } from "../../LuauAST/util/assert";
 
 // https://www.lua.org/manual/5.1/manual.html#2.5.6
 /*

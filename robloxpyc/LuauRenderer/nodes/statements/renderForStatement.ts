@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
-import { renderStatements } from "LuauRenderer/util/renderStatements";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
+import { renderStatements } from "../../../LuauRenderer/util/renderStatements";
 
 export function renderForStatement(state: RenderState, node: luau.ForStatement) {
 	const idsStr = luau.list.mapToArray(node.ids, id => render(state, id)).join(", ") || "_";

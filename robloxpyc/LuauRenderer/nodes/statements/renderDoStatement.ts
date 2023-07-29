@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { RenderState } from "LuauRenderer";
-import { renderStatements } from "LuauRenderer/util/renderStatements";
+import luau from "../../../LuauAST";
+import { RenderState } from "../../../LuauRenderer";
+import { renderStatements } from "../../../LuauRenderer/util/renderStatements";
 
 export function renderDoStatement(state: RenderState, node: luau.DoStatement) {
 	let result = "";

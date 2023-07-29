@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { identity } from "LuauRenderer/util/identity";
+import luau from "../../LuauAST";
+import { identity } from "../../LuauRenderer/util/identity";
 
 export interface Visitor {
 	before?: (node: luau.Node) => void;

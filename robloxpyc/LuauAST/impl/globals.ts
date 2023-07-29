@@ -1,4 +1,4 @@
-import * as luau from "LuauAST/bundle";
+import * as luau from "../../LuauAST/bundle";
 
 const COROUTINE_ID = luau.id("coroutine");
 const MATH_ID = luau.id("math");

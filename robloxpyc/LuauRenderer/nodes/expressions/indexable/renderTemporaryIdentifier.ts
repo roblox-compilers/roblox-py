@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { RenderState } from "LuauRenderer";
+import luau from "../../../../LuauAST";
+import { assert } from "../../../../LuauAST/util/assert";
+import { RenderState } from "../../../../LuauRenderer";
 
 export function renderTemporaryIdentifier(state: RenderState, node: luau.TemporaryIdentifier) {
 	const name = state.getTempName(node);

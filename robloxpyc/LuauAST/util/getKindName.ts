@@ -1,4 +1,4 @@
-import luau from "LuauAST";
+import luau from "../../LuauAST";
 
 export function getKindName(kind: luau.SyntaxKind) {
 	// avoid FirstExpression, LastExpression, etc.

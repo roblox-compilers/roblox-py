@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../LuauAST";
+import { render, RenderState } from "../../LuauRenderer";
 
 /**
  * Renders the given list of identifiers inside of `node` into a string sepearted by commas

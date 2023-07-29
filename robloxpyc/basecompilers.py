@@ -16,7 +16,7 @@ else:
 
 
 def cppcompile(r, file, pluscount=False):
-  if '.cpp' in file:
+  if file.endswith(".cpp"):
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))
@@ -59,7 +59,7 @@ def cppcompile(r, file, pluscount=False):
         
         return 0      
 def ccompile(r, file, pluscount=False):
-  if '.c' in file:
+  if file.endswith(".c"):
     # compile the file to a file with the same name and path but .lua
     try:
       newctranslator = parser.CodeConverter(file, getconfig("c", "dynamiclibpath", "None"))

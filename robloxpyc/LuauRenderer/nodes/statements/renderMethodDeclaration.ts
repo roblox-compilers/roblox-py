@@ -1,7 +1,7 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
-import { renderParameters } from "LuauRenderer/util/renderParameters";
-import { renderStatements } from "LuauRenderer/util/renderStatements";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
+import { renderParameters } from "../../../LuauRenderer/util/renderParameters";
+import { renderStatements } from "../../../LuauRenderer/util/renderStatements";
 
 export function renderMethodDeclaration(state: RenderState, node: luau.MethodDeclaration) {
 	let result = "";

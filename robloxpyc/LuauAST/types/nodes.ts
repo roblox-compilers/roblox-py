@@ -1,4 +1,4 @@
-import luau from "LuauAST";
+import luau from "../../LuauAST";
 
 // base types
 export interface BaseNode<T extends luau.SyntaxKind = luau.SyntaxKind> {

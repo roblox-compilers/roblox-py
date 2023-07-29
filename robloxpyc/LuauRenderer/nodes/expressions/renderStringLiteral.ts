@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { RenderState } from "LuauRenderer";
-import { getSafeBracketEquals } from "LuauRenderer/util/getSafeBracketEquals";
+import luau from "../../../LuauAST";
+import { RenderState } from "../../../LuauRenderer";
+import { getSafeBracketEquals } from "../../../LuauRenderer/util/getSafeBracketEquals";
 
 function needsBracketSpacing(node: luau.StringLiteral) {
 	const parent = node.parent;

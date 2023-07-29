@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
-import { needsParentheses } from "LuauRenderer/util/needsParentheses";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
+import { needsParentheses } from "../../../LuauRenderer/util/needsParentheses";
 
 export function renderIfExpression(state: RenderState, node: luau.IfExpression) {
 	let result = `if ${render(state, node.condition)} then ${render(state, node.expression)} `;

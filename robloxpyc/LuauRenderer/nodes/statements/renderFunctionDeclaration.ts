@@ -1,8 +1,8 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { render, RenderState } from "LuauRenderer";
-import { renderParameters } from "LuauRenderer/util/renderParameters";
-import { renderStatements } from "LuauRenderer/util/renderStatements";
+import luau from "../../../LuauAST";
+import { assert } from "../../../LuauAST/util/assert";
+import { render, RenderState } from "../../../LuauRenderer";
+import { renderParameters } from "../../../LuauRenderer/util/renderParameters";
+import { renderStatements } from "../../../LuauRenderer/util/renderStatements";
 
 export function renderFunctionDeclaration(state: RenderState, node: luau.FunctionDeclaration) {
 	if (node.localize) {

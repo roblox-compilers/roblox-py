@@ -1,7 +1,7 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { RenderState } from "LuauRenderer";
-import { visit } from "LuauRenderer/util/visit";
+import luau from "../LuauAST";
+import { assert } from "../LuauAST/util/assert";
+import { RenderState } from "../LuauRenderer";
+import { visit } from "../LuauRenderer/util/visit";
 
 function isFullyScopedNode(node: luau.Node): boolean {
 	return luau.isForStatement(node) || luau.isNumericForStatement(node) || luau.isFunctionLike(node);

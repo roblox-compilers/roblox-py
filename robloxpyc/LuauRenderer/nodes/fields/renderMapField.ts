@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
 
 export function renderMapField(state: RenderState, node: luau.MapField) {
 	const { index, value } = node;

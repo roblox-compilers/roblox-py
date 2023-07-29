@@ -1,7 +1,7 @@
-import luau from "LuauAST";
-import { RenderState } from "LuauRenderer";
-import { renderParameters } from "LuauRenderer/util/renderParameters";
-import { renderStatements } from "LuauRenderer/util/renderStatements";
+import luau from "../../../LuauAST";
+import { RenderState } from "../../../LuauRenderer";
+import { renderParameters } from "../../../LuauRenderer/util/renderParameters";
+import { renderStatements } from "../../../LuauRenderer/util/renderStatements";
 
 export function renderFunctionExpression(state: RenderState, node: luau.FunctionExpression) {
 	if (luau.list.isEmpty(node.statements)) {

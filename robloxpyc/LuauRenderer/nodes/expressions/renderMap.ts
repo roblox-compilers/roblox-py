@@ -1,5 +1,5 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
 
 export function renderMap(state: RenderState, node: luau.Map) {
 	if (luau.list.isEmpty(node.fields)) {

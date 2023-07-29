@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { render, RenderState } from "LuauRenderer";
+import luau from "../../../LuauAST";
+import { assert } from "../../../LuauAST/util/assert";
+import { render, RenderState } from "../../../LuauRenderer";
 
 export function renderAssignment(state: RenderState, node: luau.Assignment) {
 	let leftStr: string;

@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { render, RenderState } from "LuauRenderer";
-import { needsParentheses } from "LuauRenderer/util/needsParentheses";
+import luau from "../../../LuauAST";
+import { render, RenderState } from "../../../LuauRenderer";
+import { needsParentheses } from "../../../LuauRenderer/util/needsParentheses";
 
 function needsInnerParentheses(node: luau.UnaryExpression) {
 	// #{} and -{} are invalid

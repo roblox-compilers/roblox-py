@@ -1,5 +1,5 @@
 // must import bundle explicitly to get `luau.create()` calls importing correctly
-import * as luau from "LuauAST/bundle";
+import * as luau from "../../LuauAST/bundle";
 
 type AllowedFieldTypes = luau.BaseNode | luau.List<luau.BaseNode> | boolean | number | string | undefined;
 type FilterProps<T, U> = { [K in keyof T]: T[K] extends U ? T[K] : never };

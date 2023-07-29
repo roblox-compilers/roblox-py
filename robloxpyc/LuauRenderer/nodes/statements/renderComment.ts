@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { RenderState } from "LuauRenderer";
-import { getSafeBracketEquals } from "LuauRenderer/util/getSafeBracketEquals";
+import luau from "../../../LuauAST";
+import { RenderState } from "../../../LuauRenderer";
+import { getSafeBracketEquals } from "../../../LuauRenderer/util/getSafeBracketEquals";
 
 export function renderComment(state: RenderState, node: luau.Comment) {
 	const lines = node.text.split("\n");

@@ -1,6 +1,6 @@
-import luau from "LuauAST";
-import { assert } from "LuauAST/util/assert";
-import { RenderState } from "LuauRenderer";
+import luau from "../../LuauAST";
+import { assert } from "../../LuauAST/util/assert";
+import { RenderState } from "../../LuauRenderer";
 
 function endsWithIndexableExpressionInner(node: luau.Expression): boolean {
 	if (luau.isIndexableExpression(node)) {
