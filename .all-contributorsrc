@@ -33,6 +33,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "LawMixer",
+      "name": "LawMixer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53837083?v=4",
+      "profile": "http://lawmixerscpf.tk/group",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
