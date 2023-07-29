@@ -4,6 +4,9 @@
 
 <figure><img src=".gitbook/assets/Screenshot 2023-07-10 at 12.06.03 AM.png" alt="" width="375"><figcaption></figcaption></figure>
 
+## Sponsors
+<!-- sponsors --><!-- sponsors -->
+## Contributors 
 </div>
 
 ## roblox-pyc
