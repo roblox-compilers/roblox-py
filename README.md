@@ -6,6 +6,7 @@
 
 ## Sponsors
 <!-- sponsors --><!-- sponsors -->
+<sub>0 sadly</sub>
 ## Contributors 
 </div>
 
