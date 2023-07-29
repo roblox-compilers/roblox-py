@@ -71,3 +71,4 @@ Python 3.13 (dev), C (all versions), C++ (all versions), Lunar -> Lua(u)
 * [pythonlua](https://github.com/dmitrii-eremin/python-lua). this is heavily modified version with flask implementation and compiler changes. (read licenses in [copyright.txt](COPYRIGHTS.txt))
 * [seasnake](https://github.com/pybee/seasnake) and sealang. Modified to convert C/C++ to Luau rather than C/C++ to Python 2.7
 * [MoonScript](https://github.com/leafo/moonscript). Modified to work with the Roblox API (Lunar).
+* [LuauAST](). roblox-pyc uses roblox-ts's LuauAST to generate Luau code. (not used in current versions)
