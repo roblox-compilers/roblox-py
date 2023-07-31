@@ -1,0 +1,53 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "AsynchronousAI",
+      "name": "aqzp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72946059?v=4",
+      "profile": "https://github.com/AsynchronousAI",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tututuana",
+      "name": "tututuana",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51187395?v=4",
+      "profile": "https://github.com/tututuana",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BazirGames",
+      "name": "BazirGames",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49544193?v=4",
+      "profile": "https://github.com/BazirGames",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "LawMixer",
+      "name": "LawMixer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53837083?v=4",
+      "profile": "http://lawmixerscpf.tk/group",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "roblox-pyc",
+  "projectOwner": "AsynchronousAI"
+}
