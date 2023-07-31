@@ -154,7 +154,7 @@ def newLanguage(basefile, func, commentart, p=None):
             # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
             confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
             if confirm == "yes":
-              path = os.getcwd()+"/src"
+              path = os.path.join(os.getcwd(), "src")
               # check if cwd/default.project.json exists, if it does, then use that as the default project file
               #if os.path.exists(os.getcwd()+"/default.project.json"):
               #  formatdefaultproj(os.getcwd()+"/default.project.json")
