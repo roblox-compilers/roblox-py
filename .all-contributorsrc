@@ -42,6 +42,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "cataclysmic-dev",
+      "name": "cataclysmic-dev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/141081747?v=4",
+      "profile": "https://github.com/cataclysmic-dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
