@@ -9,7 +9,7 @@ from time import sleep
 
 # FILES
 if __name__ == "__main__":
-  from robloxpyc import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+  import colortext #ctranslator is old and not used
 
   # MODULAR
   from errormanager import *
@@ -23,7 +23,7 @@ if __name__ == "__main__":
   from climaker import newIncli, newIncli2, newLanguage
   from wally import wallyget
 else:
-  from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+  import colortext #ctranslator is old and not used
 
   # MODULAR
   from .errormanager import *
