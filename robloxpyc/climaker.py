@@ -3,6 +3,9 @@
 import sys
 
 import os 
+
+from platform import uname
+
 if not (os.path.dirname(os.path.abspath(__file__)).startswith(sys.path[-1])):
     from loader import loader
     from textcompiler import *
@@ -153,15 +156,48 @@ def newLanguage(basefile, func, commentart, p=None):
           elif sys.argv[1] == "cd":
             # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
             confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
-            if confirm == "yes":
+            if confirm == "yes" and uname().system == "Windows":
+              # check if cwd/default.project.json exists, if it does, then use that as the default project file
+              #if os.path.exists(os.getcwd()+"/default.project.json"):
+              #  formatdefaultproj(os.getcwd()+"/default.project.json")
+              # rename directory to -compiled
+              path_name = os.getcwd()
+              #os.rename(path_name, path_name+"-compiled")
+              # duplicate the directory, remove the -compiled from the end
+              shutil.copytree(path_name, path_name + "-compiled")
+              # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
+              path = os.getcwd()
+
+              for r, d, f in os.walk(backwordreplace(path, "-compiled", "", 1)):
+                for file in f:
+                  if '.lua' in file:
+                    luafilecontents = ""
+                    with open(os.path.join(r, file), "r") as f:
+                      luafilecontents = f.read()
+                      
+                    os.remove(os.path.join(r, file))
+                    
+                    # create new file with same name but  .py and write the lua file contents to it
+                    open(os.path.join(r, file.replace(".lua", basefile)), "x").close()
+                    # write the old file contents as a C++ comment
+                    open(os.path.join(r, file.replace(".lua", basefile)), "w").write("\"\"\"\n"+luafilecontents+"\n\"\"\"")
+                    
+                    print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", basefile)))
+              # create a .rpyc file in the non -compiled directory
+              open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
+              # set cwd to not -compiled
+              os.chdir(backwordreplace(path, "-compiled", "", 1))
+              print(info("Completed! You may need to modify the default.package.json or any other equivalent file to make it use the -compiled directory rather than the original."))
+            elif confirm == "yes":
+              # note by CataclysmicDev -> i left this old code here just to make sure its stable on unix but you can delete it and see if the above code works on unix too
               path = os.path.join(os.getcwd(), "src")
               # check if cwd/default.project.json exists, if it does, then use that as the default project file
               #if os.path.exists(os.getcwd()+"/default.project.json"):
               #  formatdefaultproj(os.getcwd()+"/default.project.json")
               # rename directory to -compiled
-              os.rename(path, path+"-compiled")
+              os.rename(path_name, path_name+"-compiled")
               # duplicate the directory, remove the -compiled from the end
-              shutil.copytree(path+"-compiled", path)
+              shutil.copytree(path_name + "-compiled", path_name)
               # now we have 2 identical directories, one with -compiled and one without. for the one without, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
               path = os.getcwd()
 
