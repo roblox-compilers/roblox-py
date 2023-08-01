@@ -117,6 +117,13 @@ def newIncli2(basefile, func):
         incli2()              
   return incli2
 
+def replaceLuaFiles(r, file, basefile, commentart, luafilecontents):
+  # create new file with same name but  .py and write the lua file contents to it
+  open(os.path.join(r, file.replace(".lua", basefile)), "x").close()
+  # write the old file contents as a py comment
+  open(os.path.join(r, file.replace(".lua", basefile)), "w").write(commentart.format(luafilecontents))
+  print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", basefile)))
+
 def newLanguage(basefile, func, commentart, p=None):
     def w():
       try:
@@ -147,12 +154,8 @@ def newLanguage(basefile, func, commentart, p=None):
                       luafilecontents = f.read()
                       
                     os.remove(os.path.join(r, file))
+                    replaceLuaFiles(r, file, basefile, commentart, luafilecontents)
                     
-                    # create new file with same name but  .py and write the lua file contents to it
-                    open(os.path.join(r, file.replace(".lua", basefile)), "x").close()
-                    # write the old file contents as a py comment
-                    open(os.path.join(r, file.replace(".lua", basefile)), "w").write(commentart.format(luafilecontents))
-                    print(colortext.green("Converted to py "+os.path.join(r, file)+" as "+file.replace(".lua", basefile)))
           elif sys.argv[1] == "cd":
             # Duplicate the cwd directory, the original will be renamed to -compiled and the new one will be renamed to the original. For the new one, go through every lua descendant file in the current directory and delete it and create a new file with the same name but .py
             confirm = input(warn("Are you sure? This will duplicate the current directory and compile the files in the new directory.\n\nType 'yes' to continue."))
@@ -176,13 +179,7 @@ def newLanguage(basefile, func, commentart, p=None):
                       luafilecontents = f.read()
                       
                     os.remove(os.path.join(r, file))
-                    
-                    # create new file with same name but  .py and write the lua file contents to it
-                    open(os.path.join(r, file.replace(".lua", basefile)), "x").close()
-                    # write the old file contents as a C++ comment
-                    open(os.path.join(r, file.replace(".lua", basefile)), "w").write("\"\"\"\n"+luafilecontents+"\n\"\"\"")
-                    
-                    print(colortext.green("Converted "+os.path.join(r, file)+" to "+file.replace(".lua", basefile)))
+                    replaceLuaFiles(r, file, basefile, commentart, luafilecontents)
               # create a .rpyc file in the non -compiled directory
               open(os.path.join(backwordreplace(path, "-compiled", "", 1), ".rpyc"), "x").close()
               # set cwd to not -compiled
