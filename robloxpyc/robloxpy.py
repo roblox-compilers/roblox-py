@@ -9,7 +9,7 @@ from time import sleep
 
 # FILES
 if __name__ == "__main__":
-  from robloxpyc import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+  import colortext #ctranslator is old and not used
 
   # MODULAR
   from errormanager import *
@@ -23,7 +23,7 @@ if __name__ == "__main__":
   from climaker import newIncli, newIncli2, newLanguage
   from wally import wallyget
 else:
-  from . import pytranslator, colortext, luainit, parser, ctranslator, header #ctranslator is old and not used
+  import colortext #ctranslator is old and not used
 
   # MODULAR
   from .errormanager import *
@@ -670,10 +670,10 @@ def globalincli2():
 """
 
 
-w = newLanguage("py", pycompile, '"""%s"""')
-cw = newLanguage("c", ccompile, '/*%s*/')
-cpw = newLanguage("cpp", cppcompile, '/*%s*/')
-lunar = newLanguage("moon", lunarcompile, '--[[%s]]')
+w = newLanguage(".py", pycompile, '"""%s"""')
+cw = newLanguage(".c", ccompile, '/*%s*/')
+cpw = newLanguage(".cpp", cppcompile, '/*%s*/')
+lunar = newLanguage(".moon", lunarcompile, '--[[%s]]')
 
 globalincli = newIncli(["py", "c", "cpp", "moon"], allcompile)
 globalincli2 = newIncli2(["py", "c", "cpp", "moon"], allcompile)
@@ -691,6 +691,7 @@ def pyc():
   selftool = colortext.blue("roblox-pyc", ["bold"])
   shortselftool = colortext.blue("rblx-pyc", ["bold"])
   shorterselftool = colortext.blue("rpyc", ["bold"])
+  print(str(sys.argv))
   try:
     if sys.argv[1] == "config":
       # Open config menu
