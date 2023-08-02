@@ -9,10 +9,10 @@ description: How can you use the built in API.
 Use the&#x20;
 
 ```
-py
+game
 ```
 
-variable to access the game in python, This is equivalent to game in roblox.
+variable to access the game in python, This is literarily the game variable in roblox.
 
 <pre class="language-python"><code class="lang-python"><strong>ValidPlayers = [
 </strong><strong>    "builderman"
@@ -22,7 +22,7 @@ variable to access the game in python, This is equivalent to game in roblox.
 <strong>def onTouch(touch):
 </strong>    print("Spawn has been touched by", touch.Name)
     
-@py.Players.PlayerAdded
+@game.Players.PlayerAdded
 def onPlrAdd(plr):
     if plr.Name in ValidPlayers:
         # The player is in our admin list, print admin joined
@@ -37,6 +37,7 @@ The above code will do the following:
 
 Compiled code:
 
+<sub>This code generated may be outdated, code generated with newer versions of roblox-pyc should deliver better results</sub>
 ```lua
 --// Compiled using roblox-pyc \--
 		
