@@ -1,2 +1,0 @@
---/ Compiled using roblox-pyc | JSON compiler \--
-return {Contents = {["default"] = {["density"] = 1.0, ["viscosity"] = 1.0, ["width"] = 1.0, ["height"] = 1.0, ["depth"] = 1.0}}, Type = 'json', Extension = 'json', SetSource = function(self, input) self.Contents = input end}
