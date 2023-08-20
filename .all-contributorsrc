@@ -51,6 +51,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "luxkatana",
+      "name": "luxkatana",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57036931?v=4",
+      "profile": "https://github.com/luxkatana",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
