@@ -28,7 +28,7 @@ function AST::getType() {
 }
 
 // Method to get the node children
-function AST::getChildren() {
+function AST::getChildren() { 
   var children = {};
   for( i, child in ipairs(this.node.children) ) {
     table.insert(children, AST.new(child));
@@ -62,6 +62,17 @@ function AST::addChild(name, properties, type) {
   };
   table.insert(this.node.children, child);
   return AST.new(child);
+}
+
+// Method to get the node depth (How many parents are above it)
+function AST::getDepth() {
+  var depth = 0;
+  var parent = this.node.parent;
+  while(parent != null) {
+    depth++;
+    parent = parent.parent;
+  }
+  return depth;
 }
 
 // Static method to create a new head node

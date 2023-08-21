@@ -66,29 +66,30 @@ Equal AST:
 -- DECL A 1 NUMBER
 -- DECL B "hello" STRING
 -- DECL C true BOOLEAN
+-- ASSIGN B "hi" STRING global=true
 -- IF C
---- PRINT B
+--- CALL PRINT B
 -- ELSE
---- PRINT "world"
+--- CALL PRINT "world"
 -- ENDSTMT
 -- FOR I 1 5
---- PRINT I
+--- CALL PRINT I
 -- ENDSTMT
 -- DECL T {1, 2, 3, 4, 5} TABLE
 -- FOR I V T
---- PRINT I V
+--- CALL PRINT I V
 -- ENDSTMT
 -- DECL FUNCTION add X Y
 --- RETURN X + Y
 -- ENDSTMT
 -- DECL SUM add A 2
--- PRINT SUM
+-- CALL PRINT SUM
 -- DECL PERSON {name = "Alice", age = 30} TABLE
--- PRINT PERSON.name
+-- CALL PRINT PERSON.name
 -- DECL MT {}
 -- DECL MT __newindex FUNCTION T K V
---- PRINT "setting" K "to" V
---- RAWSET T K V
+--- CALL PRINT "setting" K "to" V
+--- CALL RAWSET T K V
 -- ENDSTMT
 -- DECL T {}
 -- CALL setmetatable T MT

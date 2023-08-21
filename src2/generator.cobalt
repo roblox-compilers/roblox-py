@@ -1,1 +1,185 @@
 // Luau code generator. Generates Luau code from AST in astclass.cobalt.
+astlib = import("astclass")
+source = ""
+util = import("util")
+
+// VISITOR UTILS
+function write(txt, depth){
+    depthstr = ""
+    for (i = 1, (depth || 1)) {
+        depthstr = depthstr.."    "
+    }
+    source = source.."\n"..(depthstr)..txt
+}
+var alreadyDefined = []
+
+// VISITS
+// Visitor supports:
+// - Source init
+// - Declaration and assignment
+// - Function calls
+// - Return statements
+// - If statements
+// - Else statements
+// - Elseif statements
+// - While statements
+// - For numeric statements
+// - For table statements
+// - Function statements
+
+var visits = {
+    "SOURCE": function(node){
+        write() // Newline init
+    },
+    "DECL": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var value = properties["value"]
+        var type = properties["type"] // Ignore for now
+
+        write("local "..name.." = "..value, node->getDepth())
+        table.insert(alreadyDefined, name)
+    },
+    "ASSIGN": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var value = properties["value"]
+
+        if (!alreadyDefined[name] && !properties["global"]){
+            write("local "..name.." = "..value, node->getDepth())
+        }else{
+            write(name.." = "..value, node->getDepth())
+        }
+    },
+    "CALL": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var args = properties["args"]
+
+        var argString = ""
+
+        for (i, v in pairs(args)){
+            argString = argString..v
+            if (i != #args){
+                argString = argString..", "
+            }
+        }
+
+        write(name.."("..argString..")", node->getDepth())
+    },
+    "RETURN": function(node){
+        var properties = node->getProperties()
+
+        var value = properties["value"]
+
+        write("return "..value, node->getDepth())
+    },
+    "IF": function(node){
+        var properties = node->getProperties()
+
+        var condition = properties["condition"]
+
+        write("if "..condition.." then", node->getDepth())
+
+        return null, true
+    },
+    "ELSE": function(node){
+        // source should currently end with "end"
+        if (util.endsWith(source, "end")){
+            source = util.backwardsReplace(source, "end", "", 1)
+            write("else", node->getDepth())
+        }else{
+            error("Tried to generate Luau code, AST is incorrectly formatted. (err: ELSE MISSING END)")
+        }
+
+        return null, true
+    },
+    "ELSEIF": function(node){
+        var properties = node->getProperties()
+
+        var condition = properties["condition"]
+
+        if (util.endsWith(source, "end")){
+            source = util.backwardsReplace(source, "end", "", 1)
+            write("elseif "..condition.." then", node->getDepth())
+        }else{
+            error("Tried to generate Luau code, AST is incorrectly formatted. (err: ELSEIF MISSING END)")
+        }
+
+        return null, true
+    },
+    "WHILE": function(node){
+        var properties = node->getProperties()
+
+        var condition = properties["condition"]
+
+        write("while "..condition.." do", node->getDepth())
+
+        return null, true
+    },
+    "FORN": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var start = properties["start"]
+        var end = properties["end"]
+
+        write("for "..name.." = "..start..", "..end.." do", node->getDepth())
+
+        return null, true
+    },
+    "FORT": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var table = properties["table"]
+
+        write("for "..name.." in "..table.." do", node->getDepth())
+
+        return null, true
+    },
+    "FUNCTION": function(node){
+        var properties = node->getProperties()
+
+        var name = properties["name"]
+        var args = properties["args"]
+
+        var argString = ""
+
+        for (i, v in pairs(args)){
+            argString = argString..v
+            if (i != #args){
+                argString = argString..", "
+            }
+        }
+
+        write("function "..name.."("..argString..")", node->getDepth())
+
+        return null, true
+    },
+}
+
+// VISITOR
+function visit(node){
+    var ignore, addend = visits[node->getType()](node)    
+    if (!ignore){
+        for (i, v in pairs(node->getChildren())){
+            visit(v)
+        }
+    }
+    if (addend){
+        write("end")
+    }
+}
+function generate(ast){
+    if (ast->getType() == "SOURCE"){
+        source = [[--// Generated with roblox-pyc (v3) by @AsynchronousAI \\--]]
+        visit(ast)
+    }else{
+        error("Tried to generate Luau code, AST is incorrectly formatted. (err: MISSING SOURCE))")
+    }
+    return source;
+}
