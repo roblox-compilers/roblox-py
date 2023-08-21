@@ -1,1 +1,2 @@
 // Takes in a python script and generates a AST to be used.
+ast = import("ast")

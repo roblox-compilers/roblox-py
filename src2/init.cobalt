@@ -1,0 +1,11 @@
+var self = {}
+
+function self.cli(...){
+    var args = {...}
+
+    if (#args != 1){
+        error("Invalid number of arguments")
+        os.exit(1)
+    }
+}
+return self

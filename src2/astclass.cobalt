@@ -1,1 +1,86 @@
 // AST Class
+
+/* Methods
+- node->getChildren() - Get all children of node - Returns array of nodes
+- node->getType() - Get type of node - Returns string
+- node.parent - Get parent of node - Returns node
+- node.name - Get name of node - Returns string
+- node.properties - Get all properties of node - Returns array of strings
+
+- node->add(name, properties, type) - Create empty node inside of node - Returns node
+- ast.head() - Create empty node head - Returns node
+*/
+
+// Define the AST class
+var AST = {};
+AST.__index = AST;
+
+// Constructor function
+function AST.new(node) {
+  var this = setmetatable({}, AST);
+  this.node = node;
+  return this;
+}
+
+// Method to get the node type
+function AST::getType() {
+  return this.node.type;
+}
+
+// Method to get the node children
+function AST::getChildren() {
+  var children = {};
+  for( i, child in ipairs(this.node.children) ) {
+    table.insert(children, AST.new(child));
+  }
+  return children;
+}
+
+// Method to get the parent node
+function AST::getParent() {
+  return AST.new(this.node.parent);
+}
+
+// Method to get the node name
+function AST::getName() {
+  return this.node.name;
+}
+
+// Method to get the node properties
+function AST::getProperties() {
+  return this.node.properties;
+}
+
+// Method to add a child node
+function AST::addChild(name, properties, type) {
+  var child = {
+    name = name,
+    properties = properties,
+    type = type,
+    children = {},
+    parent = this.node
+  };
+  table.insert(this.node.children, child);
+  return AST.new(child);
+}
+
+// Static method to create a new head node
+function AST.head() {
+  var head = {
+    name = "head",
+    properties = {},
+    type = "head",
+    children = {},
+    parent = null
+  };
+  return AST.new(head);
+}
+
+// Example usage
+var head = AST.head();
+var child1 = head->addChild("child1", {"prop1", "prop2"}, "type1");
+var child2 = head->addChild("child2", {"prop3", "prop4"}, "type2");
+print(head->getType()); // prints "head"
+print(child1->getType()); // prints "type1"
+print(child2->getType()); // prints "type2"
+print(child1->getParent()->getType()); // prints "head"

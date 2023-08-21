@@ -1,0 +1,6 @@
+// Template manager, allows you to duplicate template.
+function new(format){
+    // Duplicate `scriptpath`/template to cwd
+    var scriptpath = debug.getinfo(1).source->sub(2)
+    var scriptdir = scriptpath->match("(.*/)")
+}
