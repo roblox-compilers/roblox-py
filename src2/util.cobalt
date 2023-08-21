@@ -1,0 +1,56 @@
+// util.cobalt - Utility functions for roblox-pyc
+
+/* Functions:
+- backwardreplace(s, old, new, occurences)
+- filerfolder(path)
+- genLib()
+- endswith(txt, end)
+*/
+
+file = file || import("file");
+filex = import("ext.file")
+
+function backwardreplace(s, old, new, occurences){
+    // Example:
+    /*
+    backwardreplace("x.py.py", ".py", ".lua", 1)
+    > x.py.lua
+    */
+    var newstring = s;
+    var i = 0;
+    while (i < occurences){
+        newstring = string.sub(newstring, 1, #(newstring) - #(old)) .. new;
+        i++;
+    }
+
+    return newstring;
+}
+
+function endswith(txt, end){
+    // Returns true if `txt` ends with `end`
+    return string.sub(txt, -#(end)) == end;
+}
+
+function filterfolder(path, ext){
+    // use file (LuaFileSystem) to get remove all .<ext> files inside of the folder relative to the cwd
+    var directory = file.currentdir() .. path;
+    var pfile
+    if (os.getenv("OS") == "Windows_NT"){
+        pfile = io.popen('dir /b "'..directory..'"');
+    }else{
+        pfile = io.popen('ls -a "'..directory..'"');
+    }
+    var rt = {};
+
+    for (filename in pfile->lines()) {
+        if (!(filename == "." || filename == "..") && endswith(filename, ext)){
+            os.remove(directory .. "/" .. filename)
+        }
+    }
+
+    pfile->close();
+
+    return true;
+}
+
+print(filterfolder("", ".lua"))

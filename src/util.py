@@ -17,16 +17,6 @@ def filtercompiledfolder():
     for file in f:
       if not file.endswith(".lua"):
         os.remove(os.path.join(r, file))
-
-def onNotFound(target):
-  currentcommand = sys.argv[2]
-  
-  allCLIS = configmanager.getconfig("general", "cli", [])
-  
-  # go through allCLIS and check if target and command matches
-  for i in allCLIS:
-    if i["target"] == target:
-      pass
 def lib():
     # if /server and /client are found, then error
     if os.path.exists(os.path.join(os.getcwd(), "server")) and os.path.exists(os.path.join(os.getcwd(), "client")):
