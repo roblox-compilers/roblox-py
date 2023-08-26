@@ -6,7 +6,16 @@ from pyflakes import api
 from packaging import version
 from tqdm import tqdm
 from time import sleep
+import sys
+import os
+# written by luxkatana/TheTrojanHorse fix:
+# fix importing problems using the CLI
 
+EXPECTED_PATH_NEEDED: str = os.path.dirname(__file__)
+if len(set(filter(lambda path: EXPECTED_PATH_NEEDED == path, sys.path))) == 0:
+  sys.path.append(EXPECTED_PATH_NEEDED)
+  
+  
 # FILES
 if __name__ == "__main__":
   from robloxpyc import colortext #ctranslator is old and not used
@@ -37,7 +46,7 @@ else:
   from .climaker import newIncli, newIncli2, newLanguage
   from .wally import wallyget
 # BUILTIN
-import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, os, zipfile
+import subprocess,shutil,sys,threading,json,requests,traceback,pkg_resources,re,sys,webbrowser,pickle, zipfile
 
 
 registryrawurl = "https://raw.githubusercontent.com/roblox-pyc/registry/main/registry.json"
