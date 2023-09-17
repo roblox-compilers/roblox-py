@@ -13,5 +13,6 @@
 /src/Makefile
 /src/init.c
 
-# Cobalt preprocessed
+# Cobalt preprocessed and compiled
 *.cii
+*.byte

@@ -43,7 +43,6 @@ pyast = function(code){
     visitor = Visitor()
     visitor.visit(tree)
     ]]
-    print(source)
     py.execute(source)
     return gen;
 }

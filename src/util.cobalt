@@ -7,8 +7,7 @@
 - endswith(txt, end)
 */
 
-file = file || import("file");
-filex = import("ext.file")
+file = import("file");
 
 function backwardreplace(s, old, new, occurences){
     // Example:
@@ -52,5 +51,3 @@ function filterfolder(path, ext){
 
     return true;
 }
-
-print(filterfolder("", ".lua"))

@@ -87,11 +87,3 @@ function AST.head() {
   return AST.new(head);
 }
 
-// Example usage
-var head = AST.head();
-var child1 = head->addChild("child1", {"prop1", "prop2"}, "type1");
-var child2 = head->addChild("child2", {"prop3", "prop4"}, "type2");
-print(head->getType()); // prints "head"
-print(child1->getType()); // prints "type1"
-print(child2->getType()); // prints "type2"
-print(child1->getParent()->getType()); // prints "head"

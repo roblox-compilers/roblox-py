@@ -1,6 +1,14 @@
 var self = {}
 
+function error(text){
+    print("\27[1;31merror:\27[0m "..text)
+    os.exit(1)
+}
 /******* IMPORTS ********/
+/* IMPORT DEPENDENCIES */
+#include "astclass.cobalt"
+#include "util.cobalt"
+
 /* IMPORT AST GENERATORS */
 #include "pyast.cobalt"
 #include "cppast.cobalt"
@@ -48,9 +56,8 @@ function self.loadTemplate(path, format){
 operated by the CLI
 */
 if (arg){ // being run through interpreter or AOT compiler
-    if (#args != 1){
+    if (#arg != 1){
         error("Invalid number of arguments")
-        os.exit(1)
     }
 }
 
