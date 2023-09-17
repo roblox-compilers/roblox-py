@@ -6,12 +6,7 @@ parser & visior runner.
 */
 py = import("python")
 
-code = [[
-def add(a, b):
-    result = a + b
-    return result
-]]
-
+gen = "" /* string to be automatically written by visitor */
 visitor = {
     visit_FunctionDef: function(node) {
         print("FunctionDef: " .. node.name)
@@ -24,26 +19,31 @@ visitor = {
     },
 }
 
-/* Parse code to table tree inside of python */
-tree = {}
-source = ([[
-import ast
-import cobalt
-visitors = cobalt.globals().visitor
-code = cobalt.globals().code
-tree = ast.parse(code)
 
-class Visitor(ast.NodeVisitor):]])
 
-for (i, v in pairs(visitor)) {
-    source = source .. ("\n\t"..[[def ]]..i..[[(self, node):
-]].."\t\t"..[[visitors.]]..i..[[(node)
-]].."\t\t"..[[self.generic_visit(node)]])
+return function(code){
+    /* Runs the visitor */
+    tree = {}
+    source = ([[
+    import ast
+    import cobalt
+    visitors = cobalt.globals().visitor
+    code = cobalt.globals().code
+    tree = ast.parse(code)
+
+    class Visitor(ast.NodeVisitor):]])
+
+    for (i, v in pairs(visitor)) {
+        source = source .. ("\n\t"..[[def ]]..i..[[(self, node):
+    ]].."\t\t"..[[visitors.]]..i..[[(node)
+    ]].."\t\t"..[[self.generic_visit(node)]])
+    }
+
+    source = source.."\n"..[[
+    visitor = Visitor()
+    visitor.visit(tree)
+    ]]
+    print(source)
+    py.execute(source)
+    return gen;
 }
-
-source = source.."\n"..[[
-visitor = Visitor()
-visitor.visit(tree)
-]]
-print(source)
-py.execute(source)
