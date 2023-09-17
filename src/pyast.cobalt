@@ -1,1 +1,49 @@
 // Python code to astclass
+/*
+The nodevisitor itself is written in Cobalt
+but is wrapped around a python auto-generated
+parser & visior runner.
+*/
+py = import("python")
+
+code = [[
+def add(a, b):
+    result = a + b
+    return result
+]]
+
+visitor = {
+    visit_FunctionDef: function(node) {
+        print("FunctionDef: " .. node.name)
+    },
+    visit_ClassDef: function(node) {
+        print("ClassDef: " .. node.name)
+    },
+    visit_Assign: function(node) {
+        print("Assign: " .. node.targets[0].id)
+    },
+}
+
+/* Parse code to table tree inside of python */
+tree = {}
+source = ([[
+import ast
+import cobalt
+visitors = cobalt.globals().visitor
+code = cobalt.globals().code
+tree = ast.parse(code)
+
+class Visitor(ast.NodeVisitor):]])
+
+for (i, v in pairs(visitor)) {
+    source = source .. ("\n\t"..[[def ]]..i..[[(self, node):
+]].."\t\t"..[[visitors.]]..i..[[(node)
+]].."\t\t"..[[self.generic_visit(node)]])
+}
+
+source = source.."\n"..[[
+visitor = Visitor()
+visitor.visit(tree)
+]]
+print(source)
+py.execute(source)
