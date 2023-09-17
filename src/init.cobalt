@@ -5,6 +5,15 @@ function error(text){
     os.exit(1)
 }
 /******* IMPORTS ********/
+/*
+#includes instead of imports
+are used because this one file get
+compiled into the final executable 
+and because imports can get 
+complicated when dealing with
+CLI's.
+*/
+
 /* IMPORT DEPENDENCIES */
 #include "astclass.cobalt"
 #include "util.cobalt"
