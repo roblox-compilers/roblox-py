@@ -64,10 +64,70 @@ function self.loadTemplate(path, format){
 /*
 operated by the CLI
 */
+#define VERSION "3.0.0"
+#define TAB "\t\b\b\b\b"
+function usage(){
+    print("\n"..[[usage: rpyc [options]
+Available options are:
+]]..TAB..[[-o file   output to 'file' (as a file or directory if -d is used)
+]]..TAB..[[-i file   input from 'file'
+]]..TAB..[[-d        compile all files in current directory 
+]]..TAB..[[-w        watch mode (directory only)
+]]..TAB..[[-v        show version information
+]]..TAB..[[-vd       show version number only]])
+    os.exit(0)
+}
+function version(){
+    print("\27[1;34mcopyright:\27[0m roblox-pyc \27[1m"..VERSION.."\27[0m licensed under the GNU Affero General Public License by \27[1m@AsynchronousAI\27[0m")
+    os.exit(0)
+}
 if (arg){ // being run through interpreter or AOT compiler
-    if (#arg != 1){
-        error("Invalid number of arguments")
+    if (#arg < 1){
+        print("rpyc: no arguments provided")
+        usage()
     }
+    var flags = {}
+    for (i, v in pairs(arg)){
+        if (v == "cobalt" || v == "cobaltc.byte") continue
+        if (string.get(v, 1) == "-"){
+            flags[#flags+1] = v
+        }else{
+            warn("Unhandled argument: "..v)
+        }
+    }
+
+    /* Run flags */
+    var mode = "none"
+    for (i, v in pairs(flags)){
+        if (v == "-w") {
+            /* Watch mode*/
+        }else if (v == "-h" || v == "--help") {
+            usage()
+        }else if (v == "-v" || v == "--version") {
+            version()
+        }else if (v == "-vd") {
+            print(VERSION)
+        }else if (v == "-w") {
+            mode = "watch"
+        }else if (v->split(":")[1] == "-i") {
+            mode = "file"
+            if (#v->split(":") != 2) error("-i flag requires a file and only one file\n\tExample: -i:main.py")
+            _G.infile = v->split(":")[2]
+        }else if (v->split(":")[1] == "-o") {
+            mode = "file"
+            if (#v->split(":") != 2) error("-o flag requires a file and only one file\n\tExample: -o:main.lua")
+            _G.outfile = v->split(":")[2]
+        }else if (v->split(":")[1] == "-d") {
+            mode = "directory"
+            _G.directory = require("file").currentdir()
+        }
+    }
+    
+    /* Operate mode */
+    if (mode == "none"){
+        error("No mode specified")
+    }
+
 }
 
 return self
