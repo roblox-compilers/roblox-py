@@ -21,7 +21,7 @@ visitor = {
 
 
 
-return function(code){
+pyast = function(code){
     /* Runs the visitor */
     tree = {}
     source = ([[

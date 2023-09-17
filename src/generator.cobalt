@@ -176,7 +176,7 @@ function visit(node){
 }
 function generate(ast){
     if (ast->getType() == "SOURCE"){
-        source = [[--// Generated with roblox-pyc (v3) by @AsynchronousAI \\--]]
+        source = "--// Generated with roblox-pyc (v3) by @AsynchronousAI \\--"
         visit(ast)
     }else{
         error("Tried to generate Luau code, AST is incorrectly formatted. (err: MISSING SOURCE))")

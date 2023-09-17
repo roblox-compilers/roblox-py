@@ -1,1 +1,17 @@
+# idrk
 *.pyc
+
+# CMake
+/cmake_install.cmake
+/CMakeCache.txt
+/Makefile
+/CMakeFiles
+/src/CMakeFiles
+/src/Makefile
+/src/cmake_install.cmake
+/src/Makefile.cmake
+/src/Makefile
+/src/init.c
+
+# Cobalt preprocessed
+*.cii
