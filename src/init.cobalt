@@ -2,15 +2,15 @@ var self = {}
 
 /******* IMPORTS ********/
 /* IMPORT AST GENERATORS */
-var pyast = import("pyast")
-var cppast = import("cppast")
-var cast = import("cast")
+#include "pyast.cobalt"
+#include "cppast.cobalt"
+#include "cast.cobalt"
 
 /* IMPORT CODE GENERATORS */
-var generator = import("generator")
+#include "generator.cobalt"
 
 /* IMPORT TEMPLATES */
-var template = import("template")
+#include "template.cobalt"
 /************************/
 
 
