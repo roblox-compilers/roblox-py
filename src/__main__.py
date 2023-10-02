@@ -882,11 +882,11 @@ VERSION = "3.0.0"
 TAB = "\t\b\b\b\b"
 
 def warn(msg):
-    print("\033[1;33m" + "warning: " + "\033[0m" + msg)
+    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + msg)
 def info(msg):
-    print("\033[1;32m" + "info: " + "\033[0m" + msg)
+    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + msg)
 def error(msg):
-    print("\033[1;31m" + "error: " + "\033[0m" + msg)
+    sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
     sys.exit()
     
 def usage():
