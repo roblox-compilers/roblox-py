@@ -1,4 +1,4 @@
-Pythonlua:
+# Pythonlua:
 
                               Apache License
                            Version 2.0, January 2004
@@ -202,7 +202,7 @@ Pythonlua:
    See the License for the specific language governing permissions and
    limitations under the License.
 
-TextBoxPlus and Highlighter (used in roblox plugin):
+# TextBoxPlus and Highlighter (used in roblox plugin):
 
 MIT License
 
