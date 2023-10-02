@@ -58,26 +58,3 @@ Python, C, C++ Compiler for Roblox.
 > Python is fully implemented, all code should work because it supports the dev build of Python 3.13.
 
 ***
-
-### Building
-```bash
-cmake -DCOBALT_INCLUDES=/path/to/cobalt/headers .
-make
-```
-***
-### API
-```js
-var rpyc = import("roblox-pyc"); // #include-ing roblox-pyc/init.cobalt might turn on interface mode and cause issues.
-var ast = rpyc->ParseCPP("#include <stdio.h> \n int main() { printf('Hi') return 0; }");
-print(rpyc->Generate(ast))
-/*
-Output:
-_G.rpyc.include("stdio.h")
-
-function main()
-    printf("Hi")
-    return 0
-end
-*/
-
-```
