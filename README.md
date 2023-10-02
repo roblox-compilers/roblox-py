@@ -50,11 +50,4 @@
 ***
 
 Python, C, C++ Compiler for Roblox.
-
-> This has NO RELATION with .pyc files, roblox-py, or roblox-ts
-
-> C/C++ is still in progress.
-
-> Python is fully implemented, all code should work because it supports the dev build of Python 3.13.
-
 ***

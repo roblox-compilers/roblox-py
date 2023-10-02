@@ -752,7 +752,32 @@ class NodeVisitor(ast.NodeVisitor):
         }
 
         self.emit(line.format(**values))
+    
+    def visit_Raise(self, node):
+        """Visit raise"""
+        line = "error({})".format(self.visit_all(node.exc, inline=True))
+        self.emit(line)
+        
+    def visit_Try(self, node):
+        """Visit try"""
+        self.emit("xpcall(function()")
 
+        self.visit_all(node.body)
+        
+        self.emit("end, function(err)")
+        
+        self.visit_all(node.handlers)
+        
+        self.emit("end)")
+        
+    def visit_ExceptHandler(self, node):
+        """Visit exception handler"""
+        self.emit("if err:find('{}') then".format(node.type.id))
+        
+        self.visit_all(node.body)
+        
+        self.emit("end")
+        
     def visit_While(self, node):
         """Visit while"""
         test = self.visit_all(node.test, inline=True)

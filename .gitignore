@@ -4,3 +4,6 @@
 # Cobalt preprocessed and compiled
 *.cii
 *.byte
+
+test.py
+test.lua
