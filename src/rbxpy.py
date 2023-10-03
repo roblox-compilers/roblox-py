@@ -1195,7 +1195,7 @@ class Translator:
 
         self.output = []
 
-    def translate(self, pycode):
+    def translate(self, pycode, fn):
         """Translate python code to lua code"""
         try:
             # code that uses ast
@@ -1219,6 +1219,9 @@ class Translator:
         for depend in dependencies:
             if depend not in dependencies:
                 dependencies.append(depend)
+        
+        if fn:
+            dependencies.append("fn")
             
         for depend in dependencies:
             # set
@@ -1538,6 +1541,354 @@ end"""
     end
 
     return false
+end"""
+            elif depend == "fn":
+                DEPEND += """if game then
+__name__ = if script:IsA("BaseScript") then "__main__" else script.Name 
+else
+__name__ = nil
+end
+range = function(s, e) -- range()
+    local tb = {}
+    local a = 0
+    local b = 0
+    if not e then a=1 else a=s end
+    if not e then b=s else b=e end
+    for i = a, b do
+        tb[#tb+1] = i
+    end
+    return tb
+end
+len = function(x) return #x end -- len()
+abs = math.abs -- abs()
+str = tostring -- str()
+int = tonumber -- int()
+sum = function(tbl) --sum()
+    local total = 0
+    for _, v in ipairs(tbl) do
+        total = total + v
+    end
+    return total
+end
+max = function(tbl) --max()
+    local maxValue = -math.huge
+    for _, v in ipairs(tbl) do
+        if v > maxValue then
+            maxValue = v
+        end
+    end
+    return maxValue
+end
+min = function(tbl) --min()
+    local minValue = math.huge
+    for _, v in ipairs(tbl) do
+        if v < minValue then
+            minValue = v
+        end
+    end
+    return minValue
+end
+reversed = function(seq) -- reversed()
+    local reversedSeq = {}
+    local length = #seq
+    for i = length, 1, -1 do
+        reversedSeq[length - i + 1] = seq[i]
+    end
+    return reversedSeq
+end
+split = function(str, sep) -- split
+    local substrings = {}
+    local pattern = string.format("([^%s]+)",sep or "%s")
+    for substring in string.gmatch(str, pattern) do
+        table.insert(substrings, substring)
+    end
+    return substrings
+end
+round = math.round -- round()
+all = function (iter) -- all()
+    for i, v in iter do if not v then return false end end
+
+    return true
+end
+any = function (iter) -- any()
+    for i, v in iter do
+        if v then return true end
+    end
+    return false
+end
+ord = string.byte -- ord
+chr = string.char -- chr
+callable = function(fun) -- callable()
+    if rawget(fun) ~= fun then warn("At the momement Roblox.py's function callable() does not fully support metatables.") end
+    return typeof(rawget(fun))	== "function"
+end
+float = tonumber -- float()
+super = function()
+    error("roblox-pyc does not has a Lua implementation of the function `super`. Use `self` instead")
+end
+format = function(format, ...) -- format
+    local args = {...}
+    local num_args = select("#", ...)
+
+    local formatted_string = string.gsub(format, "{(%d+)}", function(index)
+        index = tonumber(index)
+        if index >= 1 and index <= num_args then
+            return tostring(args[index])
+        else
+            return "{" .. index .. "}"
+        end
+    end)
+
+    return formatted_string
+end
+hex = function (value) -- hex
+    return string.format("%x", value)
+end
+id = function (obj) -- id
+    return print(tostring({obj}):gsub("table: ", ""):split(" ")[1])
+end
+map = function (func, ...) --map
+    local args = {...}
+    local result = {}
+    local num_args = select("#", ...)
+
+    local shortest_length = math.huge
+    for i = 1, num_args do
+        local arg = args[i]
+        local arg_length = #arg
+        if arg_length < shortest_length then
+            shortest_length = arg_length
+        end
+    end
+
+    for i = 1, shortest_length do
+        local mapped_args = {}
+        for j = 1, num_args do
+            local arg = args[j]
+            table.insert(mapped_args, arg[i])
+        end
+        table.insert(result, func(unpack(mapped_args)))
+    end
+
+    return result
+end
+bool = function(x) -- bool
+    if x == false or x == nil or x == 0 then
+        return false
+    end
+
+    if typeof(x) == "table" then
+        if x._is_list or x._is_dict then
+            return next(x._data) ~= nil
+        end
+    end
+
+    return true
+end
+divmod = function(a, b) -- divmod
+    local res = { math.floor(a / b), math.fmod(a, b) }
+    return unpack(res)
+end
+slice = function (seq, start, stop, step)
+    local sliced = {}
+    local len = #seq
+    start = start or 1
+    stop = stop or len
+    step = step or 1
+    if start < 0 then
+        start = len + start + 1
+    end
+    if stop < 0 then
+        stop = len + stop + 1
+    end
+    for i = start, stop - 1, step do
+        table.insert(sliced, seq[i])
+    end
+    return sliced
+end
+anext = function (iterator) -- anext
+    local status, value = pcall(iterator)
+    if status then
+        return value
+    end
+end
+ascii = function (obj) -- ascii
+    return string.format("%q", tostring(obj))
+end
+dir = function (obj) -- dir
+    local result = {}
+    for key, _ in pairs(obj) do
+        table.insert(result, key)
+    end
+    return result
+end
+getattr = function (obj, name, default) -- getattr
+    local value = obj[name]
+    if value == nil then
+        return default
+    end
+    return value
+end
+globals = function () -- globals
+    return _G
+end
+hasattr = function (obj, name) --hasattr
+    return obj[name] ~= nil
+end
+isinstance = function (obj, class) -- isinstance
+    return type(obj) == class
+end
+issubclass = function (cls, classinfo) -- issubclass
+    local mt = getmetatable(cls)
+    while mt do
+        if mt.__index == classinfo then
+            return true
+        end
+        mt = getmetatable(mt.__index)
+    end
+    return false
+end
+iter = function (obj) -- iter
+    if type(obj) == "table" and obj.__iter__ ~= nil then
+        return obj.__iter__
+    end
+    return nil
+end
+locals = function () -- locals
+    return _G
+end
+oct = function (num) --oct
+    return string.format("%o", num)
+end
+pow = function (base, exponent, modulo) --pow
+    if modulo ~= nil then
+        return math.pow(base, exponent) % modulo
+    else
+        return base ^ exponent
+    end
+end
+eval = function (expr, env)
+    return loadstring(expr)()
+end
+exec = loadstring
+filter = function (predicate, iterable)
+    local result = {}
+    for _, value in ipairs(iterable) do
+        if predicate(value) then
+            table.insert(result, value)
+        end
+    end
+    return result
+end
+frozenset = function (...)
+    local elements = {...}
+    local frozenSet = {}
+    for _, element in ipairs(elements) do
+        frozenSet[element] = true
+    end
+    return frozenSet
+end
+aiter = function (iterable) -- aiter
+    return pairs(iterable)
+end
+bin = function(num: number)
+    local bits = {}
+    repeat
+        table.insert(bits, 1, num % 2)
+        num = math.floor(num / 2)
+    until num == 0
+    return "0b" .. table.concat(bits)
+end
+complex = function (real, imag) -- complex
+    return { real = real, imag = imag }
+end
+deltaattr = function (object, attribute) -- delattr
+    object[attribute] = nil
+end
+enumerate = function (iterable) -- enumerate
+    local i = 0
+    return function()
+        i = i + 1
+        local value = iterable[i]
+        if value ~= nil then
+            return i, value
+        end
+    end
+end
+bytearray = function (arg) -- bytearray
+    if type(arg) == "string" then
+        local bytes = {}
+        for i = 1, #arg do
+            table.insert(bytes, string.byte(arg, i))
+        end
+        return bytes
+    elseif type(arg) == "number" then
+        local bytes = {}
+        while arg > 0 do
+            table.insert(bytes, 1, arg % 256)
+            arg = math.floor(arg / 256)
+        end
+        return bytes
+    elseif type(arg) == "table" then
+        return arg -- Assuming it's already a bytearray table
+    else
+        error("Invalid argument type for bytearray()")
+    end
+end
+bytes = function (arg) -- bytes
+    if type(arg) == "string" then
+        local bytes = {}
+        for i = 1, #arg do
+            table.insert(bytes, string.byte(arg, i))
+        end
+        return bytes
+    elseif type(arg) == "table" then
+        return arg -- Assuming it's already a bytes table
+    else
+        error("Invalid argument type for bytes()")
+    end
+end
+compile = loadstring
+help = function (object) -- help
+    print("Help for object:", object)
+    print("Type:", type(object))
+    print("Learn more in the official roblox documentation!")
+end
+memoryview = function (object) -- memoryview
+    if type(object) == "table" then
+        local buffer = table.concat(object)
+        return { buffer = buffer, itemsize = 1 }
+    else
+        error("Invalid argument type for memoryview()")
+    end
+end
+repr = function (object) -- repr
+    return tostring(object)
+end
+sorted = function (iterable, cmp, key, reverse) -- sorted
+    local sortedTable = {}
+    for key, value in pairs(iterable) do
+        table.insert(sortedTable, { key = key, value = value })
+    end
+    table.sort(sortedTable, function(a, b)
+        -- Compare logic based on cmp, key, reverse parameters
+        return a.key < b.key
+    end)
+    local i = 0
+    return function()
+        i = i + 1
+        local entry = sortedTable[i]
+        if entry then
+            return entry.key, entry.value
+        end
+    end
+end
+vars = function (object) -- vars
+    local attributes = {}
+    for key, value in pairs(object) do
+        attributes[key] = value
+    end
+    return attributes
 end"""
             else:
                 error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
@@ -2684,7 +3035,8 @@ def usage():
 {TAB}\033[1m-v\033[0m        show version information
 {TAB}\033[1m-vd\033[0m       show version number only"
 {TAB}\033[1m-ast\033[0m      show python ast tree before code
-{TAB}\033[1m-s\033[0m        generate std.lua
+{TAB}\033[1m-f\033[0m        include standard python functions in generated code
+{TAB}\033[1m-fn\033[0m       do not include standard python functions in generated code
 {TAB}\033[1m-u\033[0m        open this""")
     sys.exit()
 
@@ -2699,6 +3051,7 @@ def main():
     ast = False
     input_filename = "NONE"
     type = 1 # 1: py->lua, 2: lua->py
+    includeSTD = False
     for arg in args:
         if arg == "-v":
             version()
@@ -2707,8 +3060,10 @@ def main():
             sys.exit()
         elif arg == "-u":
             usage()
-        elif arg == "-s":
-            error("In development")
+        elif arg == "-f":
+            includeSTD = True
+        elif arg == "-fn":
+            includeSTD = False
         elif arg == "-ast":
             ast = True
         elif arg == "-py":
@@ -2734,7 +3089,7 @@ def main():
 
         translator = Translator(Config(".pyluaconf.yaml"),
                                 show_ast=ast)
-        lua_code = translator.translate(content)
+        lua_code = translator.translate(content, includeSTD)
 
         if not ast:
             print(lua_code)
