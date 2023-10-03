@@ -249,7 +249,7 @@ class LoopCounter:
 
 """Node visitor"""
 class NodeVisitor(ast.NodeVisitor):
-    LUACODE = "[[luacode]]"
+    LUACODE = "luau"
 
     """Node visitor"""
     def __init__(self, context=None, config=None):
@@ -493,10 +493,22 @@ class NodeVisitor(ast.NodeVisitor):
         last_ctx = self.context.last()
 
         name = node.name
+        type = 1 # 1 = static, 2 = class
+        for decorator in reversed(node.decorator_list):
+            decorator_name = self.visit_all(decorator, inline=True)
+            
+            if decorator_name == "classmethod":
+                type = 2
+            elif decorator_name == "staticmethod":
+                type = 1
         if last_ctx["class_name"]:
             name = ".".join([last_ctx["class_name"], name])
-
-        arguments = [arg.arg for arg in node.args.args]
+            
+        if type == 1:
+            arguments = [arg.arg for arg in node.args.args]
+        else:
+            arguments = ["self"]
+            arguments.extend([arg.arg for arg in node.args.args])
 
         if node.args.vararg is not None:
             arguments.append("...")
@@ -540,6 +552,8 @@ class NodeVisitor(ast.NodeVisitor):
 
         for decorator in reversed(node.decorator_list):
             decorator_name = self.visit_all(decorator, inline=True)
+            if decorator_name == "classmethod" or decorator_name == "staticmethod":
+                continue
             values = {
                 "name": name,
                 "decorator": decorator_name,
@@ -575,6 +589,75 @@ class NodeVisitor(ast.NodeVisitor):
         for name in node.names:
             last_ctx["globals"].add_symbol(name)
 
+    def visit_AsyncFunctionDef(self, node):
+        """Visit async function definition"""
+        line = "{local}function {name}({arguments}) coroutine.wrap(function()"
+
+        last_ctx = self.context.last()
+
+        name = node.name
+        if last_ctx["class_name"]:
+            name = ".".join([last_ctx["class_name"], name])
+
+        arguments = [arg.arg for arg in node.args.args]
+
+        if node.args.vararg is not None:
+            arguments.append("...")
+
+        local_keyword = ""
+
+        if "." not in name and not last_ctx["locals"].exists(name):
+            local_keyword = "local "
+            last_ctx["locals"].add_symbol(name)
+
+        function_def = line.format(local=local_keyword,
+                                   name=name,
+                                   arguments=", ".join(arguments))
+
+        self.emit(function_def)
+
+        self.context.push({"class_name": ""})
+        self.visit_all(node.body)
+        self.context.pop()
+
+        body = self.output[-1]
+
+        if node.args.vararg is not None:
+            line = "local {name} = list {{...}}".format(name=node.args.vararg.arg)
+            body.insert(0, line)
+
+        arg_index = -1
+        for i in reversed(node.args.defaults):
+            line = "{name} = {name} or {value}"
+
+            arg = node.args.args[arg_index]
+            values = {
+                "name": arg.arg,
+                "value": self.visit_all(i, inline=True),
+            }
+            body.insert(0, line.format(**values))
+
+            arg_index -= 1
+
+        self.emit("end)() end")
+
+        for decorator in reversed(node.decorator_list):
+            decorator_name = self.visit_all(decorator, inline=True)
+            values = {
+                "name": name,
+                "decorator": decorator_name,
+            }
+            line = "{name} = {decorator}({name})".format(**values)
+            self.emit(line)
+        
+    def visit_Await(self, node):
+        """Visit await"""
+        self.emit("coroutine.await({})".format(self.visit_all(node.value, inline=True)))
+        
+    def visit_Yield(self, node):
+        """Visit yield"""
+        self.emit("coroutine.yield({})".format(self.visit_all(node.value, inline=True)))
+        
     def visit_If(self, node):
         """Visit if"""
         test = self.visit_all(node.test, inline=True)
