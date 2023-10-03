@@ -454,8 +454,8 @@ class NodeVisitor(ast.NodeVisitor):
         }
 
         line = "({})".format(operation["format"])
-        if operation["depend"]:
-            self.depend(operation["depend"])
+        #if operation["depend"]:
+        #    self.depend(operation["depend"])
         line = line.format(**values)
 
         self.emit("{target} = {line}".format(target=target, line=line))
@@ -477,8 +477,8 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit binary operation"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
         line = "({})".format(operation["format"])
-        if operation["depend"]:
-            self.depend(operation["depend"])
+        #if operation["depend"]: Binary operators do not have it
+        #    self.depend(operation["depend"])
         values = {
             "left": self.visit_all(node.left, True),
             "right": self.visit_all(node.right, True),
@@ -491,8 +491,8 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit boolean operation"""
         operation = BooleanOperationDesc.OPERATION[node.op.__class__]
         line = "({})".format(operation["format"])
-        if operation["depend"]:
-            self.depend(operation["depend"])
+        #if operation["depend"]:
+        #    self.depend(operation["depend"])
         values = {
             "left": self.visit_all(node.values[0], True),
             "right": self.visit_all(node.values[1], True),
@@ -1041,8 +1041,8 @@ class NodeVisitor(ast.NodeVisitor):
         value = self.visit_all(node.operand, inline=True)
 
         line = operation["format"]
-        if operation["depend"]:
-            self.depend(operation["depend"])
+        #if operation["depend"]:
+        #    self.depend(operation["depend"])
         values = {
             "value": value,
             "operation": operation["value"],
