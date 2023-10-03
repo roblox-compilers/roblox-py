@@ -7,3 +7,7 @@
 
 test.py
 test.lua
+
+# Build
+/build
+/dist

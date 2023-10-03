@@ -50,4 +50,8 @@
 ***
 
 Python, C, C++ Compiler for Roblox.
+
+## Building
+- `pip install pyinstaller`
+- `pyinstaller src/rbxpy.py`
 ***

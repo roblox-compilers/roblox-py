@@ -2324,13 +2324,13 @@ def error(msg):
     sys.exit()
     
 def usage():
-    print("\n"+f"""usage: rbxpy [file] [options] > [gen]
-Available options are:
-{tab}-v        show version information
-{tab}-vd       show version number only"
-{tab}-ast      show python ast tree before code
-{tab}-s        generate std.lua
-{tab}-u        open this""")
+    print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] > [gen]
+\033[1mOptions:\033[0m
+{TAB}\033[1m-v\033[0m        show version information
+{TAB}\033[1m-vd\033[0m       show version number only"
+{TAB}\033[1m-ast\033[0m      show python ast tree before code
+{TAB}\033[1m-s\033[0m        generate std.lua
+{TAB}\033[1m-u\033[0m        open this""")
     sys.exit()
 
 def version():
