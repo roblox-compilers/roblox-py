@@ -61,8 +61,8 @@ class BinaryOperationDesc:
             "format": _DEFAULT_BIN_FORMAT,
         },
         ast.Mod: {
-            "value": "",
-            "format": "math.fmod({left}, {right})",
+            "value": "%",
+            "format": _DEFAULT_BIN_FORMAT,
         },
         ast.Pow: {
             "value": "",
@@ -254,6 +254,7 @@ class NodeVisitor(ast.NodeVisitor):
         self.config = config
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
+        self.dependencies = []
 
     def visit_Assign(self, node):
         """Visit assign"""
@@ -276,6 +277,170 @@ class NodeVisitor(ast.NodeVisitor):
                                                      target=target,
                                                      value=value))
 
+        ### MATCHES ###
+    def visit_Match(self, node):
+        """Visit match"""
+        self.emit("match({0}, ".format(self.visit_all(node.subject, inline=True))+"{")
+        for case in node.cases:
+            if hasattr(case.pattern, "value"):
+                self.emit("[{0}] = function()".format(case.pattern.value.s))
+                self.visit_all(case.body)
+                self.emit("end,")
+            else:
+                self.emit("[\"default\"] = function()")
+                self.visit_all(case.body)
+                self.emit("end,")
+        self.emit("})")
+        # example input:
+        # match x:
+        #     case "10":
+        #         print("x is 10")
+        #     case "20":
+        #         print("x is 20")
+        #     case _:
+        #         print("x is not 10 or 20")
+        # example output:
+        # match(x, {
+        #   ["10"] = function()
+        #     print("x is 10") 
+        #   end,
+        #   ["20"] = function()
+        #     print("x is 20")
+        #   end,
+        #   ["_"] = function()
+        #     print("x is not 10 or 20")
+        #   end
+        # })
+    def visit_MatchValue(self, node):
+        """Visit match value"""
+        return self.visit_all(node.value, inline=True)
+    def visit_MatchCase(self, node):
+        """Visit match case"""
+        return self.visit_all(node.body)
+    
+    def visit_MatchPattern(self, node):
+        """Visit match pattern"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchSingleton(self, node):
+        """Visit match singleton"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchSequence(self, node):
+        """Visit match sequence"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchMapping(self, node):
+        """Visit match mapping"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchClass(self, node):
+        """Visit match class"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchAs(self, node):
+        """Visit match as"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchKeyword(self, node):
+        """Visit match keyword"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchStar(self, node):
+        """Visit match star"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    def visit_MatchOr(self, node):
+        """Visit match or"""
+        return self.visit_all(node.pattern, inline=True)
+    
+    ### END MATCH ###
+    def visit_AsyncWith(self, node):
+        """Visit async with"""
+        """Visit with"""
+        self.emit("coroutine.wrap(function()")
+        self.visit_all(node.body)
+        body = self.output[-1]
+        lines = []
+        for i in node.items:
+            line = ""
+            if i.optional_vars is not None:
+                line = "local {} = "
+                line = line.format(self.visit_all(i.optional_vars,
+                                                  inline=True))
+            line += self.visit_all(i.context_expr, inline=True)
+            lines.append(line)
+        for line in lines:
+            body.insert(0, line)
+        self.emit("end)()")
+        
+    def visit_Slice(self, node):
+        """Visit slice"""
+        error("syntax based slicing is not supported yet. Use slice(<sequence>, <start>, <end>, <step>) instead.")
+        
+    def visit_JoinedStr(self, node):
+        # f"{a} {b}"
+        # becomes
+        # `{a} {b}`
+        
+        """Visit joined string"""
+        values = []
+        for value in node.values:
+            if isinstance(value, ast.Str):
+                values.append(value.s)
+            else:
+                values.append(self.visit_all(value, inline=True))
+        self.emit("`{}`".format("".join(values)))
+        
+    def visit_FormattedValue(self, node):
+        """Visit formatted value"""
+        # f"{a}"
+        # becomes
+        # {a}
+        self.emit("{" + (self.visit_all(node.value, inline=True)) + "}")
+    
+    def visit_Bytes(self, node):
+        """Visit bytes"""
+        # Use utf8 strings instead of bytes
+        self.emit("\"{}\"".format(node.s.decode("utf8")))
+        
+        
+    def visit_TryStar(self, node):
+        """Visit try"""
+        self.emit("local success, result = pcall(function()")
+        self.visit_all(node.body)
+        self.emit("end)")
+        
+    def visit_Assert(self, node):
+        """Visit assert"""
+        self.emit("assert({})".format(self.visit_all(node.test, True)))
+        
+    def visit_Nonlocal(self, node):
+        """Visit nonlocal"""
+        for name in node.names:
+            self.context.last()["nonlocals"].add_symbol(name)
+        
+    def visit_AnnAssign(self, node): 
+        """Visit annassign"""
+        target = self.visit_all(node.target, inline=True)
+        value = self.visit_all(node.value, inline=True)
+        local_keyword = ""
+        last_ctx = self.context.last()
+        if last_ctx["class_name"]:
+            target = ".".join([last_ctx["class_name"], target])
+        if "." not in target and not last_ctx["locals"].exists(target):
+            local_keyword = "local "
+            last_ctx["locals"].add_symbol(target)
+        self.emit("{local}{target}: {type} = {value}".format(local=local_keyword,
+                                                     target=target,
+                                                     value=value,
+                                                     type=self.visit_all(node.annotation, inline=True)))
+        self.depend("pytypes")
+        # example input:
+        # a: int = 1
+        # example output:
+        # local a = 1
+        
     def visit_AugAssign(self, node):
         """Visit augassign"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
@@ -411,7 +576,7 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_Continue(self, node):
         """Visit continue"""
         last_ctx = self.context.last()
-        line = "goto {}".format(last_ctx["loop_label_name"])
+        line = "continue"
         self.emit(line)
 
     def visit_Delete(self, node):
@@ -583,8 +748,6 @@ class NodeVisitor(ast.NodeVisitor):
         })
         self.visit_all(node.body)
         self.context.pop()
-
-        #self.output[-1].append("::{}::".format(continue_label)) 5.2
 
         self.emit("end")
 
@@ -877,6 +1040,11 @@ class NodeVisitor(ast.NodeVisitor):
         line = "error({})".format(self.visit_all(node.exc, inline=True))
         self.emit(line)
         
+    def visit_Set(self, node):
+        """Visit set"""
+        values = [self.visit_all(value, True) for value in node.elts]
+        self.emit('{' + ', '.join(values) + '}')
+        
     def visit_Try(self, node):
         """Visit try"""
         self.emit("xpcall(function()")
@@ -910,10 +1078,35 @@ class NodeVisitor(ast.NodeVisitor):
         self.visit_all(node.body)
         self.context.pop()
 
-        #self.output[-1].append("::{}::".format(continue_label)) 5.2
-
         self.emit("end")
 
+    
+    def visit_SetComp(self, node):
+        """Visit set comprehension"""
+        self.emit("(function()")
+        self.emit("local result = set({})")
+        self.depend("set")
+        ends_count = 0
+        for comp in node.generators:
+            line = "for {target} in {iterator} do"
+            values = {
+                "target": self.visit_all(comp.target, inline=True),
+                "iterator": self.visit_all(comp.iter, inline=True),
+            }
+            line = line.format(**values)
+            self.emit(line)
+            ends_count += 1
+            for if_ in comp.ifs:
+                line = "if {} then".format(self.visit_all(if_, inline=True))
+                self.emit(line)
+                ends_count += 1
+        line = "result.add({})"
+        line = line.format(self.visit_all(node.elt, inline=True))
+        self.emit(line)
+        self.emit(" ".join(["end"] * ends_count))
+        self.emit("return result")
+        self.emit("end)()")
+        
     def visit_With(self, node):
         """Visit with"""
         self.emit("do")
@@ -938,7 +1131,9 @@ class NodeVisitor(ast.NodeVisitor):
 
     def generic_visit(self, node):
         """Unknown nodes handler"""
-        error("Unknown node: {}".format(node))
+        if node is None:
+            return
+        error("Unsupported feature: '{}'".format(node.__class__.__name__))
 
     def visit_all(self, nodes, inline=False):
         """Visit all nodes in the given list"""
@@ -974,8 +1169,8 @@ class NodeVisitor(ast.NodeVisitor):
         self.dependencies.append(value)
         
 """Header"""
-HEADER = f"--// Generated by roblox-pyc v{VERSION} \\\\--\n"
-PY_HEADER = f"## Generated by roblox-pyc v{VERSION} ##\n"
+HEADER = f"--// Generated by roblox-py v{VERSION} \\\\--\n"
+PY_HEADER = f"## Generated by roblox-py v{VERSION} ##\n"
 
 
 def genDependencies(dependencies):
@@ -2155,7 +2350,7 @@ Available options are:
     sys.exit()
 
 def version():
-    print("\033[1;34m" + "copyright:" + "\033[0m" + " roblox-pyc " + "\033[1m" + VERSION + "\033[0m" + " licensed under the GNU Affero General Public License by " + "\033[1m" + "@AsynchronousAI" + "\033[0m")
+    print("\033[1;34m" + "copyright:" + "\033[0m" + " roblox-py " + "\033[1m" + VERSION + "\033[0m" + " licensed under the GNU Affero General Public License by " + "\033[1m" + "@AsynchronousAI" + "\033[0m")
     sys.exit(0)
 
 """The main entry point to the translator"""
