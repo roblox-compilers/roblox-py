@@ -601,12 +601,14 @@ class NodeVisitor(ast.NodeVisitor):
         elements = ", ".join(elements)
         self.depend("dict")
         self.emit("dict {{{}}}".format(elements))
+        self.depend("dict")
 
     def visit_DictComp(self, node):
         """Visit dictionary comprehension"""
         self.emit("(function()")
         self.depend("dict")
         self.emit("local result = dict {}")
+        self.depend("dict")
 
         ends_count = 0
 
@@ -790,6 +792,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         if node.args.vararg is not None:
             line = "local {name} = list {{...}}".format(name=node.args.vararg.arg)
+            self.depend("list")
             body.insert(0, line)
 
         arg_index = -1
@@ -928,12 +931,14 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit list"""
         elements = [self.visit_all(item, inline=True) for item in node.elts]
         line = "list {{{}}}".format(", ".join(elements))
+        self.depend("list")
         self.emit(line)
 
     def visit_ListComp(self, node):
         """Visit list comprehension"""
         self.emit("(function()")
         self.emit("local result = list {}")
+        self.depend("list")
 
         ends_count = 0
 
@@ -1198,6 +1203,11 @@ class Translator:
         
         self.output = visitor.output
         
+        # Remove dupelicates from dependencies
+        for depend in dependencies:
+            if depend not in dependencies:
+                dependencies.append(depend)
+            
         for depend in dependencies:
             # set
             
