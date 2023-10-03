@@ -280,37 +280,21 @@ class NodeVisitor(ast.NodeVisitor):
         ### MATCHES ###
     def visit_Match(self, node):
         """Visit match"""
-        self.emit("match({0}, ".format(self.visit_all(node.subject, inline=True))+"{")
         for case in node.cases:
             if hasattr(case.pattern, "value"):
-                self.emit("[{0}] = function()".format(case.pattern.value.s))
+                first = ""
+                if case is node.cases[0]:
+                    first = ""
+                else:
+                    first = "else"
+                    
+                self.emit("{}if {} == {} then".format(first, self.visit_all(node.subject, inline=True), case.pattern.value.s))
                 self.visit_all(case.body)
-                self.emit("end,")
             else:
-                self.emit("[\"default\"] = function()")
+                self.emit("else")
                 self.visit_all(case.body)
-                self.emit("end,")
-        self.emit("})")
-        # example input:
-        # match x:
-        #     case "10":
-        #         print("x is 10")
-        #     case "20":
-        #         print("x is 20")
-        #     case _:
-        #         print("x is not 10 or 20")
-        # example output:
-        # match(x, {
-        #   ["10"] = function()
-        #     print("x is 10") 
-        #   end,
-        #   ["20"] = function()
-        #     print("x is 20")
-        #   end,
-        #   ["_"] = function()
-        #     print("x is not 10 or 20")
-        #   end
-        # })
+        self.emit("end")
+        
     def visit_MatchValue(self, node):
         """Visit match value"""
         return self.visit_all(node.value, inline=True)
