@@ -303,6 +303,10 @@ class NodeVisitor(ast.NodeVisitor):
             "object": self.visit_all(node.value, True),
             "attr": node.attr,
         }
+        # Does object start and end with a " "
+        if (values["object"].startswith('"') and values["object"].endswith('"')) or (values["object"].startswith('\'') and values["object"].endswith('\'')) or (values["object"].startswith('{') and values["object"].endswith('}')) or (values["object"].startswith('[') and values["object"].endswith(']')) or (values["object"].startswith('`') and values["object"].endswith('`')):
+            values["object"] = "({})".format(values["object"])
+        
         self.emit(line.format(**values))
 
     def visit_BinOp(self, node):
@@ -435,11 +439,13 @@ class NodeVisitor(ast.NodeVisitor):
 
         elements = ["{} = {}".format(keys[i], values[i]) for i in range(len(keys))]
         elements = ", ".join(elements)
+        self.depend("dict")
         self.emit("dict {{{}}}".format(elements))
 
     def visit_DictComp(self, node):
         """Visit dictionary comprehension"""
         self.emit("(function()")
+        self.depend("dict")
         self.emit("local result = dict {}")
 
         ends_count = 0
@@ -533,7 +539,8 @@ class NodeVisitor(ast.NodeVisitor):
         body = self.output[-1]
 
         if node.args.vararg is not None:
-            line = "local {name} = list {{...}}".format(name=node.args.vararg.arg)
+            self.depend("list")
+            line = "local {name} = list({{...})".format(name=node.args.vararg.arg)
             body.insert(0, line)
 
         arg_index = -1
