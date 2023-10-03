@@ -124,10 +124,12 @@ class CompareOperationDesc:
         ast.Gt: ">",
         ast.GtE: ">=",
         ast.In: {
-            "format": "operator_in({left}, {right})",
+            "format": "op_in({left}, {right})",
+            "depend": "in",
         },
         ast.NotIn: {
-            "format": "not operator_in({left}, {right})",
+            "format": "not op_in({left}, {right})",
+            "depend": "in",
         },
     }
     
@@ -452,6 +454,8 @@ class NodeVisitor(ast.NodeVisitor):
         }
 
         line = "({})".format(operation["format"])
+        if operation["depend"]:
+            self.depend(operation["depend"])
         line = line.format(**values)
 
         self.emit("{target} = {line}".format(target=target, line=line))
@@ -473,6 +477,8 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit binary operation"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
         line = "({})".format(operation["format"])
+        if operation["depend"]:
+            self.depend(operation["depend"])
         values = {
             "left": self.visit_all(node.left, True),
             "right": self.visit_all(node.right, True),
@@ -485,6 +491,8 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit boolean operation"""
         operation = BooleanOperationDesc.OPERATION[node.op.__class__]
         line = "({})".format(operation["format"])
+        if operation["depend"]:
+            self.depend(operation["depend"])
         values = {
             "left": self.visit_all(node.values[0], True),
             "right": self.visit_all(node.values[1], True),
@@ -564,6 +572,8 @@ class NodeVisitor(ast.NodeVisitor):
                 line += "{left} {op} {right}".format(**values)
             elif isinstance(operation, dict):
                 line += operation["format"].format(**values)
+                if operation["depend"]:
+                    self.depend(operation["depend"])
 
             if i < len(node.ops) - 1:
                 left = right
@@ -1031,6 +1041,8 @@ class NodeVisitor(ast.NodeVisitor):
         value = self.visit_all(node.operand, inline=True)
 
         line = operation["format"]
+        if operation["depend"]:
+            self.depend(operation["depend"])
         values = {
             "value": value,
             "operation": operation["value"],
@@ -1513,10 +1525,22 @@ end"""
 
     return c
 end"""
-            #elif depend == "set":
-            #    pass
+            elif depend == "in":
+                DEPEND += """function op_in(item, items)
+    if type(items) == "table" then
+        for v in items do
+            if v == item then
+                return true
+            end
+        end
+    elseif type(items) == "string" and type(item) == "string" then
+        return string.find(items, item, 1, true) ~= nil
+    end
+
+    return false
+end"""
             else:
-                error("Auto-generated dependency unhandled {}, please report this issue on Discord or Github".format(depend))
+                error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
 
                     
         DEPEND += "\n\n----- CODE START -----\n"
