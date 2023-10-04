@@ -413,7 +413,7 @@ class NodeVisitor(ast.NodeVisitor):
         value = self.visit_all(node.value, inline=True)
         local_keyword = ""
         last_ctx = self.context.last()
-        istype = (last_ctx["class_name"] == "")
+        istype = (last_ctx["class_name"] == "TYPE")
         if last_ctx["class_name"] and not istype:
             target = ".".join([last_ctx["class_name"], target])
         if "." not in target and not last_ctx["locals"].exists(target):
@@ -437,10 +437,13 @@ class NodeVisitor(ast.NodeVisitor):
                                                         target=target,
                                                         value=value,
                                                         type=type))
-            if istype:
-                error("Named type values cannot be added")
         else:
-            self.emit("{target}: {type},".format(local=local_keyword,
+            if istype:
+                self.emit("{target}: {type},".format(local=local_keyword,
+                                                            target=target,
+                                                            type=type))
+            else:
+                self.emit("{local}{target} = nil".format(local=local_keyword,
                                                         target=target,
                                                         type=type))
         # example input:
@@ -527,7 +530,7 @@ class NodeVisitor(ast.NodeVisitor):
         
         if "type" in bases:
             self.emit("type {} = {{".format(node.name, self.visit_all(node.bases[0], inline=True)))
-            self.context.push({"class_name": ""})
+            self.context.push({"class_name": "TYPE"})
             self.visit_all(node.body)
             self.context.pop()
             self.emit("}")
@@ -1241,7 +1244,7 @@ class Translator:
             # set
             
             if depend == "list":
-                DEPEND += """function list(t)
+                DEPEND += """\n\nfunction list(t)
 	local result = {}
 
 	result._is_list = true
@@ -1367,7 +1370,7 @@ class Translator:
 	return result
 end"""
             elif depend == "dict":
-                DEPEND += """function dict(t)
+                DEPEND += """\n\nfunction dict(t)
 	local result = {}
 
 	result._is_dict = true
@@ -1499,7 +1502,7 @@ end"""
 	return result
 end"""
             elif depend == "class":
-                DEPEND += """function class(class_init, bases)
+                DEPEND += """\n\nfunction class(class_init, bases)
     bases = bases or {}
 
     local c = {}
@@ -1543,7 +1546,7 @@ end"""
     return c
 end"""      
             elif depend == "in":
-                DEPEND += """function op_in(item, items)
+                DEPEND += """\n\nfunction op_in(item, items)
     if type(items) == "table" then
         for v in items do
             if v == item then
@@ -1557,7 +1560,7 @@ end"""
     return false
 end"""
             elif depend == "fn":
-                DEPEND += """if game then
+                DEPEND += """\n\nif game then
 __name__ = if script:IsA("BaseScript") then "__main__" else script.Name 
 else
 __name__ = nil
@@ -1940,6 +1943,8 @@ end"""
     def get_luainit(): # Return STDlib
         return """"""
 
+#class PyGenerator:
+    
 #### INTERFACE ####
 
 def warn(msg):
@@ -1968,6 +1973,11 @@ def version():
 """The main entry point to the translator"""
 def main():
     """Entry point function to the translator"""
+    
+    # Enable support for ANSI escape sequences
+    if os.name == "nt":
+        os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\"")
+
     args = sys.argv[1:]
     ast = False
     input_filename = "NONE"
