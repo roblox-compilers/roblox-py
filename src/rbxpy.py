@@ -898,13 +898,19 @@ class NodeVisitor(ast.NodeVisitor):
         line = 'local {asname} = require("{name}")'
         values = {"asname": "", "name": ""}
 
+        if node.names[0].name.startswith("game."):
+            line = 'local {asname} = game:GetService("{name}")'
+            values["name"] = node.names[0].name[5:]
+            
         if node.names[0].asname is None:
-            values["name"] = node.names[0].name
+            if not node.names[0].name.startswith("game."):
+                values["name"] = node.names[0].name
             values["asname"] = values["name"]
             values["asname"] = values["asname"].split(".")[-1]
         else:
             values["asname"] = node.names[0].asname
-            values["name"] = node.names[0].name
+            if not node.names[0].name.startswith("game."):
+                values["name"] = node.names[0].name
 
         self.emit(line.format(**values))
     
