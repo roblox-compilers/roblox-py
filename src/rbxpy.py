@@ -413,7 +413,8 @@ class NodeVisitor(ast.NodeVisitor):
         value = self.visit_all(node.value, inline=True)
         local_keyword = ""
         last_ctx = self.context.last()
-        if last_ctx["class_name"]:
+        istype = (last_ctx["class_name"] == "")
+        if last_ctx["class_name"] and not istype:
             target = ".".join([last_ctx["class_name"], target])
         if "." not in target and not last_ctx["locals"].exists(target):
             local_keyword = "local "
@@ -435,6 +436,12 @@ class NodeVisitor(ast.NodeVisitor):
             self.emit("{local}{target}: {type} = {value}".format(local=local_keyword,
                                                         target=target,
                                                         value=value,
+                                                        type=type))
+            if istype:
+                error("Named type values cannot be added")
+        else:
+            self.emit("{target}: {type},".format(local=local_keyword,
+                                                        target=target,
                                                         type=type))
         # example input:
         # a: int = 1
@@ -517,38 +524,45 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node):
         """Visit class definition"""
         bases = [self.visit_all(base, inline=True) for base in node.bases]
-
-        local_keyword = ""
-        last_ctx = self.context.last()
-        if not last_ctx["class_name"] and not last_ctx["locals"].exists(node.name):
-            local_keyword = "local "
-            last_ctx["locals"].add_symbol(node.name)
-
-        name = node.name
-        if last_ctx["class_name"]:
-            name = ".".join([last_ctx["class_name"], name])
-
-        values = {
-            "local": local_keyword,
-            "name": name,
-            "node_name": node.name,
-        }
-
-        self.emit("{local}{name} = class(function({node_name})".format(**values))
-        self.depend("class")
         
-        self.context.push({"class_name": node.name})
-        self.visit_all(node.body)
-        self.context.pop()
+        if "type" in bases:
+            self.emit("type {} = {{".format(node.name, self.visit_all(node.bases[0], inline=True)))
+            self.context.push({"class_name": ""})
+            self.visit_all(node.body)
+            self.context.pop()
+            self.emit("}")
+        else:
+            local_keyword = ""
+            last_ctx = self.context.last()
+            if not last_ctx["class_name"] and not last_ctx["locals"].exists(node.name):
+                local_keyword = "local "
+                last_ctx["locals"].add_symbol(node.name)
 
-        self.output[-1].append("return {node_name}".format(**values))
+            name = node.name
+            if last_ctx["class_name"]:
+                name = ".".join([last_ctx["class_name"], name])
 
-        self.emit("end, {{{}}})".format(", ".join(bases)))
+            values = {
+                "local": local_keyword,
+                "name": name,
+                "node_name": node.name,
+            }
 
-        # Return class object only in the top-level classes.
-        # Not in the nested classes.
-        if self.config["class"]["return_at_the_end"] and not last_ctx["class_name"]:
-            self.emit("return {}".format(name))
+            self.emit("{local}{name} = class(function({node_name})".format(**values))
+            self.depend("class")
+            
+            self.context.push({"class_name": node.name})
+            self.visit_all(node.body)
+            self.context.pop()
+
+            self.output[-1].append("return {node_name}".format(**values))
+
+            self.emit("end, {{{}}})".format(", ".join(bases)))
+
+            # Return class object only in the top-level classes.
+            # Not in the nested classes.
+            if self.config["class"]["return_at_the_end"] and not last_ctx["class_name"]:
+                self.emit("return {}".format(name))
 
     def visit_Compare(self, node):
         """Visit compare"""
@@ -1029,7 +1043,7 @@ class NodeVisitor(ast.NodeVisitor):
         }
 
         self.emit(line.format(**values))
-
+        
     def visit_Tuple(self, node):
         """Visit tuple"""
         elements = [self.visit_all(item, inline=True) for item in node.elts]
@@ -1527,7 +1541,7 @@ end"""
     setmetatable(c, mt)
 
     return c
-end"""
+end"""      
             elif depend == "in":
                 DEPEND += """function op_in(item, items)
     if type(items) == "table" then
@@ -2242,7 +2256,6 @@ def parse_tokens(tokens, in_body=0, in_table_construct=0, in_fn_arguments=0):
         # [ is beeing used as a accessor for table
         if in_table_construct == 0 and is_op(token, "["):
             key_tokens = extract_until_end_op(tokens, "]")
-
             expression = {
                 "type": "call",
                 "name": "[",
@@ -3097,7 +3110,10 @@ def main():
         file_handler = open(input_filename, 'r')
         source = file_handler.read()
 
-        tokens = lexer(source)
+        try:
+            tokens = lexer(source)
+        except:
+            error("lexer error")
 
         #if kwargs["strip_comments"]:
         #    tokens = list(filter(lambda x: x["type"] != "COMMENT", tokens))
@@ -3107,13 +3123,19 @@ def main():
         #    pprint(tokens)
         #    return
 
-        ast_ = parse(tokens)
+        try: 
+            ast_ = parse(tokens)
+        except:
+            error("parser error")
 
         #if kwargs["ast"]:
         #    pprint(ast_)
         #    return
 
-        py_ast = ast_to_py_ast(ast_)
+        try: 
+            py_ast = ast_to_py_ast(ast_)
+        except:
+            error("ast error")
 
         #if kwargs["py_ast"]:
         #    print(ast.dump(py_ast))
@@ -3123,7 +3145,10 @@ def main():
         #    print(astunparse.unparse(py_ast))
         #    return
 
-        print(PY_HEADER + astunparse.unparse(py_ast))
+        try:
+            print(PY_HEADER + astunparse.unparse(py_ast))
+        except:
+            error("generator error")
     return 0
 
 
