@@ -916,24 +916,44 @@ class NodeVisitor(ast.NodeVisitor):
         else:
             module = module
 
-        for name in node.names:
-            if name.asname is None:
-                if name.name == "*":
-                    error("import * is unsupproted")
+        if module == "services":
+            for name in node.names:
+                if name.asname is None:
+                    if name.name == "*":
+                        error("import * is unsupproted")
+                    else:
+                        self.emit("local {name} = game:GetService(\"{name}\")".format(
+                            name=name.name,
+                            module=module,
+                        ))
                 else:
-                    self.emit("local {name} = require(\"{module}\").{name}".format(
-                        name=name.name,
-                        module=module,
-                    ))
-            else:
-                if name.name == "*":
-                    error("import * is unsupproted")
+                    if name.name == "*":
+                        error("import * is unsupproted")
+                    else:
+                        self.emit("local {name} = game:GetService(\"{realname}\")".format(
+                            name=name.asname,
+                            module=module,
+                            realname=name.name,
+                        ))
+        else:
+            for name in node.names:
+                if name.asname is None:
+                    if name.name == "*":
+                        error("import * is unsupproted")
+                    else:
+                        self.emit("local {name} = require(\"{module}\").{name}".format(
+                            name=name.name,
+                            module=module,
+                        ))
                 else:
-                    self.emit("local {name} = require(\"{module}\").{realname}".format(
-                        name=name.asname,
-                        module=module,
-                        realname=name.name,
-                    ))
+                    if name.name == "*":
+                        error("import * is unsupproted")
+                    else:
+                        self.emit("local {name} = require(\"{module}\").{realname}".format(
+                            name=name.asname,
+                            module=module,
+                            realname=name.name,
+                        ))
 
     def visit_Index(self, node):
         """Visit index"""
