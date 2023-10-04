@@ -290,8 +290,11 @@ class NodeVisitor(ast.NodeVisitor):
                     first = ""
                 else:
                     first = "else"
-                    
-                self.emit("{}if {} == {} then".format(first, self.visit_all(node.subject, inline=True), case.pattern.value.s))
+                
+                val = case.pattern.value.s
+                if isinstance(val, str):
+                    val = '"{}"'.format(val)
+                self.emit("{}if {} == {} then".format(first, self.visit_all(node.subject, inline=True), val))
                 self.visit_all(case.body)
             else:
                 self.emit("else")
