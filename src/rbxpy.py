@@ -297,8 +297,9 @@ class NodeVisitor(ast.NodeVisitor):
                 self.emit("{}if {} == {} then".format(first, self.visit_all(node.subject, inline=True), val))
                 self.visit_all(case.body)
             else:
-                self.emit("else")
-                self.visit_all(case.body)
+            #    self.emit("else")
+            #    self.visit_all(case.body)
+                error("Match statement requires a compile-time constant, not a variable.")
         self.emit("end")
         
     def visit_MatchValue(self, node):
