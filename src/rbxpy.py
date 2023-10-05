@@ -260,6 +260,7 @@ class NodeVisitor(ast.NodeVisitor):
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
 
+        global dependencies
         dependencies = []
 
     def visit_Assign(self, node):
@@ -1272,10 +1273,8 @@ class Translator:
         
         self.output = visitor.output
         
-        # Remove dupelicates from dependencies
-        for depend in dependencies:
-            if depend not in dependencies:
-                dependencies.append(depend)
+        # Remove duplicates from dependencies (list)
+        dependencies = list(set(dependencies))
         
         if fn:
             dependencies.append("fn")
