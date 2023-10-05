@@ -260,9 +260,6 @@ class NodeVisitor(ast.NodeVisitor):
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
 
-        global dependencies
-        dependencies = []
-
     def visit_Assign(self, node):
         """Visit assign"""
         target = self.visit_all(node.targets[0], inline=True)
