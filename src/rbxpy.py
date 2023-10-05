@@ -46,7 +46,8 @@ class BinaryOperationDesc:
     OPERATION = {
         ast.Add: {
             "value": "+",
-            "format": _DEFAULT_BIN_FORMAT,
+            "format": "(safeadd({left}, {right}))",
+            "depend": "safeadd",
         },
         ast.Sub: {
             "value": "-",
@@ -458,6 +459,9 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_AugAssign(self, node):
         """Visit augassign"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
+        
+        if operationp["depend"]:
+            self.depend(operation["depend"])
 
         target = self.visit_all(node.target, inline=True)
 
@@ -490,6 +494,10 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_BinOp(self, node):
         """Visit binary operation"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
+        
+        if operation["depend"]:
+            self.depend(operation["depend"])
+            
         line = "({})".format(operation["format"])
         #if operation["depend"]: Binary operators do not have it
         #    self.depend(operation["depend"])
@@ -1936,6 +1944,16 @@ vars = function (object) -- vars
         attributes[key] = value
     end
     return attributes
+end"""
+            elif depend == "safeadd":
+                DEPEND += """\n\nfunction safeadd(a, b)
+    if type(a) == "number" and type(b) == "number" then
+        return a + b
+    elseif type(a) == "string" and type(b) == "string" then
+        return a .. b
+    else
+        error(`Attempt to add a {type(a)} and a {type(b)}`)
+    end
 end"""
             else:
                 error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
