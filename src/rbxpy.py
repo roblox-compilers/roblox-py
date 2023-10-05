@@ -1253,14 +1253,17 @@ class Translator:
 
         self.output = []
 
-    def translate(self, pycode, fn):
+    def translate(self, pycode, fn, isAPI = False):
         """Translate python code to lua code"""
-        try:
-            # code that uses ast
+        if isAPI: 
             py_ast_tree = ast.parse(pycode)
-        except SyntaxError as err:
-            sys.stderr.write("\033[1;31m" + "syntax error: " + "\033[0m" + str(err) + "\n")
-            sys.exit(1)
+        else:
+            try:
+                # code that uses ast
+                py_ast_tree = ast.parse(pycode)
+            except SyntaxError as err:
+                sys.stderr.write("\033[1;31m" + "syntax error: " + "\033[0m" + str(err) + "\n")
+                sys.exit(1)
             
         visitor = NodeVisitor(config=self.config)
 
@@ -1995,18 +1998,13 @@ end"""
 #class PyGenerator:
     
 #### INTERFACE ####
-proverr = None
-
 def warn(msg):
     sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + msg)
 def info(msg):
     sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + msg)
 def error(msg):
-    if proverr:
-        proverr(msg)
-    else:
-        sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
-        sys.exit()
+    sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
+    sys.exit()
     
 def usage():
     print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] > [gen]
