@@ -1277,6 +1277,7 @@ class Translator:
         self.output = visitor.output
         
         # Remove duplicates from dependencies (list)
+        global dependencies
         dependencies = list(set(dependencies))
         
         if fn:
