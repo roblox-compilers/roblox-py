@@ -2029,9 +2029,16 @@ def main():
     args = sys.argv[1:]
     ast = False
     input_filename = "NONE"
+    out = "NONE"
     type = 1 # 1: py->lua, 2: lua->py
     includeSTD = False
+    skip = False
+    
     for arg in args:
+        if skip:
+            skip = False
+            continue
+        
         if arg == "-v":
             version()
         elif arg == "-vd":
@@ -2047,6 +2054,9 @@ def main():
             ast = True
         elif arg == "-py":
             type = 1
+        elif arg == "-o":
+            out = args[args.index(arg)+1]
+            skip = True
         elif arg == "-lua":
             type = 2
         else:
@@ -2073,7 +2083,11 @@ def main():
         lua_code = translator.translate(content, includeSTD)
 
         if not ast:
-            print(lua_code)
+            if out != "NONE":
+                with open(out, "w") as file:
+                    file.write(lua_code)
+            else:
+                print(lua_code)
     else:
         command = "luac -l "+input_filename
         
