@@ -2000,8 +2000,11 @@ def warn(msg):
 def info(msg):
     sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + msg)
 def error(msg):
-    sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
-    sys.exit()
+    if proverr:
+        proverr(msg)
+    else:
+        sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
+        sys.exit()
     
 def usage():
     print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] > [gen]
@@ -2018,6 +2021,10 @@ def version():
     print("\033[1;34m" + "copyright:" + "\033[0m" + " roblox-py " + "\033[1m" + VERSION + "\033[0m" + " licensed under the GNU Affero General Public License by " + "\033[1m" + "@AsynchronousAI" + "\033[0m")
     sys.exit(0)
 
+def provideerr(err):
+    global proverr
+    proverr = err
+    
 """The main entry point to the translator"""
 def main():
     """Entry point function to the translator"""
