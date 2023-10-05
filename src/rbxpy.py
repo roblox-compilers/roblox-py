@@ -1994,6 +1994,7 @@ end"""
 #class PyGenerator:
     
 #### INTERFACE ####
+proverr = None
 
 def warn(msg):
     sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + msg)
