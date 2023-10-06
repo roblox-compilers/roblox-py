@@ -260,6 +260,7 @@ class LoopCounter:
 
 """Node visitor"""
 dependencies = []
+exports = []
 
 class NodeVisitor(ast.NodeVisitor):
     LUACODE = "luau"
@@ -295,6 +296,8 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                      target=target,
                                                      value=value))
+        
+        exports.append(target)
 
         ### MATCHES ###
     def visit_Match(self, node):
@@ -784,6 +787,8 @@ class NodeVisitor(ast.NodeVisitor):
             }
             line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
+        
+        exports.append(name)
 
     def visit_For(self, node):
         """Visit for loop"""
@@ -886,6 +891,8 @@ class NodeVisitor(ast.NodeVisitor):
             }
             line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
+        
+        exports.append(name)
     def visit_Await(self, node):
         """Visit await"""
         self.emit("coroutine.await({})".format(self.visit_all(node.value, inline=True)))
@@ -1345,9 +1352,17 @@ class Translator:
         global dependencies
         dependencies = list(set(dependencies))
         
+        global exports
+        exports = list(set(exports))
+        
         if fn:
             dependencies.append("fn")
-            
+        
+        FOOTER = "\n\n--// EXPORTS \\\\--\n"
+        FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
+        for export in exports:
+            FOOTER += f"\t\t[\"{export}\"] = {export},\n"
+        FOOTER += "\t}\nend"
         for depend in dependencies:
             # set
             
@@ -2032,7 +2047,7 @@ end"""
         DEPEND += "\n\n----- CODE START -----\n"
         
 
-        return HEADER + DEPEND + self.to_code()
+        return HEADER + DEPEND + self.to_code() + FOOTER
 
     def to_code(self, code=None, indent=0):
         """Create a lua code from the compiler output"""
