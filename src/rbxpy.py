@@ -809,7 +809,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_AsyncFunctionDef(self, node):
         """Visit async function definition"""
-        line = "{local}function {name}({arguments}) coroutine.wrap(function()"
+        line = "{local}function {name}({arguments}) task.spawn(function()"
 
         last_ctx = self.context.last()
 
@@ -870,7 +870,7 @@ class NodeVisitor(ast.NodeVisitor):
 
             arg_index -= 1
 
-        self.emit("end")
+        self.emit("end) end")
 
         for decorator in reversed(node.decorator_list):
             decorator_name = self.visit_all(decorator, inline=True)
