@@ -803,10 +803,22 @@ class NodeVisitor(ast.NodeVisitor):
         last_ctx = self.context.last()
 
         name = node.name
+        type = 1 # 1 = static, 2 = class
+        for decorator in reversed(node.decorator_list):
+            decorator_name = self.visit_all(decorator, inline=True)
+            
+            if decorator_name == "classmethod":
+                type = 2
+            elif decorator_name == "staticmethod":
+                type = 1
         if last_ctx["class_name"]:
             name = ".".join([last_ctx["class_name"], name])
-
-        arguments = [arg.arg for arg in node.args.args]
+            
+        if type == 1:
+            arguments = [arg.arg for arg in node.args.args]
+        else:
+            arguments = ["self"]
+            arguments.extend([arg.arg for arg in node.args.args])
 
         if node.args.vararg is not None:
             arguments.append("...")
@@ -830,8 +842,8 @@ class NodeVisitor(ast.NodeVisitor):
         body = self.output[-1]
 
         if node.args.vararg is not None:
-            line = "local {name} = list {{...}}".format(name=node.args.vararg.arg)
             self.depend("list")
+            line = "local {name} = list({{...})".format(name=node.args.vararg.arg)
             body.insert(0, line)
 
         arg_index = -1
@@ -847,17 +859,18 @@ class NodeVisitor(ast.NodeVisitor):
 
             arg_index -= 1
 
-        self.emit("end)() end")
+        self.emit("end")
 
         for decorator in reversed(node.decorator_list):
             decorator_name = self.visit_all(decorator, inline=True)
+            if decorator_name == "classmethod" or decorator_name == "staticmethod":
+                continue
             values = {
                 "name": name,
                 "decorator": decorator_name,
             }
-            line = "{name} = {decorator}({name})".format(**values)
+            line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
-        
     def visit_Await(self, node):
         """Visit await"""
         self.emit("coroutine.await({})".format(self.visit_all(node.value, inline=True)))
