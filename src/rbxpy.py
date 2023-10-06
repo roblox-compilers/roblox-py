@@ -361,7 +361,7 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_AsyncWith(self, node):
         """Visit async with"""
         """Visit with"""
-        self.emit("coroutine.wrap(function()")
+        self.emit("task.spawn(function()")
         self.visit_all(node.body)
         body = self.output[-1]
         lines = []
@@ -375,7 +375,7 @@ class NodeVisitor(ast.NodeVisitor):
             lines.append(line)
         for line in lines:
             body.insert(0, line)
-        self.emit("end)()")
+        self.emit("end)")
         
     def visit_Slice(self, node):
         """Visit slice"""
