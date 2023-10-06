@@ -271,6 +271,10 @@ class NodeVisitor(ast.NodeVisitor):
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
 
+    def visit_YieldFrom(self, node):
+        """Visit yield from"""
+        self.emit("for _, v in {} do coroutine.yield(v) end".format(self.visit_all(node.value, inline=True)))
+        
     def visit_Assign(self, node):
         """Visit assign"""
         target = self.visit_all(node.targets[0], inline=True)
@@ -652,7 +656,7 @@ class NodeVisitor(ast.NodeVisitor):
         self.depend("dict")
         self.emit("dict {{{}}}".format(elements))
         self.depend("dict")
-
+            
     def visit_DictComp(self, node):
         """Visit dictionary comprehension"""
         self.emit("(function()")
@@ -1023,6 +1027,38 @@ class NodeVisitor(ast.NodeVisitor):
         self.depend("list")
         self.emit(line)
 
+    def visit_GeneratorExp(self, node):
+        """Visit generator expression"""
+        self.emit("(function()")
+        self.emit("local result = list {}")
+        self.depend("list")
+    
+        ends_count = 0
+        
+        for comp in node.generators:
+            line = "for {target} in {iterator} do"
+            values = {
+                "target": self.visit_all(comp.target, inline=True),
+                "iterator": self.visit_all(comp.iter, inline=True),
+            }
+            line = line.format(**values)
+            self.emit(line)
+            ends_count += 1
+            
+            for if_ in comp.ifs:
+                line = "if {} then".format(self.visit_all(if_, inline=True))
+                self.emit(line)
+                ends_count += 1
+        
+        line = "result.append({})"
+        line = line.format(self.visit_all(node.elt, inline=True))
+        self.emit(line)
+
+        self.emit(" ".join(["end"] * ends_count))
+
+        self.emit("return result")
+        self.emit("end)()")
+                
     def visit_ListComp(self, node):
         """Visit list comprehension"""
         self.emit("(function()")
@@ -1153,11 +1189,19 @@ class NodeVisitor(ast.NodeVisitor):
         
     def visit_ExceptHandler(self, node):
         """Visit exception handler"""
-        self.emit("if err:find('{}') then".format(node.type.id))
+        if (node.type) != None:
+            if node.type.id == "Exception":
+                self.emit("local {} = err\n".format(node.name)) # The \n does messup the token generator, but makes cleaner code
+                self.emit("if err then")
+            else:
+                self.emit("if err:find('{}') then".format(node.type.id))
         
         self.visit_all(node.body)
         
-        self.emit("end")
+        if (node.type) != None:
+            self.emit("end")
+
+    
         
     def visit_While(self, node):
         """Visit while"""
