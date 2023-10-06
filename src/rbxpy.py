@@ -460,7 +460,7 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit augassign"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
         
-        if operationp["depend"]:
+        if operation["depend"]:
             self.depend(operation["depend"])
 
         target = self.visit_all(node.target, inline=True)
