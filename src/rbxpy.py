@@ -767,7 +767,7 @@ class NodeVisitor(ast.NodeVisitor):
                 "name": name,
                 "decorator": decorator_name,
             }
-            line = "{name} = {{['fn'] = {name}, ['event'] = {decorator}:Connect({name})}}".format(**values)
+            line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
 
     def visit_For(self, node):
