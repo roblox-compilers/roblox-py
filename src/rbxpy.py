@@ -297,7 +297,7 @@ class NodeVisitor(ast.NodeVisitor):
                                                      target=target,
                                                      value=value))
         
-        exports.append(target)
+        #exports.append(target)
 
         ### MATCHES ###
     def visit_Match(self, node):
@@ -788,7 +788,7 @@ class NodeVisitor(ast.NodeVisitor):
             line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
         
-        exports.append(name)
+        #exports.append(name)
 
     def visit_For(self, node):
         """Visit for loop"""
@@ -815,6 +815,7 @@ class NodeVisitor(ast.NodeVisitor):
         last_ctx = self.context.last()
         for name in node.names:
             last_ctx["globals"].add_symbol(name)
+            exports.append(name)
 
     def visit_AsyncFunctionDef(self, node):
         """Visit async function definition"""
@@ -892,7 +893,7 @@ class NodeVisitor(ast.NodeVisitor):
             line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
         
-        exports.append(name)
+        #exports.append(name)
     def visit_Await(self, node):
         """Visit await"""
         self.emit("coroutine.await({})".format(self.visit_all(node.value, inline=True)))
