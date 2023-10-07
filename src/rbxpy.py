@@ -2123,6 +2123,7 @@ def main():
     out = "NONE"
     type = 1 # 1: py->lua, 2: lua->py
     includeSTD = False
+    export = True
     skip = False
     
     for arg in args:
@@ -2141,6 +2142,8 @@ def main():
             includeSTD = True
         elif arg == "-fn":
             includeSTD = False
+        elif arg == "-ne":
+            export = False
         elif arg == "-ast":
             ast = True
         elif arg == "-py":
@@ -2171,7 +2174,7 @@ def main():
 
         translator = Translator(Config(".pyluaconf.yaml"),
                                 show_ast=ast)
-        lua_code = translator.translate(content, includeSTD)
+        lua_code = translator.translate(content, includeSTD, False, export)
 
         if not ast:
             if out != "NONE":
