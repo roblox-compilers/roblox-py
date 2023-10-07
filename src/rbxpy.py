@@ -1326,47 +1326,50 @@ class Translator:
 
         self.output = []
 
-    def translate(self, pycode, fn, isAPI = False, export = True):
+    def translate(self, pycode, fn, isAPI = False, export = True, reqfile = False):
         """Translate python code to lua code"""
-        if isAPI: 
-            py_ast_tree = ast.parse(pycode)
-        else:
-            try:
-                # code that uses ast
+        if not reqfile:
+            if isAPI: 
                 py_ast_tree = ast.parse(pycode)
-            except SyntaxError as err:
-                sys.stderr.write("\033[1;31m" + "syntax error: " + "\033[0m" + str(err) + "\n")
-                sys.exit(1)
-            
-        visitor = NodeVisitor(config=self.config)
+            else:
+                try:
+                    # code that uses ast
+                    py_ast_tree = ast.parse(pycode)
+                except SyntaxError as err:
+                    sys.stderr.write("\033[1;31m" + "syntax error: " + "\033[0m" + str(err) + "\n")
+                    sys.exit(1)
+                
+            visitor = NodeVisitor(config=self.config)
 
-        if self.show_ast:
-            print(ast.dump(py_ast_tree))
+            if self.show_ast:
+                print(ast.dump(py_ast_tree))
 
-        visitor.visit(py_ast_tree)
-        
-        DEPEND = "\n\n--// REQUIREMENTS \\\\--\n"
-        
-        self.output = visitor.output
-        
-        # Remove duplicates from dependencies (list)
-        global dependencies
-        dependencies = list(set(dependencies))
-        
-        global exports
-        exports = list(set(exports))
-        
-        if fn:
-            dependencies.append("fn")
-        if export and exports != []:
-            FOOTER = "\n\n--// EXPORTS \\\\--\n"
-            FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
-            for export in exports:
-                FOOTER += f"\t\t[\"{export}\"] = {export},\n"
-            FOOTER += "\t}\nend"
-        else:
-            FOOTER = ""
+            visitor.visit(py_ast_tree)
             
+            DEPEND = "\n\n--// REQUIREMENTS \\\\--\n"
+            
+            self.output = visitor.output
+            
+            # Remove duplicates from dependencies (list)
+            global dependencies
+            dependencies = list(set(dependencies))
+            
+            global exports
+            exports = list(set(exports))
+            
+            if fn:
+                dependencies.append("fn")
+            if export and exports != []:
+                FOOTER = "\n\n--// EXPORTS \\\\--\n"
+                FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
+                for export in exports:
+                    FOOTER += f"\t\t[\"{export}\"] = {export},\n"
+                FOOTER += "\t}\nend"
+            else:
+                FOOTER = ""
+            
+        if reqfile:
+            dependencies = ["class", "dict", "list", "in", "fn", "safeadd"]
         for depend in dependencies:
             # set
             
@@ -2047,9 +2050,12 @@ end"""
             else:
                 error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
 
-                    
-        DEPEND += "\n\n----- CODE START -----\n"
-        
+    
+        if not reqfile:           
+            DEPEND += "\n\n----- CODE START -----\n"  
+        else:
+            DEPEND += "return env"
+            return DEPEND
 
         return HEADER + DEPEND + self.to_code() + FOOTER
 
@@ -2126,6 +2132,7 @@ def main():
     includeSTD = False
     export = True
     skip = False
+    reqfile = None
     
     for arg in args:
         if skip:
@@ -2141,6 +2148,8 @@ def main():
             usage()
         elif arg == "-f":
             includeSTD = True
+        elif arg == "-r":
+            reqfile = True
         elif arg == "-fn":
             includeSTD = False
         elif arg == "-ne":
@@ -2176,7 +2185,8 @@ def main():
         translator = Translator(Config(".pyluaconf.yaml"),
                                 show_ast=ast)
         lua_code = translator.translate(content, includeSTD, False, export)
-
+        if reqfile:
+            reqcode = translator.translate(content, True, False, False, True)
         if not ast:
             if out != "NONE":
                 with open(out, "w") as file:
