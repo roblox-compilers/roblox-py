@@ -2177,23 +2177,24 @@ def main():
             input_filename = arg
             
     if type == 1:
-        if input_filename == "NONE":
+        if (input_filename == "NONE") and not reqfile:
             usage()
-        if not Path(input_filename).is_file():
+        if (not Path(input_filename).is_file()) and not reqfile:
             error(
                 "The given filename ('{}') is not a file.".format(input_filename))
 
-        content = None
-        with open(input_filename, "r") as file:
-            content = file.read()
+        if not reqfile:
+            content = None
+            with open(input_filename, "r") as file:
+                content = file.read()
 
-        if not content:
-            error("The input file is empty.")
+            if not content:
+                error("The input file is empty.")
 
         translator = Translator(Config(".pyluaconf.yaml"),
                                 show_ast=ast)
         if reqfile:
-            reqcode = translator.translate(content, True, False, False, True)
+            reqcode = translator.translate("", True, False, False, True)
             if out != "NONE":
                 with open(out, "w") as file:
                     file.write(reqcode)
