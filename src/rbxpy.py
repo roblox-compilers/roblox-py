@@ -466,9 +466,12 @@ class NodeVisitor(ast.NodeVisitor):
                                                             target=target,
                                                             type=type))
             else:
-                self.emit("{local}{target} = nil".format(local=local_keyword,
-                                                        target=target,
-                                                        type=type))
+                if node.annotation.__class__.__name__ == "Call":
+                    self.visit_Call(node.annotation, target)
+                else:
+                    self.emit("{local}{target} = nil".format(local=local_keyword,
+                                                            target=target,
+                                                            type=type))
         # example input:
         # a: int = 1
         # example output:
@@ -545,11 +548,13 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit break"""
         self.emit("break")
 
-    def visit_Call(self, node):
+    def visit_Call(self, node, method = None):
         """Visit function call"""
         line = "{name}({arguments})"
 
         name = self.visit_all(node.func, inline=True)
+        if method:
+            name = method + ":" + name
         arguments = [self.visit_all(arg, inline=True) for arg in node.args]
 
         self.emit(line.format(name=name, arguments=", ".join(arguments)))
