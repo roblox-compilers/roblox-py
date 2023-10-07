@@ -1325,7 +1325,7 @@ class Translator:
 
         self.output = []
 
-    def translate(self, pycode, fn, isAPI = False):
+    def translate(self, pycode, fn, isAPI = False, export = True):
         """Translate python code to lua code"""
         if isAPI: 
             py_ast_tree = ast.parse(pycode)
@@ -1357,12 +1357,15 @@ class Translator:
         
         if fn:
             dependencies.append("fn")
-        
-        FOOTER = "\n\n--// EXPORTS \\\\--\n"
-        FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
-        for export in exports:
-            FOOTER += f"\t\t[\"{export}\"] = {export},\n"
-        FOOTER += "\t}\nend"
+        if export and exports != []:
+            FOOTER = "\n\n--// EXPORTS \\\\--\n"
+            FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
+            for export in exports:
+                FOOTER += f"\t\t[\"{export}\"] = {export},\n"
+            FOOTER += "\t}\nend"
+        else:
+            FOOTER = ""
+            
         for depend in dependencies:
             # set
             
