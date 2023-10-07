@@ -2048,7 +2048,7 @@ class Translator:
             return DEPEND
         
         CODE = self.to_code()
-        libs = []
+        libs = ["class", "dict", "list", "op_in", "safeadd", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars"]
         
         if useRequire:
             DEPEND = """\n\n--// Imports \\\\--
