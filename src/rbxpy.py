@@ -2094,19 +2094,19 @@ py = _G.rbxpy or require(game.ReplicatedStorage.rbxpy)
 #class PyGenerator:
     
 #### INTERFACE ####
-def warn(msg):
-    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + msg)
-def info(msg):
-    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + msg)
 def error(msg):
-    sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
-    sys.exit()
+    print("\033[91;1merror\033[0m \033[90mPY roblox-py:\033[0m " + msg)
+def warn(msg):
+    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
+def info(msg):
+    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
+    
     
 def usage():
-    print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] > [gen]
+    print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] -o [gen]
 \033[1mOptions:\033[0m
 {TAB}\033[1m-v\033[0m        show version information
-{TAB}\033[1m-vd\033[0m       show version number only"
+{TAB}\033[1m-vd\033[0m       show version number only
 {TAB}\033[1m-ast\033[0m      show python ast tree before code
 {TAB}\033[1m-f\033[0m        include standard python functions in generated code
 {TAB}\033[1m-fn\033[0m       do not include standard python functions in generated code
