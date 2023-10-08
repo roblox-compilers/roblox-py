@@ -1686,13 +1686,15 @@ class Translator:
     else
     __name__ = nil
     end
-    range = function(s, e) -- range()
+    range = function(s, e, f) -- range()
         local tb = {}
         local a = 0
         local b = 0
+        local c = 0
         if not e then a=1 else a=s end
         if not e then b=s else b=e end
-        for i = a, b do
+        if not f then c=1 else c=f end
+        for i = a, b, c do
             tb[#tb+1] = i
         end
         return tb
