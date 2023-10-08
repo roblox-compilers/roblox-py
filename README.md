@@ -8,13 +8,13 @@
 <figure><img src=".gitbook/assets/Screenshot 2023-07-10 at 12.06.03 AM.png" alt="" width="375"><figcaption></figcaption></figure>
 
 
-## roblox-pyc
+## roblox-py
 
 [**Docs**](https://rcc-1.gitbook.io/roblox-py/) **|** [**Devforum**]() **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Discord**](https://discord.gg/3WCdXhwgfE) **|** [**Playground**](https://roblox-py.aqzp.repl.co)
 
 ***
 
-Python, C, C++ Compiler for Roblox.
+Python to Luau Compiler for Roblox.
 
 
 ## Sponsors
