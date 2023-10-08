@@ -2126,10 +2126,6 @@ def provideerr(err):
 """The main entry point to the translator"""
 def main():
     """Entry point function to the translator"""
-    
-    # Enable support for ANSI escape sequences
-    if os.name == "nt":
-        os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\" > /dev/null")
 
     args = sys.argv[1:]
     ast = False
@@ -2173,6 +2169,11 @@ def main():
             skip = True
         elif arg == "-lua":
             type = 2
+        elif arg == "-clrtxt":
+            # Enable support for ANSI escape sequences
+            if os.name == "nt":
+                os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\"")
+            sys.exit(0)
         else:
             if input_filename != "NONE":
                 error("Unexpected argument: '{}'".format(arg))
