@@ -10,7 +10,7 @@
 
 ## roblox-pyc
 
-[**Docs**](https://robloxpyc.gitbook.io/roblox-pyc) **|** [**Devforum**](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Tests/Examples**](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
+[**Docs**](https://rcc-1.gitbook.io/roblox-py/) **|** [**Devforum**](https://discord.gg/3WCdXhwgfE) **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Discord**](
 
 ***
 
