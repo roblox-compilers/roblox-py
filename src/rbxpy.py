@@ -1659,7 +1659,15 @@ class Translator:
                 object.__init__(...)
             end
 
-            return object
+     	    meta = {
+	  	__add = object.__add__,
+    		__sub = object.__sub__,
+      		__div = object.__div__,
+		__unm = object.__unm,
+	   }
+
+
+            return setmetatable(object, meta)
         end
 
         setmetatable(c, mt)
