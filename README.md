@@ -7,6 +7,16 @@
 
 <figure><img src=".gitbook/assets/Screenshot 2023-07-10 at 12.06.03 AM.png" alt="" width="375"><figcaption></figcaption></figure>
 
+
+## roblox-pyc
+
+[**Docs**](https://robloxpyc.gitbook.io/roblox-pyc) **|** [**Devforum**](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Tests/Examples**](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
+
+***
+
+Python, C, C++ Compiler for Roblox.
+
+
 ## Sponsors
 <!-- sponsors --><!-- sponsors -->
 <sub>0 sadly</sub>
@@ -39,17 +49,3 @@
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 </div>
-
-
-## roblox-pyc
-
-[**Docs**](https://robloxpyc.gitbook.io/roblox-pyc) **|** [**Devforum**](https://devforum.roblox.com/t/roblox-py-python-luau/2457105?u=dev98799) **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Tests/Examples**](https://github.com/AsynchronousAI/roblox.py/tree/main/test)
-
-***
-
-Python, C, C++ Compiler for Roblox.
-
-## Building
-- `pip install pyinstaller`
-- `pyinstaller src/rbxpy.py`
-***
