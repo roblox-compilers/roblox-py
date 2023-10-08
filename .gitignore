@@ -1,1 +1,13 @@
+# idrk
 *.pyc
+
+# Cobalt preprocessed and compiled
+*.cii
+*.byte
+
+test.py
+test.lua
+
+# Build
+/build
+/dist
