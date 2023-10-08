@@ -1686,13 +1686,15 @@ class Translator:
     else
     __name__ = nil
     end
-    range = function(s, e) -- range()
+    range = function(s, e, f) -- range()
         local tb = {}
         local a = 0
         local b = 0
+        local c = 0
         if not e then a=1 else a=s end
         if not e then b=s else b=e end
-        for i = a, b do
+        if not f then c=1 else c=f end
+        for i = a, b, c do
             tb[#tb+1] = i
         end
         return tb
@@ -2094,19 +2096,19 @@ py = _G.rbxpy or require(game.ReplicatedStorage.rbxpy)
 #class PyGenerator:
     
 #### INTERFACE ####
-def error(msg):
-    print("\033[91;1merror\033[0m \033[90mPY roblox-py:\033[0m " + msg)
 def warn(msg):
-    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
+    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + msg)
 def info(msg):
-    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
-    
+    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + msg)
+def error(msg):
+    sys.stderr.write("\033[1;31m" + "error: " + "\033[0m" + msg + "\n")
+    sys.exit()
     
 def usage():
-    print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] -o [gen]
+    print("\n"+f"""usage: \033[1;33mrbxpy\033[0m [file] [options] > [gen]
 \033[1mOptions:\033[0m
 {TAB}\033[1m-v\033[0m        show version information
-{TAB}\033[1m-vd\033[0m       show version number only
+{TAB}\033[1m-vd\033[0m       show version number only"
 {TAB}\033[1m-ast\033[0m      show python ast tree before code
 {TAB}\033[1m-f\033[0m        include standard python functions in generated code
 {TAB}\033[1m-fn\033[0m       do not include standard python functions in generated code
@@ -2124,10 +2126,6 @@ def provideerr(err):
 """The main entry point to the translator"""
 def main():
     """Entry point function to the translator"""
-    
-    # Enable support for ANSI escape sequences
-    if os.name == "nt":
-        os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\" > /dev/null")
 
     args = sys.argv[1:]
     ast = False
@@ -2171,6 +2169,11 @@ def main():
             skip = True
         elif arg == "-lua":
             type = 2
+        elif arg == "-clrtxt":
+            # Enable support for ANSI escape sequences
+            if os.name == "nt":
+                os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\"")
+            sys.exit(0)
         else:
             if input_filename != "NONE":
                 error("Unexpected argument: '{}'".format(arg))
