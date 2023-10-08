@@ -2127,7 +2127,7 @@ def main():
     
     # Enable support for ANSI escape sequences
     if os.name == "nt":
-        os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\"")
+        os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\" > /dev/null")
 
     args = sys.argv[1:]
     ast = False
