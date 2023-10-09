@@ -2062,7 +2062,7 @@ class Translator:
         
         if useRequire:
             DEPEND = """\n\n--// Imports \\\\--
-py = _G.rbxpy or require(game.ReplicatedStorage.rbxpy)
+py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
 
 """
             for i in libs:
