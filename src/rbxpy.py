@@ -5,7 +5,7 @@ from pathlib import Path
 from enum import Enum
 
 #### CONSTANTS ####
-VERSION = "3.0.0"
+VERSION = "3.26.111"
 TAB = "\t\b\b\b\b"
 
 #### COMPILER ####
@@ -1689,7 +1689,7 @@ class Translator:
     end"""
                 elif depend == "fn":
                     DEPEND += """\n\nif game then
-    __name__ = if script:IsA("BaseScript") then "__main__" else script.Name 
+    __name__ = (if script:IsA("BaseScript") then "__main__" else script.Name)
     else
     __name__ = nil
     end
