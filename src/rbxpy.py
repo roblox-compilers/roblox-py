@@ -2066,7 +2066,7 @@ py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
 """
             for i in libs:
                 if i in CODE:
-                    DEPEND += f"{i} = py.{i}"
+                    DEPEND += f"{i} = py.{i}\n"
                     
             DEPEND += "\n\n----- CODE START -----\n"
             
