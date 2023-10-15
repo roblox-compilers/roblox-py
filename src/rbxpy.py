@@ -415,12 +415,6 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("[[{}]]".format(node.s.decode("utf8")))
         
         
-    def visit_TryStar(self, node):
-        """Visit try"""
-        self.emit("local success, result = pcall(function()")
-        self.visit_all(node.body)
-        self.emit("end)")
-        
     def visit_Assert(self, node):
         """Visit assert"""
         self.emit("assert({})".format(self.visit_all(node.test, True)))
@@ -1203,11 +1197,16 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_ExceptHandler(self, node):
         """Visit exception handler"""
         if (node.type) != None:
-            if node.type.id == "Exception":
-                self.emit("local {} = err\n".format(node.name)) # The \n does messup the token generator, but makes cleaner code
-                self.emit("if err then")
-            else:
+            if not hasattr(node.type, "id"):
+                error("'except' type had an invalid value (expected 'name')")
+                sys.exit(1)
+            if node.type.id != "Exception" or node.type.id != "BaseException" or node.type.id != "Error":
                 self.emit("if err:find('{}') then".format(node.type.id))
+            else:
+                self.emit("if err then")
+                
+            if node.name != None:
+                self.emit("\tlocal {} = err".format(node.name)) # The \n does messup the token generator, but makes cleaner code
         
         self.visit_all(node.body)
         
