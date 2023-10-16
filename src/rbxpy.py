@@ -942,7 +942,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node):
         """Visit import"""
-        line = 'local {asname} = require("{name}")'
+        line = 'local {asname} = rcc.import("{name}") or require("{name}")'
         values = {"asname": "", "name": ""}
 
         if node.names[0].name.startswith("game."):
@@ -994,7 +994,7 @@ class NodeVisitor(ast.NodeVisitor):
                     if name.name == "*":
                         error("import * is unsupproted")
                     else:
-                        self.emit("local {name} = require(\"{module}\").{name}".format(
+                        self.emit("local {name} = (rcc.import(\"{module}\") or require(\"{module}\")).{name}".format(
                             name=name.name,
                             module=module,
                         ))
@@ -1002,7 +1002,7 @@ class NodeVisitor(ast.NodeVisitor):
                     if name.name == "*":
                         error("import * is unsupproted")
                     else:
-                        self.emit("local {name} = require(\"{module}\").{realname}".format(
+                        self.emit("local {name} = (rcc.import(\"{module}\") or require(\"{module}\")).{realname}".format(
                             name=name.asname,
                             module=module,
                             realname=name.name,
@@ -2062,13 +2062,25 @@ class Translator:
         if useRequire:
             DEPEND = """\n\n--// Imports \\\\--
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
-
+if game.ReplicatedStorage.Packages.rcclib then
+    rcc = _G.rcc or require(game.ReplicatedStorage.Packages.rcclib)
+else
+    rcc = { }
+    setmetatable(rcc, {__index = function(_, index) return function()end end})\
+end
 """
             for i in libs:
                 if i in CODE:
                     DEPEND += f"{i} = py.{i}\n"
                     
             DEPEND += "\n\n----- CODE START -----\n"
+        else:
+            DEPEND += "\n\n--// Imports \\\\--\n"
+            DEPEND += "rcc = { }\n"
+            DEPEND += "py = { }\n"
+            DEPEND += "setmetabale(rcc, {__index = function(_, index) return function()end end})\n"
+            DEPEND += "setmetabale(py, {__index = function(_, index) return function()end end})\n"
+            
             
 
         return HEADER + DEPEND + CODE + FOOTER
