@@ -2077,9 +2077,9 @@ end
         else:
             DEPEND += "\n\n--// Imports \\\\--\n"
             DEPEND += "rcc = { }\n"
-            DEPEND += "py = { }\n"
-            DEPEND += "setmetabale(rcc, {__index = function(_, index) return function()end end})\n"
-            DEPEND += "setmetabale(py, {__index = function(_, index) return function()end end})\n"
+            DEPEND += "py = { }\n\n"
+            DEPEND += "setmetatabale(rcc, {__index = function(_, index) return function()end end})\n"
+            DEPEND += "setmetatabale(py, {__index = function(_, index) return function()end end})\n\n\n"
             
             
 
