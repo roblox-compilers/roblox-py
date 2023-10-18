@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
-import sys, ast, yaml, re, os, subprocess
+import sys, ast, yaml, re, os, subprocess, threading
 from pprint import pprint
 from pathlib import Path
 from enum import Enum
 
+try:
+    import shutil
+except ImportError:
+    print("Please install the 'shutil' module.")
+    exit(1)
+
 #### CONSTANTS ####
 VERSION = "3.26.111"
 TAB = "\t\b\b\b\b"
+
+#### PYRIGHT ####
+def check_pyright():
+    exists = shutil.which("pyright") is not None
+    if not exists:
+        warn("pyright is not installed, install it for more descriptive and compiler errors.")
+    return exists
 
 #### COMPILER ####
 """Config"""
@@ -450,13 +463,13 @@ class NodeVisitor(ast.NodeVisitor):
             error("The Python type '{}' can not be converted to Luau.".format(type))
             
         if value != None and value != "":
-            self.emit("{local}{target}: {type} = {value}".format(local=local_keyword,
+            self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                         target=target,
                                                         value=value,
                                                         type=type))
         else:
             if istype:
-                self.emit("{target}: {type},".format(local=local_keyword,
+                self.emit("{target},".format(local=local_keyword,
                                                             target=target,
                                                             type=type))
             else:
@@ -758,7 +771,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         if node.args.vararg is not None:
             self.depend("list")
-            line = "local {name} = list({{...})".format(name=node.args.vararg.arg)
+            line = "local {name} = list({{...}})".format(name=node.args.vararg.arg)
             body.insert(0, line)
 
         arg_index = -1
@@ -1330,7 +1343,7 @@ class Translator:
 
         self.output = []
 
-    def translate(self, pycode, fn, isAPI = False, export = True, reqfile = False, useRequire = False):
+    def translate(self, pycode, fn, isAPI = False, export = True, reqfile = False, useRequire = False, pyRight = False):
         """Translate python code to lua code"""
         DEPEND = "\n\n--// REQUIREMENTS \\\\--\n"
         
@@ -2078,8 +2091,8 @@ end
             DEPEND += "\n\n--// Imports \\\\--\n"
             DEPEND += "rcc = { }\n"
             DEPEND += "py = { }\n\n"
-            DEPEND += "setmetatabale(rcc, {__index = function(_, index) return function()end end})\n"
-            DEPEND += "setmetatabale(py, {__index = function(_, index) return function()end end})\n\n\n"
+            DEPEND += "setmetatable(rcc, {__index = function(_, index) return function()end end})\n"
+            DEPEND += "setmetatable(py, {__index = function(_, index) return function()end end})\n\n\n"
             
             
 
@@ -2131,6 +2144,12 @@ def usage():
 {TAB}\033[1m-ast\033[0m      show python ast tree before code
 {TAB}\033[1m-f\033[0m        include standard python functions in generated code
 {TAB}\033[1m-fn\033[0m       do not include standard python functions in generated code
+{TAB}\033[1m-ne\033[0m       do not export functions
+{TAB}\033[1m-s\033[0m        generate a require file
+{TAB}\033[1m-r\033[0m        use require instead of rbxpy
+{TAB}\033[1m-clrtxt\033[0m   modify system shell for a better experience
+{TAB}\033[1m-o\033[0m        output file
+{TAB}\033[1m-c\033[0m        ignore pyright errors
 {TAB}\033[1m-u\033[0m        open this""")
     sys.exit()
 
@@ -2167,6 +2186,8 @@ def main():
         elif arg == "-vd":
             print(VERSION)
             sys.exit()
+        elif arg == "-c":
+            continue
         elif arg == "-u":
             usage()
         elif arg == "-f":
@@ -2224,7 +2245,15 @@ def main():
                 print(reqcode)
             sys.exit(0)
         else:
-            lua_code = translator.translate(content, includeSTD, False, export, False, useRequire)
+            pyright = check_pyright()
+            if pyright and not "-c" in args:
+                def check():
+                    success = subprocess.run(["pyright", input_filename])
+                    if not success:
+                        error("compiler error")
+                threading.Thread(target=check).start()
+                
+            lua_code = translator.translate(content, includeSTD, False, export, False, useRequire, pyright)
         
         if not ast:
             if out != "NONE":
