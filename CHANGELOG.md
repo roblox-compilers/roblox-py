@@ -18,11 +18,11 @@
 
 # v3.27.111 Development Release 2
 - Multiline strings get deconstructed in \n or \t
-- Fixed strings which include a \n being interpreted as an actual newline
+- Fixed strings that include a \n being interpreted as an actual newline
 - Strings will automatically switch from being a single quote to a double quote if it contains a double quote
-- Syntax based slicing now supports missing lower or upper bounds
+- Syntax-based slicing now supports missing lower or upper bounds
 - Assigning or indexing a variable with a reserved luau keyword will now error
 - Support adding lists
-- Finally statements in try/except/finally statements
+- `finally` statements in try/except/finally statements
 ## Tested
 - The entire roblox-py source code itself compiled to Luau successfully

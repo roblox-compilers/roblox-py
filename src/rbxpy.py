@@ -1240,6 +1240,7 @@ class NodeVisitor(ast.NodeVisitor):
         
     def visit_Try(self, node):
         """Visit try"""
+        self.emit("--> try statement start:")
         self.emit("xpcall(function()")
 
         self.visit_all(node.body)
@@ -1267,6 +1268,8 @@ class NodeVisitor(ast.NodeVisitor):
         
         self.emit("end)")
         self.visit_all(node.finalbody)
+        
+        self.emit("--> try statement end")
         
         
     def visit_While(self, node):
