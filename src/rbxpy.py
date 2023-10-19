@@ -11,7 +11,7 @@ except ImportError:
     exit(1)
 
 #### CONSTANTS ####
-VERSION = "3.26.111"
+VERSION = "3.27.111"
 TAB = "\t\b\b\b\b"
 
 #### PYRIGHT ####
@@ -157,6 +157,14 @@ class CompareOperationDesc:
             "format": "not op_in({left}, {right})",
             "depend": "in",
         },
+        ast.Is: {
+            "format": "op_is({left}, {right})",
+            "depend": "is",
+        },
+        ast.IsNot: {
+            "format": "not op_is({left}, {right})",
+            "depend": "is",
+        },
     }
     
 """Name constant description"""
@@ -301,11 +309,11 @@ class NodeVisitor(ast.NodeVisitor):
         if last_ctx["class_name"]:
             target = ".".join([last_ctx["class_name"], target])
 
-        if "." not in target and not last_ctx["locals"].exists(target):
+        if target.isalnum() and not last_ctx["locals"].exists(target):
             local_keyword = "local "
             last_ctx["locals"].add_symbol(target)
 
-
+        
         self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                      target=target,
                                                      value=value))
@@ -390,7 +398,7 @@ class NodeVisitor(ast.NodeVisitor):
             if i.optional_vars is not None:
                 line = "local {} = "
                 line = line.format(self.visit_all(i.optional_vars,
-                                                  inline=True))
+                                                inline=True))
             line += self.visit_all(i.context_expr, inline=True)
             lines.append(line)
         for line in lines:
@@ -398,8 +406,19 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("end)")
         
     def visit_Slice(self, node):
-        """Visit slice"""
-        error("syntax based slicing is not supported yet. Use slice(<sequence>, <start>, <end>, <step>) instead.")
+        lower = self.visit_all(node.lower, inline=True)
+        if node.upper: 
+            upper = self.visit_all(node.upper, inline=True)
+            lower += ", "
+        else:
+            upper = ""
+        if node.step:
+            step = self.visit_all(node.step, inline=True)
+            step += ", "
+        else:
+            step = ""
+        
+        self.emit("slice({}{}{})".format(lower, upper, step))
         
     def visit_JoinedStr(self, node):
         # f"{a} {b}"
@@ -451,34 +470,20 @@ class NodeVisitor(ast.NodeVisitor):
             last_ctx["locals"].add_symbol(target)
         type = self.visit_all(node.annotation, inline=True)
         
-        if type == "int" or type == "float":
-            type = "number"
-        elif type == "str":
-            type = "string"
-        elif type == "list" or type == "dict" or type == "memoryview" or type == "bytearray" or type == "set" or type == "range" or type == "frozenset" or type == "module" or type == "classobj" or type == "class" or type == "tuple":
-            type = "table"
-        elif type == "NoneType":
-            type = "nil"
-        elif type == "ellipsis" or type == "NotImplementedType" or type == "slice" or type == "classmethod" or type == "type" or type == "staticmethod":
-            error("The Python type '{}' can not be converted to Luau.".format(type))
-            
         if value != None and value != "":
             self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                         target=target,
-                                                        value=value,
-                                                        type=type))
+                                                        value=value))
         else:
             if istype:
                 self.emit("{target},".format(local=local_keyword,
-                                                            target=target,
-                                                            type=type))
+                                                            target=target))
             else:
                 if node.annotation.__class__.__name__ == "Call":
                     self.visit_Call(node.annotation, target)
                 else:
                     self.emit("{local}{target} = nil".format(local=local_keyword,
-                                                            target=target,
-                                                            type=type))
+                                                            target=target))
         # example input:
         # a: int = 1
         # example output:
@@ -660,8 +665,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         for key in node.keys:
             value = self.visit_all(key, inline=True)
-            if isinstance(key, ast.Str):
-                value = "[{}]".format(value)
+            value = "[{}]".format(value)
             keys.append(value)
 
         values = [self.visit_all(item, inline=True) for item in node.values]
@@ -953,24 +957,29 @@ class NodeVisitor(ast.NodeVisitor):
 
         self.emit(line.format(**values))
 
-    def visit_Import(self, node):
+    def visit_Import(self, node, og= True):
         """Visit import"""
         line = 'local {asname} = rcc.import("{name}") or require("{name}")'
         values = {"asname": "", "name": ""}
+        
+        if og:
+            for v in node.names:
+                self.visit_Import(v, False)
+            return
 
-        if node.names[0].name.startswith("game."):
+        if node.name.startswith("game."):
             line = 'local {asname} = game:GetService("{name}")'
-            values["name"] = node.names[0].name[5:]
+            values["name"] = node.name[5:]
             
-        if node.names[0].asname is None:
-            if not node.names[0].name.startswith("game."):
-                values["name"] = node.names[0].name
+        if node.asname is None:
+            if not node.name.startswith("game."):
+                values["name"] = node.name
             values["asname"] = values["name"]
             values["asname"] = values["asname"].split(".")[-1]
         else:
-            values["asname"] = node.names[0].asname
-            if not node.names[0].name.startswith("game."):
-                values["name"] = node.names[0].name
+            values["asname"] = node.asname
+            if not node.name.startswith("game."):
+                values["name"] = node.name
 
         self.emit(line.format(**values))
     
@@ -1157,10 +1166,34 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Subscript(self, node):
         """Visit subscript"""
-        line = "{name}[{index}]"
+        line = "{name}{indexs}"
+        index = self.visit_all(node.slice, inline=True)
+        indexs = []
+        final = ""
+        
+        # Split index by toplevel , and add each index to indexs
+        # This is done to support multiple indexes
+        # Example: a[1, 2, 3] -> a[1][2][3] 
+        # but a[x(1,2), b(3, 4)] -> a[x(1,2)][b(3, 4)]
+        
+        depth = 0
+        for char in index:
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            elif char == "," and depth == 0:
+                indexs.append(index[:index.find(char)])
+                index = index[index.find(char)+1:]
+        indexs.append(index)
+        
+        # Generate final
+        for i in indexs:
+            final += "[{}]".format(i)
+        
         values = {
             "name": self.visit_all(node.value, inline=True),
-            "index": self.visit_all(node.slice, inline=True),
+            "indexs": final,
         }
 
         self.emit(line.format(**values))
@@ -1203,30 +1236,22 @@ class NodeVisitor(ast.NodeVisitor):
         
         self.emit("end, function(err)")
         
-        self.visit_all(node.handlers)
+        for i, handler in enumerate(node.handlers):
+            if ((handler.type) != None) and hasattr(handler.type, "id"):
+                if handler.type.id != "Exception" or handler.type.id != "BaseException" or handler.type.id != "Error":
+                    self.emit("if err:find('{}') then".format(handler.type.id))
+                else:
+                    self.emit("if err then")
+                    
+                if handler.name != None:
+                    self.emit("\tlocal {} = err".format(handler.name)) # The \n does messup the token generator, but makes cleaner code
+            
+            self.visit_all(node.body)
+            if i == len(list(node.handlers))-1:
+                self.emit("end")
         
         self.emit("end)")
         
-    def visit_ExceptHandler(self, node):
-        """Visit exception handler"""
-        if (node.type) != None:
-            if not hasattr(node.type, "id"):
-                error("'except' type had an invalid value (expected 'name')")
-                sys.exit(1)
-            if node.type.id != "Exception" or node.type.id != "BaseException" or node.type.id != "Error":
-                self.emit("if err:find('{}') then".format(node.type.id))
-            else:
-                self.emit("if err then")
-                
-            if node.name != None:
-                self.emit("\tlocal {} = err".format(node.name)) # The \n does messup the token generator, but makes cleaner code
-        
-        self.visit_all(node.body)
-        
-        if (node.type) != None:
-            self.emit("end")
-
-    
         
     def visit_While(self, node):
         """Visit while"""
@@ -1331,8 +1356,8 @@ class NodeVisitor(ast.NodeVisitor):
         dependencies.append(value)
         
 """Header"""
-HEADER = f"--// Generated by roblox-py v{VERSION} \\\\--\n"
-PY_HEADER = f"## Generated by roblox-py v{VERSION} ##\n"
+HEADER = f"--> generated by roblox-py v{VERSION}\n"
+PY_HEADER = f"## generated by roblox-py v{VERSION} ##\n"
 
 """Python to lua translator class"""
 class Translator:
@@ -1345,7 +1370,7 @@ class Translator:
 
     def translate(self, pycode, fn, isAPI = False, export = True, reqfile = False, useRequire = False, pyRight = False):
         """Translate python code to lua code"""
-        DEPEND = "\n\n--// REQUIREMENTS \\\\--\n"
+        DEPEND = "\n\n--> requirements\n"
         
         if not reqfile:
             if isAPI: 
@@ -1377,7 +1402,7 @@ class Translator:
             if fn:
                 dependencies.append("fn")
             if export and exports != []:
-                FOOTER = "\n\n--// EXPORTS \\\\--\n"
+                FOOTER = "\n\n--> exports\n"
                 FOOTER += "if not script:IsA(\"BaseScript\") then\n\treturn {\n"
                 for export in exports:
                     FOOTER += f"\t\t[\"{export}\"] = {export},\n"
@@ -1386,7 +1411,7 @@ class Translator:
                 FOOTER = ""
             
         if reqfile:
-            dependencies = ["class", "dict", "list", "in", "fn", "safeadd"]
+            dependencies = ["class", "dict", "list", "in", "fn", "safeadd", "is"]
         if not useRequire:
             for depend in dependencies:
                 # set
@@ -2060,35 +2085,57 @@ class Translator:
             error(`Attempt to add a {type(a)} and a {type(b)}`)
         end
     end"""
+                elif depend == "is":
+                    DEPEND += """\n\nfunction op_is(a, b)
+        warn("[roblox-py] is serves no purpose when compiling to Lua, use == instead")
+        return a == b
+    end"""
                 else:
                     error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
     
         if not reqfile:           
-            DEPEND += "\n\n----- CODE START -----\n"  
+            DEPEND += "\n\n--> code begin\n"  
         else:
             DEPEND += "\n\nreturn env"
             return DEPEND
         
         CODE = self.to_code()
-        libs = ["class", "dict", "list", "op_in", "safeadd", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars"]
+        TYPS = """\n\n--> python types
+class = "table"
+tuple = "table"
+dict = "table"
+list = "table"
+bool = "boolean"
+complex = "table"
+bytearray = "table" """
+        ERRS = "\n\n--> error handling\n"
+        errs = ["ValueError", "TypeError", "AttributeError", "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NotImplementedError", "RuntimeError", "NameError", "SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError", "OSError", "FileNotFoundError", "PermissionError", "EOFError", "ConnectionError", "TimeoutError", "UnboundLocalError", "RecursionError", "MemoryError", "OverflowError", "FloatingPointError", "ArithmeticError", "ReferenceError", "SystemError", "SystemExit", "GeneratorExit", "KeyboardInterrupt", "StopIteration", "Exception", "BaseException", "Error"]
+        libs = ["class", "op_is", "dict", "list", "op_in", "safeadd", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars"]
         
+        for i in errs:
+            if ("error("+i+"(") in CODE:
+                ERRS += f"""function {i}(errorMessage)
+    return ("[roblox-py] {i}: " .. errorMessage)
+end
+"""
+                
         if useRequire:
-            DEPEND = """\n\n--// Imports \\\\--
+            DEPEND = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
 if game.ReplicatedStorage.Packages.rcclib then
     rcc = _G.rcc or require(game.ReplicatedStorage.Packages.rcclib)
 else
     rcc = { }
-    setmetatable(rcc, {__index = function(_, index) return function()end end})\
+    setmetatable(rcc, {__index = function(_, index) return function()end end})
 end
 """
             for i in libs:
                 if i in CODE:
                     DEPEND += f"{i} = py.{i}\n"
                     
-            DEPEND += "\n\n----- CODE START -----\n"
+            DEPEND += "\n\n--> code start\n"
         else:
-            DEPEND += "\n\n--// Imports \\\\--\n"
+            DEPEND += "\n\n--> imports\n"
             DEPEND += "rcc = { }\n"
             DEPEND += "py = { }\n\n"
             DEPEND += "setmetatable(rcc, {__index = function(_, index) return function()end end})\n"
@@ -2096,7 +2143,7 @@ end
             
             
 
-        return HEADER + DEPEND + CODE + FOOTER
+        return HEADER + TYPS + ERRS + DEPEND + CODE + FOOTER
 
     def to_code(self, code=None, indent=0):
         """Create a lua code from the compiler output"""
@@ -2130,6 +2177,7 @@ end
 #### INTERFACE ####
 def error(msg):
     print("\033[91;1merror\033[0m \033[90mPY roblox-py:\033[0m " + msg)
+    sys.exit(1)
 def warn(msg):
     sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
 def info(msg):
@@ -2213,6 +2261,8 @@ def main():
             # Enable support for ANSI escape sequences
             if os.name == "nt":
                 os.system("cmd /c \"setx ENABLE_VIRTUAL_TERMINAL_PROCESSING 1\"")
+            else:
+                error("Not required on this platform")
             sys.exit(0)
         else:
             if input_filename != "NONE":
@@ -2248,9 +2298,13 @@ def main():
             pyright = check_pyright()
             if pyright and not "-c" in args:
                 def check():
-                    success = subprocess.run(["pyright", input_filename])
+                    os.environ["PYRIGHT_PYTHON_FORCE_VERSION"] = 'latest'
+                    success = subprocess.Popen(["pyright", input_filename]).wait() == 0
+                    
                     if not success:
-                        error("compiler error")
+                        print("-----------------------------------------------------")
+                        error("compilation failed")
+                        sys.exit(1)
                 threading.Thread(target=check).start()
                 
             lua_code = translator.translate(content, includeSTD, False, export, False, useRequire, pyright)
