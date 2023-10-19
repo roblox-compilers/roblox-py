@@ -22,6 +22,9 @@ def check_pyright():
     return exists
 
 #### COMPILER ####
+"""Luau"""
+reserves = ["and", "break", "do", "else", "elseif", "end", "for", "function", "if", "in", "local", "not", "or", "repeat", "return", "then", "until", "while"]
+
 """Config"""
 class Config:
     """Translator config."""
@@ -313,7 +316,9 @@ class NodeVisitor(ast.NodeVisitor):
             local_keyword = "local "
             last_ctx["locals"].add_symbol(target)
 
-        
+        if target in reserves:
+            error(f"'{target}'is a reserved Luau keyword.")
+            
         self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                      target=target,
                                                      value=value))
@@ -406,17 +411,20 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit("end)")
         
     def visit_Slice(self, node):
-        lower = self.visit_all(node.lower, inline=True)
-        if node.upper: 
-            upper = self.visit_all(node.upper, inline=True)
-            lower += ", "
+        if node.lower: 
+            lower = self.visit_all(node.lower, inline=True)
         else:
-            upper = ""
+            lower = "0"
+        lower += ", "
+        if node.upper:
+            upper = self.visit_all(node.upper, inline=True)
+        else:
+            upper = "0"
+        upper += ", "
         if node.step:
             step = self.visit_all(node.step, inline=True)
-            step += ", "
         else:
-            step = ""
+            step = "0"
         
         self.emit("slice({}{}{})".format(lower, upper, step))
         
@@ -432,7 +440,7 @@ class NodeVisitor(ast.NodeVisitor):
                 values.append(value.s)
             else:
                 values.append(self.visit_all(value, inline=True))
-        self.emit("`{}`".format("".join(values)))
+        self.emit(repr("`{}`".format("".join(values)))[1:-1])
         
     def visit_FormattedValue(self, node):
         """Visit formatted value"""
@@ -929,8 +937,8 @@ class NodeVisitor(ast.NodeVisitor):
 
         if node.orelse:
             if isinstance(node.orelse[0], ast.If):
-                elseif = node.orelse[0]
-                elseif_test = self.visit_all(elseif.test, inline=True)
+                _elseif = node.orelse[0]
+                elseif_test = self.visit_all(_elseif.test, inline=True)
 
                 line = "elseif {} then".format(elseif_test)
                 self.emit(line)
@@ -1155,14 +1163,14 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Str(self, node):
         """Visit str"""
-        value = node.s
+        value = repr(node.s)
         if value.startswith(NodeVisitor.LUACODE):
             value = value[len(NodeVisitor.LUACODE):]
             self.emit(value)
         elif self.context.last()["docstring"]:
             self.emit('--[[ {} ]]'.format(node.s))
         else:
-            self.emit('"{}"'.format(node.s))
+            self.emit(repr('{}'.format(node.s)))
 
     def visit_Subscript(self, node):
         """Visit subscript"""
@@ -1195,6 +1203,8 @@ class NodeVisitor(ast.NodeVisitor):
             "name": self.visit_all(node.value, inline=True),
             "indexs": final,
         }
+        if values['name'] in reserves:
+            error(f"'{values['name']}'is a reserved Luau keyword.")
 
         self.emit(line.format(**values))
         
@@ -1235,22 +1245,28 @@ class NodeVisitor(ast.NodeVisitor):
         self.visit_all(node.body)
         
         self.emit("end, function(err)")
-        
+        ifD = False
         for i, handler in enumerate(node.handlers):
+            self.emit("--> try: {}".format(i))
             if ((handler.type) != None) and hasattr(handler.type, "id"):
-                if handler.type.id != "Exception" or handler.type.id != "BaseException" or handler.type.id != "Error":
-                    self.emit("if err:find('{}') then".format(handler.type.id))
+                if i == 0:
+                    ifD = True
+                    an = "if"
                 else:
-                    self.emit("if err then")
+                    an = "elseif"
+                if handler.type.id != "Exception" or handler.type.id != "BaseException" or handler.type.id != "Error":
+                    self.emit(f"{an} err:find('{handler.type.id}') then")
+                else:
+                    self.emit(f"{an} err then")
                     
                 if handler.name != None:
-                    self.emit("\tlocal {} = err".format(handler.name)) # The \n does messup the token generator, but makes cleaner code
-            
-            self.visit_all(node.body)
-            if i == len(list(node.handlers))-1:
+                    self.emit(f"\tlocal {handler.name} = err")
+            self.visit_all(handler.body)
+            if (i == len(node.handlers) - 1) and ifD:
                 self.emit("end")
         
         self.emit("end)")
+        self.visit_all(node.finalbody)
         
         
     def visit_While(self, node):
@@ -2077,12 +2093,19 @@ class Translator:
     end"""
                 elif depend == "safeadd":
                     DEPEND += """\n\nfunction safeadd(a, b)
-        if type(a) == "number" and type(b) == "number" then
-            return a + b
-        elseif type(a) == "string" and type(b) == "string" then
+        if type(a) == "string" or type(b) == "string" then
             return a .. b
+        elseif type(a) == "table" and type(b) == "table" then
+            local result = {}
+            for _, v in ipairs(a) do
+                table.insert(result, v)
+            end
+            for _, v in ipairs(b) do
+                table.insert(result, v)
+            end
+            return result
         else
-            error(`Attempt to add a {type(a)} and a {type(b)}`)
+            return a + b
         end
     end"""
                 elif depend == "is":
