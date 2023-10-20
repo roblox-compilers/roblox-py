@@ -1,12 +1,10 @@
-# idrk
+# Python
 *.pyc
 
-# Cobalt preprocessed and compiled
-*.cii
-*.byte
-
+# Test
 test.py
 test.lua
+test.ipynb
 
 # Build
 /build

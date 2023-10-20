@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, ast, yaml, re, os, subprocess, threading
+import sys, ast, os, subprocess, threading, libs, json
 from pprint import pprint
 from pathlib import Path
 from enum import Enum
@@ -33,6 +33,7 @@ class Config:
             "class": {
                 "return_at_the_end": False,
             },
+            "luau": None,
         }
 
         if filename is not None:
@@ -42,12 +43,12 @@ class Config:
         """Load config from the file"""
         try:
             with open(filename, "r") as stream:
-                data = yaml.load(stream)
+                data = json.load(stream)
                 self.data.update(data)
         except FileNotFoundError:
             pass # Use a default config if the file not found
-        except yaml.YAMLError as ex:
-            print(ex)
+        except json.decoder.JSONDecodeError:
+            error("Config file is not a valid JSON file.")
 
     def __getitem__(self, key):
         """Get data values"""
@@ -436,7 +437,7 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit joined string"""
         values = []
         for value in node.values:
-            if isinstance(value, ast.Str):
+            if isinstance(value, ast.Constant):
                 values.append(value.s)
             else:
                 values.append(self.visit_all(value, inline=True))
@@ -578,49 +579,56 @@ class NodeVisitor(ast.NodeVisitor):
         arguments = [self.visit_all(arg, inline=True) for arg in node.args]
 
         self.emit(line.format(name=name, arguments=", ".join(arguments)))
+            
 
+    def visit_TypeAlias(self, node):
+        if self.config['luau'] == None:
+            warn("in your \033[1m.robloxpy.json\033[0m file, specify weather or not to export Luau types like \033[1m\"luau\": true\033[0m`. Ignoring type alias.")
+        elif self.config['luau'] == True:
+            self.emit("type {} = {}".format(node.name.id, self.visit_all(node.value, inline=True)))
+            
     def visit_ClassDef(self, node):
         """Visit class definition"""
         bases = [self.visit_all(base, inline=True) for base in node.bases]
         
-        if "type" in bases:
-            self.emit("type {} = {{".format(node.name, self.visit_all(node.bases[0], inline=True)))
-            self.context.push({"class_name": "TYPE"})
-            self.visit_all(node.body)
-            self.context.pop()
-            self.emit("}")
-        else:
-            local_keyword = ""
-            last_ctx = self.context.last()
-            if not last_ctx["class_name"] and not last_ctx["locals"].exists(node.name):
-                local_keyword = "local "
-                last_ctx["locals"].add_symbol(node.name)
+        #if "type" in bases:
+            #self.emit("type {} = {{".format(node.name, self.visit_all(node.bases[0], inline=True)))
+            #self.context.push({"class_name": "TYPE"})
+            #self.visit_all(node.body)
+            #self.context.pop()
+            #self.emit("}")
+        #else:
+        local_keyword = ""
+        last_ctx = self.context.last()
+        if not last_ctx["class_name"] and not last_ctx["locals"].exists(node.name):
+            local_keyword = "local "
+            last_ctx["locals"].add_symbol(node.name)
 
-            name = node.name
-            if last_ctx["class_name"]:
-                name = ".".join([last_ctx["class_name"], name])
+        name = node.name
+        if last_ctx["class_name"]:
+            name = ".".join([last_ctx["class_name"], name])
 
-            values = {
-                "local": local_keyword,
-                "name": name,
-                "node_name": node.name,
-            }
+        values = {
+            "local": local_keyword,
+            "name": name,
+            "node_name": node.name,
+        }
 
-            self.emit("{local}{name} = class(function({node_name})".format(**values))
-            self.depend("class")
-            
-            self.context.push({"class_name": node.name})
-            self.visit_all(node.body)
-            self.context.pop()
+        self.emit("{local}{name} = class(function({node_name})".format(**values))
+        self.depend("class")
+        
+        self.context.push({"class_name": node.name})
+        self.visit_all(node.body)
+        self.context.pop()
 
-            self.output[-1].append("return {node_name}".format(**values))
+        self.output[-1].append("return {node_name}".format(**values))
 
-            self.emit("end, {{{}}})".format(", ".join(bases)))
+        self.emit("end, {{{}}})".format(", ".join(bases)))
 
-            # Return class object only in the top-level classes.
-            # Not in the nested classes.
-            if self.config["class"]["return_at_the_end"] and not last_ctx["class_name"]:
-                self.emit("return {}".format(name))
+        # Return class object only in the top-level classes.
+        # Not in the nested classes.
+        if self.config["class"]["return_at_the_end"] and not last_ctx["class_name"]:
+            self.emit("return {}".format(name))
 
     def visit_Compare(self, node):
         """Visit compare"""
@@ -727,7 +735,7 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_Expr(self, node):
         """Visit expr"""
         expr_is_docstring = False
-        if isinstance(node.value, ast.Str):
+        if isinstance(node.value, ast.Constant):
             expr_is_docstring = True
 
         self.context.push({"docstring": expr_is_docstring})
@@ -988,6 +996,10 @@ class NodeVisitor(ast.NodeVisitor):
             values["asname"] = node.asname
             if not node.name.startswith("game."):
                 values["name"] = node.name
+    
+        if node.name in libs.libs:
+            self.emit(getattr(libs, node.name))
+            return
 
         self.emit(line.format(**values))
     
@@ -1143,7 +1155,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Num(self, node):
         """Visit number"""
-        self.emit(str(node.n))
+        self.emit(str(node.value))
 
     def visit_Pass(self, node):
         """Visit pass"""
@@ -2205,9 +2217,9 @@ def error(msg):
     print("\033[91;1merror\033[0m \033[90mPY roblox-py:\033[0m " + msg)
     sys.exit(1)
 def warn(msg):
-    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
+    sys.stderr.write("\033[1;33m" + "warning: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg + "\n")
 def info(msg):
-    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg)
+    sys.stderr.write("\033[1;32m" + "info: " + "\033[0m" + "\033[90mPY roblox-py:\033[0m " + msg + "\n")
     
     
 def usage():
@@ -2249,6 +2261,7 @@ def main():
     skip = False
     reqfile = None
     useRequire = False
+    notebook = False
     
     for arg in args:
         if skip:
@@ -2257,9 +2270,13 @@ def main():
         
         if arg == "-v":
             version()
+        elif arg == "p":
+            error("Plugin is discontinued")
         elif arg == "-vd":
             print(VERSION)
             sys.exit()
+        elif arg == "-j":
+            notebook = True
         elif arg == "-c":
             continue
         elif arg == "-u":
@@ -2310,7 +2327,7 @@ def main():
             if not content:
                 error("The input file is empty.")
 
-        translator = Translator(Config(".pyluaconf.yaml"),
+        translator = Translator(Config(".robloxpy.json"),
                                 show_ast=ast)
         if reqfile:
             reqcode = translator.translate("", True, False, False, True)
@@ -2321,19 +2338,32 @@ def main():
                 print(reqcode)
             sys.exit(0)
         else:
-            pyright = check_pyright()
-            if pyright and not "-c" in args:
-                def check():
-                    os.environ["PYRIGHT_PYTHON_FORCE_VERSION"] = 'latest'
-                    success = subprocess.Popen(["pyright", input_filename]).wait() == 0
+            if not notebook:
+                pyright = check_pyright()
+                if pyright and not "-c" in args:
+                    def check():
+                        os.environ["PYRIGHT_PYTHON_FORCE_VERSION"] = 'latest'
+                        success = subprocess.Popen(["pyright", input_filename]).wait() == 0
+                        
+                        if not success:
+                            print("-----------------------------------------------------")
+                            error("compilation failed")
+                            sys.exit(1)
+                    threading.Thread(target=check).start()
                     
-                    if not success:
-                        print("-----------------------------------------------------")
-                        error("compilation failed")
-                        sys.exit(1)
-                threading.Thread(target=check).start()
-                
-            lua_code = translator.translate(content, includeSTD, False, export, False, useRequire, pyright)
+                lua_code = translator.translate(content, includeSTD, False, export, False, useRequire, pyright)
+            else:
+                nb = json.loads(content)
+                cells = nb['cells']
+                code = ""
+                for i, cell in enumerate(cells):
+                    code += '\n\n""" Cell: ' + str(i+1) + ': """ \n\n'
+                    if cell['cell_type'] == "code":
+                        code += "\n"
+                        code += "".join(cell['source'])
+                    elif cell['cell_type'] == "markdown":
+                        code += '\n""" MD:\n\t' + "\t".join(cell['source']) + '\n"""\n'
+                lua_code = translator.translate(code, includeSTD, False, export, False, useRequire, False)
         
         if not ast:
             if out != "NONE":

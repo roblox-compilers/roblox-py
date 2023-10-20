@@ -26,3 +26,14 @@
 - `finally` statements in try/except/finally statements
 ## Tested
 - The entire roblox-py source code itself compiled to Luau successfully
+
+# v3.27.111 Development Release 3
+- Try statements have comments due to their lack of human readability
+- `json` library is now supported (experimental)
+- `.robloxpy.json` config files
+- Support for Python 3.12 interpreter
+- Removal of `class <name>(type)` to make Luau types since Python 3.12 has native `type x =` (contents of the type do not get compiled)
+- Luau compatible config
+- Support for `3.12` type annotations (by ignoring them)
+- Discontinue plugin
+- Jupyter Notebook support `-j` argument
