@@ -1030,6 +1030,8 @@ class NodeVisitor(ast.NodeVisitor):
                             module=module,
                             realname=name.name,
                         ))
+        elif module == "rbx":
+            pass
         else:
             for name in node.names:
                 if name.asname is None:
