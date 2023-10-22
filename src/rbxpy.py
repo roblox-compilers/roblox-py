@@ -1036,21 +1036,19 @@ class NodeVisitor(ast.NodeVisitor):
                     if name.name == "*":
                         continue
                     else:
-                        if name.name.startswith("services."):
-                            self.emit("local {name} = game:GetService(\"{name}\")".format(
-                                name=name.name,
-                                module=module,
-                            ))
+                        self.emit("local {name} = game:GetService(\"{name}\")".format(
+                            name=name.name,
+                            module=module,
+                        ))
                 else:
                     if name.name == "*":
                         continue
                     else:
-                        if name.name.startswith("services."):
-                            self.emit("local {name} = game:GetService(\"{realname}\")".format(
-                                name=name.asname,
-                                module=module,
-                                realname=name.name,
-                            ))
+                        self.emit("local {name} = game:GetService(\"{realname}\")".format(
+                            name=name.asname,
+                            module=module,
+                            realname=name.name,
+                        ))
         else:
             for name in node.names:
                 if name.asname is None:
