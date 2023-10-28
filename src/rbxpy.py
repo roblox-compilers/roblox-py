@@ -2255,7 +2255,12 @@ def usage():
 {TAB}\033[1m-clrtxt\033[0m   modify system shell for a better experience
 {TAB}\033[1m-o\033[0m        output file
 {TAB}\033[1m-c\033[0m        ignore pyright errors
-{TAB}\033[1m-u\033[0m        open this""")
+{TAB}\033[1m-u\033[0m        open this
+
+\033[1mInputs:\033[0m
+{TAB}\033[1m-j\033[0m        input is a jupyter notebook
+{TAB}\033[1m-py\033[0m       input is python file (default)
+{TAB}\033[1m-lua\033[0m      input is lua file to convert to python""")
     sys.exit()
 
 def version():
@@ -2391,40 +2396,25 @@ def main():
             else:
                 print(lua_code)
     else:
-        command = "luac -l "+input_filename
-        
         try:
-            res = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            sys.exit(1)
+            from luaparser import ast as luast
+        except:
+            error("luaparser not installed, please install it with 'pip install luaparser'")
+        if (input_filename == "NONE"):
+            usage()
+        if (not Path(input_filename).is_file()):
+            error(
+                "The given filename ('{}') is not a file.".format(input_filename))
+        
+        with open(input_filename, "r") as file:
+            content = file.read()
+        
+        if not content:
+            error("The input file is empty.")
             
-        res = (res.decode("utf-8"))
+        lua_code = luast.parse(content)
+        print(luast.to_pretty_str(lua_code))
         
-        # Parse
-        commands = {}
-        
-        lines = res.split("\n")
-        lines.pop(0)
-        lines.pop(0)
-        lines.pop(0)
-        for line in lines:
-            data = line.split("\t")
-            if len(data) < 4:
-                continue
-            num, cmd, args = data[1], data[3], data[4]
-            if len(data) > 5:
-                data = data[5]
-            else:
-                data = "NONE"
-                
-            commands[num] = {"cmd": cmd, "args": args, "data": data}
-        res = "\n".join(lines)
-        
-        print(commands)
-        
-        # If luac.out is found then remove it
-        if Path("luac.out").is_file():
-            os.remove("luac.out")
             
     return 0
 
