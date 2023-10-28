@@ -24,6 +24,10 @@ def check_pyright():
 #### COMPILER ####
 """Luau"""
 reserves = ["and", "break", "do", "else", "elseif", "end", "for", "function", "if", "in", "local", "not", "or", "repeat", "return", "then", "until", "while"]
+def prepareVisitor():
+    global LuaNodeVisitor
+    class LuaNodeVisitor(luast.ASTVisitor):
+        pass
 
 """Config"""
 class Config:
@@ -2397,9 +2401,15 @@ def main():
                 print(lua_code)
     else:
         try:
+            global luast
             from luaparser import ast as luast
+            from luaparser import astnodes
         except:
             error("luaparser not installed, please install it with 'pip install luaparser'")
+        try:
+            import astunparse
+        except:
+            error("astunparse not installed, please install it with 'pip install astunparse'")
         if (input_filename == "NONE"):
             usage()
         if (not Path(input_filename).is_file()):
@@ -2412,8 +2422,10 @@ def main():
         if not content:
             error("The input file is empty.")
             
-        lua_code = luast.parse(content)
-        print(luast.to_pretty_str(lua_code))
+        prepareVisitor()
+        
+        lua_tree = luast.parse(content)
+        code = LuaNodeVisitor().visit(lua_tree)
         
             
     return 0
