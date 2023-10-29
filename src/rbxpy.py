@@ -68,6 +68,7 @@ def prepareVisitor():
                 if i < len(node.values) - 1:
                     self.appendExp(", ")
             self.visit_Comment(node)
+            self.newLine()
             
         # handle comments
         def visit_Comment(self, node):
@@ -88,6 +89,8 @@ def prepareVisitor():
                 self.appendExp(node.id)
             elif isinstance(node, luastnodes.Number):
                 self.appendExp(str(node.n))
+            elif isinstance(node, luastnodes.String):
+                self.appendExp("\"" + node.s + "\"")
             elif isinstance(node, luastnodes.AddOp):
                 self.visit_Constant(node.left)
                 self.appendExp(" + ")
@@ -100,21 +103,21 @@ def prepareVisitor():
                 self.visit_Constant(node.left)
                 self.appendExp(" * ")
                 self.visit_Constant(node.right)
-            elif isinstance(node, luastnodes.DivOp):
-                self.visit_Constant(node.left)
-                self.appendExp(" / ")
-                self.visit_Constant(node.right)
             elif isinstance(node, luastnodes.ModOp):
                 self.visit_Constant(node.left)
                 self.appendExp(" % ")
                 self.visit_Constant(node.right)
-            elif isinstance(node, luastnodes.PowOp):
+            elif isinstance(node, luastnodes.ExpoOp):
                 self.visit_Constant(node.left)
                 self.appendExp(" ^ ")
                 self.visit_Constant(node.right)
-            elif isinstance(node, luastnodes.ConcatOp):
+            elif isinstance(node, luastnodes.FloatDivOp):
                 self.visit_Constant(node.left)
-                self.appendExp(" .. ")
+                self.appendExp(" / ")
+                self.visit_Constant(node.right)
+            elif isinstance(node, luastnodes.Concat):
+                self.visit_Constant(node.left)
+                self.appendExp(" + ")
                 self.visit_Constant(node.right)
                 
                 
