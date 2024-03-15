@@ -17,8 +17,8 @@ TAB = "\t\b\b\b\b"
 #### PYRIGHT ####
 def check_pyright():
     exists = shutil.which("pyright") is not None
-    if not exists:
-        warn("pyright is not installed, install it for more descriptive and compiler errors.")
+   # if not exists:
+   #     warn("pyright is not installed, install it for more descriptive and compiler errors.")
     return exists
 
 #### COMPILER ####
