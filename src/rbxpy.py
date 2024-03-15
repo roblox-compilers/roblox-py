@@ -2371,6 +2371,7 @@ def usage():
 
 \033[1mInputs:\033[0m
 {TAB}\033[1m-j\033[0m        input is a jupyter notebook
+{TAB}\033[1m-b\033[0m        input is bython file
 {TAB}\033[1m-py\033[0m       input is python file (default)
 {TAB}\033[1m-lua\033[0m      input is lua file to convert to python""")
     sys.exit()
@@ -2398,6 +2399,7 @@ def main():
     reqfile = None
     useRequire = False
     notebook = False
+    bython = False
     
     for arg in args:
         if skip:
@@ -2413,6 +2415,8 @@ def main():
             sys.exit()
         elif arg == "-j":
             notebook = True
+        elif arg == "-b":
+            bython = True
         elif arg == "-c":
             continue
         elif arg == "-u":
@@ -2474,7 +2478,19 @@ def main():
                 print(reqcode)
             sys.exit(0)
         else:
-            if not notebook:
+            if bython:
+                try: 
+                    from bython import parser
+                except:
+                    error("bython not installed, please install it with 'pip install bython'")
+                parser.parse_file(input_filename, False, '', 'temp')
+                print(input_filename)
+                with open('temp', 'r') as file:
+                    content = file.read()
+                    print(content)
+                os.remove('temp')
+                lua_code = translator.translate(content, includeSTD, False, export, False, useRequire, False)
+            elif not notebook:
                 pyright = check_pyright()
                 if pyright and not "-c" in args:
                     def check():
