@@ -1087,7 +1087,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node, og= True):
         """Visit import"""
-        line = 'local {asname} = rcc.import("{name}") or require("{name}")'
+        line = 'local {asname} = rcc.import("{name}", script) or require("{name}")'
         values = {"asname": "", "name": ""}
         
         if og:
@@ -2291,7 +2291,7 @@ end
         if useRequire:
             DEPEND = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
-if game.ReplicatedStorage.Packages.rcclib then
+if game.ReplicatedStorage:FindFirstChild("Packages") and game.ReplicatedStorage.Packages:FindFirstChild("rcclib") then
     rcc = _G.rcc or require(game.ReplicatedStorage.Packages.rcclib)
 else
     rcc = { }
