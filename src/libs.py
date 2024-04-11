@@ -1,8 +1,8 @@
 json = """local json = {}
-function json.encode(t)
+function json.loads(t)
     return game.HttpService:JSONEncode(t)
 end
-function json.decode(t)
+function json.dumps(t)
     return game.HttpService:JSONDecode(t)
 end
 function fault()
