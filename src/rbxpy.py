@@ -1700,6 +1700,9 @@ class Translator:
 
                 return v
             end,
+	    __len = function(self)
+                return #self._data
+            end
         })
 
         return result
