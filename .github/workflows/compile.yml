@@ -36,7 +36,7 @@ jobs:
       run: |
         cd rcc
         mkdir ${{ github.workspace }}/build
-        echo ${{ github.workspace }}/build | python rcc.py install rbxpy < /dev/null
+        echo ${{ github.workspace }}/build | python rcc.py install rbxpy
 
 
     - name: Upload artifact
