@@ -28,11 +28,13 @@ jobs:
     
     - name: Install dependencies
       run: |
+        cd rcc
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Run script
       run: |
+        cd rcc
         mkdir ${{ github.workspace }}/build
         echo ${{ github.workspace }}/build | python rcc.py install rcc
 
