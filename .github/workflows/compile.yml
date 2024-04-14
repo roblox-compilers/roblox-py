@@ -36,13 +36,13 @@ jobs:
       run: |
         cd rcc
         mkdir ${{ github.workspace }}/build
-        echo ${{ github.workspace }}/build | python rcc.py install rcc
+        echo ${{ github.workspace }}/build | python rcc.py install rbxpy
 
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ runner.os == 'Windows' && 'rcc-win' || runner.os == 'Ubuntu' && 'rcc-ubuntu' || 'rcc-macos' }}
+        name: ${{ runner.os == 'Windows' && 'rbxpy-win' || runner.os == 'Ubuntu' && 'rbxpy-ubuntu' || 'rbxpy-macos' }}
         path: '${{ github.workspace }}/build/'
 
     #- name: Create Release
