@@ -83,7 +83,7 @@ class Translator:
             DEPEND += "\n\n--> code begin\n"  
         else:
             allDepends = ""
-            for depend in libs:
+            for depend in libs.libs:
                 allDepends += f"[\"{depend}\"] = {depend},"
             DEPEND += "\n\nreturn {"+allDepends+"}\n"
             return DEPEND
