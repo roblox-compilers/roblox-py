@@ -88,6 +88,7 @@ class Translator:
             return DEPEND
         
         CODE = self.to_code()
+        ERRS = "\n\n--> error handling\n"
         
         for i in errs:
             if ("error("+i+"(") in CODE:
