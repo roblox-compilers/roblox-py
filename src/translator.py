@@ -58,6 +58,7 @@ class Translator:
             
         if reqfile:
             dependencies = ["class", "dict", "list", "in", "fn", "safeadd", "is"]
+            DEPEND = ""
         if not useRequire:
             for depend in dependencies:
                 # set
