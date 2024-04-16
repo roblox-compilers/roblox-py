@@ -1136,4 +1136,7 @@ class NodeVisitor(ast.NodeVisitor):
     def depend(self, value):
       if value != "":
         dependencies.append(value)
-     
+    def get_dependencies(self):
+      return dependencies
+    def get_exports(self):
+      return exports

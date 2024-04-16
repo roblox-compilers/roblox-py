@@ -40,11 +40,9 @@ class Translator:
             self.output = visitor.output
             
             # Remove duplicates from dependencies (list)
-            global dependencies
-            dependencies = list(set(dependencies))
+            dependencies = list(set(visitor.get_dependencies()))
             
-            global exports
-            exports = list(set(exports))
+            exports = list(set(visitor.get_exports()))
             
             if fn:
                 dependencies.append("fn")
