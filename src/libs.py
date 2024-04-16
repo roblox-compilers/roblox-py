@@ -14,18 +14,11 @@ json.load, json.dump = fault, fault"""
 
 libs = ["json"]
 
-TYPS = """\n\n--> python types
-class = "table"
-tuple = "table"
-dict = "table"
-list = "table"
-bool = "boolean"
-complex = "table"
-bytearray = "table" """
+TYPS = """""" # old
 errs = ["ValueError", "TypeError", "AttributeError", "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NotImplementedError", "RuntimeError", "NameError", "SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError", "OSError", "FileNotFoundError", "PermissionError", "EOFError", "ConnectionError", "TimeoutError", "UnboundLocalError", "RecursionError", "MemoryError", "OverflowError", "FloatingPointError", "ArithmeticError", "ReferenceError", "SystemError", "SystemExit", "GeneratorExit", "KeyboardInterrupt", "StopIteration", "Exception", "BaseException", "Error"]
 libs = ["class", "op_is", "dict", "list", "op_in", "safeadd", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars"]
 
-DEPEND = """\n\n--> imports
+DEPENDENCY = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
 if game.ReplicatedStorage:FindFirstChild("Packages") and game.ReplicatedStorage.Packages:FindFirstChild("rcclib") then
     rcc = _G.rcc or require(game.ReplicatedStorage.Packages.rcclib)

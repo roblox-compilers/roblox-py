@@ -6,7 +6,9 @@ from nodevisitor import NodeVisitor
 from log import error
 from const import HEADER
 from libs import *
+import libs
 
+DEPEND = libs.DEPENDENCY
 class Translator:
     """Python to lua main class translator"""
     def __init__(self, config=None, show_ast=False):
@@ -17,8 +19,7 @@ class Translator:
 
     def translate(self, pycode, fn, isAPI = False, export = True, reqfile = False, useRequire = False, pyRight = False):
         """Translate python code to lua code"""
-        DEPEND = "\n\n--> requirements\n"
-        
+        global DEPEND
         if not reqfile:
             if isAPI: 
                 py_ast_tree = ast.parse(pycode)
@@ -96,20 +97,12 @@ class Translator:
     return ("[roblox-py] {i}: " .. errorMessage)
 end
 """
-                
-        if useRequire:
-            for i in libs:
-                if i in CODE:
-                    DEPEND += f"{i} = py.{i}\n"
-                    
-            DEPEND += "\n\n--> code start\n"
-        else:
-            DEPEND += "\n\n--> imports\n"
-            DEPEND += "rcc = { }\n"
-            DEPEND += "py = { }\n\n"
-            DEPEND += "setmetatable(rcc, {__index = function(_, index) return function()end end})\n"
-            DEPEND += "setmetatable(py, {__index = function(_, index) return function()end end})\n\n\n"
             
+        for i in libs.libs:
+            if i in CODE:
+                DEPEND += f"{i} = py.{i}\n"
+                
+        DEPEND += "\n\n--> code start\n"
             
 
         return HEADER + TYPS + ERRS + DEPEND + CODE + FOOTER
