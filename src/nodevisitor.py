@@ -37,6 +37,14 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit assign"""
         target = self.visit_all(node.targets[0], inline=True)
         value = self.visit_all(node.value, inline=True)
+        if "," in target:
+            t2 = target.replace(" ","").split(",")
+            i = 0
+            while i <= (len(t2) - 1):
+                if t2[i] in reserves:
+                    error(f"'{t2[i]}' is a reserved Luau keyword.")
+                else:
+                    i += 1
 
         local_keyword = ""
 
