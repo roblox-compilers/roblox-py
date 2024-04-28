@@ -311,16 +311,18 @@ FN = """\n\nif game then
     deltaattr = function (object, attribute) -- delattr
         object[attribute] = nil
     end
-    enumerate = function (iterable) -- enumerate
-        local i = 0
-        return function()
-            i = i + 1
-            local value = iterable[i]
-            if value ~= nil then
-                return i, value
-            end
-        end
-    end
+
+    enumerate = function (t)
+	local i = 0
+	return function()
+		i = i + 1
+		local value = t(nil, i)
+		if value ~= nil then
+			return i, value
+		end
+	end
+end
+
     bytearray = function (arg) -- bytearray
         if type(arg) == "string" then
             local bytes = {}
