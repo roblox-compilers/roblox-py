@@ -890,8 +890,7 @@ class NodeVisitor(ast.NodeVisitor):
                 self.emit(line)
                 ends_count += 1
 
-        line = "result.append({})"
-        line = line.format(self.visit_all(node.elt, inline=True))
+        line = f"table.insert(result._data," + "{" + {self.visit_all(node.elt, inline=True)} + "}"
         self.emit(line)
 
         self.emit(" ".join(["end"] * ends_count))
