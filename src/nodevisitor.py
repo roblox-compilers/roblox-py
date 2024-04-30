@@ -570,13 +570,8 @@ class NodeVisitor(ast.NodeVisitor):
             "iter": self.visit_all(node.iter, inline=True),
         }
         
-        for x in libs.libs:
-            if x in values["iter"]:
-              line = "for {target} in {iter} do"
-              break
-            else:
-              line = "for {target} in safeloop({iter}) do"
-              continue
+        line = "for {target} in safeloop({iter}) do"
+
 
         self.emit(line.format(**values))
 
@@ -988,7 +983,9 @@ class NodeVisitor(ast.NodeVisitor):
     def visit_Tuple(self, node):
         """Visit tuple"""
         elements = [self.visit_all(item, inline=True) for item in node.elts]
-        self.emit(", ".join(elements))
+        line = "tuple {{{}}}".format(", ".join(elements))
+        self.depend("tuple")
+        self.emit(line)
 
     def visit_UnaryOp(self, node):
         """Visit unary operator"""

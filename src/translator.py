@@ -57,7 +57,7 @@ class Translator:
                 FOOTER = ""
             
         if reqfile:
-            dependencies = ["class", "dict", "list", "in", "fn", "safeadd", "is"]
+            dependencies = ["class", "dict", "list", "in", "fn", "safeadd", "is","tuple"]
             DEPEND = ""
         if not useRequire:
             for depend in dependencies:
@@ -77,6 +77,8 @@ class Translator:
                     DEPEND += ADD
                 elif depend == "is":
                     DEPEND += IS
+                elif depend == "tuple":
+                    DEPEND += LIST
                 else:
                     error("Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(depend))
     
