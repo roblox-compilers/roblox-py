@@ -12,11 +12,11 @@ function fault()
 end
 json.load, json.dump = fault, fault"""
 
-libs = ["json"]
+# libs = ["json"]
 
 TYPS = """""" # old
 errs = ["ValueError", "TypeError", "AttributeError", "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NotImplementedError", "RuntimeError", "NameError", "SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError", "OSError", "FileNotFoundError", "PermissionError", "EOFError", "ConnectionError", "TimeoutError", "UnboundLocalError", "RecursionError", "MemoryError", "OverflowError", "FloatingPointError", "ArithmeticError", "ReferenceError", "SystemError", "SystemExit", "GeneratorExit", "KeyboardInterrupt", "StopIteration", "Exception", "BaseException", "Error"]
-libs = ["class", "op_is", "dict", "list", "op_in", "safeadd", "safeloop", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars"]
+libs = ["class", "op_is", "dict", "list", "op_in", "safeadd", "safeloop", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars", "tuple"]
 
 DEPENDENCY = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
@@ -578,131 +578,143 @@ DICT =  """\n\nfunction dict(t)
 
         return result
     end"""
-LIST = """\n\nfunction list(t)
-        local result = {}
+LIST = """\n\nfunction list(t,check)
+	local result = {}
 
-        result._is_list = true
+	if check == false then
+		result.is_list = false
+	else
+		result._is_list = true
+	end
 
-        result._data = {}
-        for _, v in ipairs(t) do
-            table.insert(result._data, v)
-        end
+	result._data = {}
+	for _, v in ipairs(t) do
+		table.insert(result._data, v)
+	end
 
-        local methods = {}
+	if check == false then
+		table.freeze(result._data)
+	end
+	
+	local methods = {}
 
-        methods.append = function(value)
-            table.insert(result._data, value)
-        end
+	methods.append = function(value)
+		table.insert(result._data, value)
+	end
 
-        methods.extend = function(iterable)
-            for value in iterable do
-                table.insert(result._data, value)
-            end
-        end
+	methods.extend = function(iterable)
+		for value in iterable do
+			table.insert(result._data, value)
+		end
+	end
 
-        methods.insert = function(index, value)
-            table.insert(result._data, index, value)
-        end
+	methods.insert = function(index, value)
+		table.insert(result._data, index, value)
+	end
 
-        methods.remove = function(value)
-            for i, v in ipairs(result._data) do
-                if value == v then
-                    table.remove(result._data, i)
-                    break
-                end
-            end
-        end
+	methods.remove = function(value)
+		for i, v in ipairs(result._data) do
+			if value == v then
+				table.remove(result._data, i)
+				break
+			end
+		end
+	end
 
-        methods.pop = function(index)
-            index = index or #result._data
-            local value = result._data[index]
-            table.remove(result._data, index)
-            return value
-        end
+	methods.pop = function(index)
+		index = index or #result._data
+		local value = result._data[index]
+		table.remove(result._data, index)
+		return value
+	end
 
-        methods.clear = function()
-            result._data = {}
-        end
+	methods.clear = function()
+		result._data = {}
+	end
 
-        methods.index = function(value, start, end_)
-            start = start or 1
-            end_ = end_ or #result._data
+	methods.index = function(value, start, end_)
+		start = start or 1
+		end_ = end_ or #result._data
 
-            for i = start, end_, 1 do
-                if result._data[i] == value then
-                    return i
-                end
-            end
+		for i = start, end_, 1 do
+			if result._data[i] == value then
+				return i
+			end
+		end
 
-            return nil
-        end
+		return nil
+	end
 
-        methods.count = function(value)
-            local cnt = 0
-            for _, v in ipairs(result._data) do
-                if v == value then
-                    cnt = cnt + 1
-                end
-            end
+	methods.count = function(value)
+		local cnt = 0
+		for _, v in ipairs(result._data) do
+			if v == value then
+				cnt = cnt + 1
+			end
+		end
 
-            return cnt
-        end
+		return cnt
+	end
 
-        methods.sort = function(key, reverse)
-            key = key or nil
-            reverse = reverse or false
+	methods.sort = function(key, reverse)
+		key = key or nil
+		reverse = reverse or false
+		table.sort(result._data, function(a, b)
+			if reverse then
+				return a < b
+			end
 
-            table.sort(result._data, function(a, b)
-                if reverse then
-                    return a < b
-                end
+			return a > b
+		end)
+	end
 
-                return a > b
-            end)
-        end
+	methods.reverse = function()
 
-        methods.reverse = function()
-            local new_data = {}
-            for i = #result._data, 1, -1 do
-                table.insert(new_data, result._data[i])
-            end
+		local new_data = {}
+		for i = #result._data, 1, -1 do
+			table.insert(new_data, result._data[i])
+		end
 
-            result._data = new_data
-        end
+		result._data = new_data
+	end
 
-        methods.copy = function()
-            return list(result._data)
-        end
+	methods.copy = function()
+		return list(result._data)
+	end
 
-        local iterator_index = nil
+	local iterator_index = nil
 
-        setmetatable(result, {
-            __index = function(self, index)
-                if typeof(index) == "number" then
-                    if index < 0 then
-                        index = #result._data + index
-                    end
-                    return rawget(result._data, index + 1)
-                end
-                return methods[index]
-            end,
-            __newindex = function(self, index, value)
-                result._data[index] = value
-            end,
-            __call = function(self, _, idx)
-                if idx == nil and iterator_index ~= nil then
-                    iterator_index = nil
-                end
+	setmetatable(result, {
+		__index = function(self, index)
+			if typeof(index) == "number" then
+				if index < 0 then
+					index = #result._data + index
+				end
+				return rawget(result._data, index + 1)
+			end
+			return methods[index]
+		end,
+		__newindex = function(self, index, value)
+			result._data[index] = value
+		end,
+		__call = function(self, _, idx)
+			if idx == nil and iterator_index ~= nil then
+				iterator_index = nil
+			end
 
-                local v = nil
-                iterator_index, v = next(result._data, iterator_index)
+			local v = nil
+			iterator_index, v = next(result._data, iterator_index)
 
-                return v
-            end,
-	    __len = function(self)
-                return #self._data
-            end
-        })
+			return v
+		end,
+		__len = function(self)
+			return #self._data
+		end
+	})
 
-        return result
-    end"""
+	return result
+end"""
+
+TUPLE = """\n\nfunction tuple(t)
+	return list(t,false)
+end"""
