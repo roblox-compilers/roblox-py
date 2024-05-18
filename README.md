@@ -10,7 +10,7 @@
 
 ## roblox-py
 
-[**Docs**](https://rcc-1.gitbook.io/roblox-py/) **|** [**Devforum**]() **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Discord**](https://discord.gg/3WCdXhwgfE) **|** [**Playground**](https://roblox-py.aqzp.repl.co)
+[**Docs**](https://rcc.unexex.tech) **|** [**Devforum**]() **|** [**Github**](https://github.com/AsynchronousAI/roblox.pyc) **|** [**Discord**](https://discord.gg/3WCdXhwgfE) **|** [**Playground**](https://roblox-py.aqzp.repl.co)
 
 ***
 
