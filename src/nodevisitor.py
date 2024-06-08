@@ -12,8 +12,8 @@ from loopcounter import *
 from luau import *
 from symbols import *
 from translator import *
-from config import *
-import libs
+from config import * 
+import lib
 from unary import *
 # Note from @AsynchronousAI: This file is legit the compiler, if u wanna change up the generated code use this.
 dependencies = []
@@ -23,11 +23,12 @@ class NodeVisitor(ast.NodeVisitor):
     LUACODE = "luau"
 
     """Node visitor"""
-    def __init__(self, context=None, config=None):
+    def __init__(self, context=None, config=None, variables=None):
         self.context = context if context is not None else Context()
         self.config = config
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
+        self.variables = variables if variables is not None else {}
 
     def visit_YieldFrom(self, node):
         """Visit yield from"""
@@ -35,6 +36,18 @@ class NodeVisitor(ast.NodeVisitor):
         
     def visit_Assign(self, node):
         """Visit assign"""
+
+        for target in node.targets:
+            var_name = self.get_variable_name(target)
+            if var_name:
+                var_value_node = node.value
+                if isinstance(var_value_node, ast.Constant):
+                    var_type = type(var_value_node.value).__name__
+                else:
+                    var_type = type(var_value_node).__name__
+
+                self.variables[var_name] = var_type
+
         target = self.visit_all(node.targets[0], inline=True)
         value = self.visit_all(node.value, inline=True)
         if "," in target:
@@ -57,15 +70,13 @@ class NodeVisitor(ast.NodeVisitor):
             local_keyword = "local "
             last_ctx["locals"].add_symbol(target)
 
-        if target in reserves or target in libs.libs:
+        if target in reserves or target in lib.libs:
             error(f"'{target}' is a reserved Luau keyword.")
             
         self.emit("{local}{target} = {value}".format(local=local_keyword,
                                                      target=target,
                                                      value=value))
-        
-        #exports.append(target)
-
+                
         ### MATCHES ###
     def visit_Match(self, node):
         """Visit match"""
@@ -225,8 +236,7 @@ class NodeVisitor(ast.NodeVisitor):
                                                         value=value))
         else:
             if istype:
-                self.emit("{target},".format(local=local_keyword,
-                                                            target=target))
+                self.emit("{target},".format(target=target))
             else:
                 if node.annotation.__class__.__name__ == "Call":
                     self.visit_Call(node.annotation, target)
@@ -273,37 +283,88 @@ class NodeVisitor(ast.NodeVisitor):
         
         self.emit(line.format(**values))
 
+    def get_variable_name(self, node):
+        if isinstance(node, ast.Name):
+           return node.id
+        return None
+
     def visit_BinOp(self, node):
         """Visit binary operation"""
         operation = BinaryOperationDesc.OPERATION[node.op.__class__]
-        
+
         if operation["depend"]:
             self.depend(operation["depend"])
-            
-        line = "({})".format(operation["format"])
-        #if operation["depend"]: Binary operators do not have it
-        #    self.depend(operation["depend"])
-        values = {
-            "left": self.visit_all(node.left, True),
-            "right": self.visit_all(node.right, True),
-            "operation": operation["value"],
-        }
 
-        self.emit(line.format(**values))
+        line = "({})".format(operation["format"])
+
+        left_value = self.visit_all(node.left, inline=True)
+        right_value = self.visit_all(node.right, inline=True)
+        left_is_str = isinstance(node.left, ast.Constant) and isinstance(node.left.value, str) or self.variables.get(left_value) == "str"
+        right_is_str = isinstance(node.right, ast.Constant) and isinstance(node.right.value, str) or self.variables.get(right_value) == "str"
+        if operation["value"] == "*":
+            if left_is_str or self.variables.get(left_value) == "str":
+                line = "string.rep({left},{right})"
+            elif right_is_str or self.variables.get(right_value) == "str":
+                line = "string.rep({right},{left})"
+
+        if operation["value"] == "+":
+            # Checks for list + list
+            if self.variables.get(left_value) == "list" or isinstance(node.left, ast.List):
+                if self.variables.get(right_value) == "list" or isinstance(node.right, ast.List):
+                    pass
+                    #TODO: implement lists
+                    #line = f"table.move({right_value}, 1, #{right_value}, #{left_value} + 1, {left_value})" #TODO: add support for list types
+                    #self.emit(line)
+                    #return
+                else:
+                    error("Not supported.")
+            if left_is_str and right_is_str:
+                line = "{} .. {}".format(left_value, right_value)
+                self.emit(line)
+                return
+            elif left_is_str or right_is_str:
+                # Handle the case when one operand is a string and the other is not
+                if left_is_str:
+                    line = "{} .. tostring({})".format(left_value, right_value)
+                else:
+                    line = "tostring({}) .. {}".format(left_value, right_value)
+                self.emit(line)
+                return
+            else:
+                # Handle the case when neither operand is a string
+                values = {
+                    "left": left_value,
+                    "right": right_value,
+                    "operation": operation["value"],
+                }
+                line = line.format(**values)
+                self.emit(line)
+                return
+
+        else:
+            values = {
+                "left": left_value,
+                "right": right_value,
+                "operation": operation["value"],
+            }
+            line = line.format(**values)
+            self.emit(line)
+
+
 
     def visit_BoolOp(self, node):
-        """Visit boolean operation"""
-        operation = BooleanOperationDesc.OPERATION[node.op.__class__]
-        line = "({})".format(operation["format"])
-        #if operation["depend"]:
-        #    self.depend(operation["depend"])
-        values = {
-            "left": self.visit_all(node.values[0], True),
-            "right": self.visit_all(node.values[1], True),
-            "operation": operation["value"],
-        }
+            """Visit boolean operation"""
+            operation = BooleanOperationDesc.OPERATION[node.op.__class__]
+            line = "({})".format(operation["format"])
+            #if operation["depend"]:
+            #    self.depend(operation["depend"])
+            values = {
+                "left": self.visit_all(node.values[0], True),
+                "right": self.visit_all(node.values[1], True),
+                "operation": operation["value"],
+            }
 
-        self.emit(line.format(**values))
+            self.emit(line.format(**values))
 
     def visit_Break(self, node):
         """Visit break"""
@@ -314,6 +375,9 @@ class NodeVisitor(ast.NodeVisitor):
         line = "{name}({arguments})"
 
         name = self.visit_all(node.func, inline=True)
+
+        if str(name) == "complex":
+            self.depend("complex")
         if method:
             name = method + ":" + name
         arguments = [self.visit_all(arg, inline=True) for arg in node.args]
@@ -379,6 +443,8 @@ class NodeVisitor(ast.NodeVisitor):
         for i in range(len(node.ops)):
             operation = node.ops[i]
             operation = CompareOperationDesc.OPERATION[operation.__class__]
+            print(operation)
+
 
             right = self.visit_all(node.comparators[i], inline=True)
 
@@ -387,12 +453,13 @@ class NodeVisitor(ast.NodeVisitor):
                 "right": right,
             }
 
+
             if isinstance(operation, str):
                 values["op"] = operation
                 line += "{left} {op} {right}".format(**values)
             elif isinstance(operation, dict):
                 line += operation["format"].format(**values)
-                if operation["depend"]:
+                if operation.get("depend", None) != None:
                     self.depend(operation["depend"])
 
             if i < len(node.ops) - 1:
@@ -486,7 +553,7 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         """Visit function definition"""
-        line = "{local}function {name}({arguments})"
+        line = "{local} function {name}({arguments})"
 
         last_ctx = self.context.last()
 
@@ -564,15 +631,22 @@ class NodeVisitor(ast.NodeVisitor):
 
     def visit_For(self, node):
         """Visit for loop"""
-        
         values = {
             "target": self.visit_all(node.target, inline=True),
             "iter": self.visit_all(node.iter, inline=True),
         }
         
-        line = "for {target} in safeloop({iter}) do"
+        line = "for {target} in {iter} do"
 
 
+        if isinstance(node.iter, ast.Constant):
+            line = 'for {target} in string.gmatch({iter},".") do'
+
+        if values["iter"] in self.variables:
+            if self.variables[values["iter"]] == "str":
+                line = 'for {target} in string.gmatch({iter},".") do'
+            else:
+                line = 'for {target} in {iter} do'
         self.emit(line.format(**values))
 
         continue_label = LoopCounter.get_next()
@@ -638,7 +712,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         if node.args.vararg is not None:
             self.depend("list")
-            line = "local {name} = list({{...})".format(name=node.args.vararg.arg)
+            line = f"local {node.args.vararg.arg} = list({...})"
             body.insert(0, line)
 
         arg_index = -1
@@ -739,7 +813,7 @@ class NodeVisitor(ast.NodeVisitor):
             if not node.name.startswith("game."):
                 values["name"] = node.name
     
-        if node.name in libs.libs:
+        if node.name in lib.libs:
             self.emit(getattr(libs, node.name))
             return
 
@@ -761,7 +835,6 @@ class NodeVisitor(ast.NodeVisitor):
                     else:
                         self.emit("local {name} = game:GetService(\"{name}\")".format(
                             name=name.name,
-                            module=module,
                         ))
                 else:
                     if name.name == "*":
@@ -769,7 +842,6 @@ class NodeVisitor(ast.NodeVisitor):
                     else:
                         self.emit("local {name} = game:GetService(\"{realname}\")".format(
                             name=name.asname,
-                            module=module,
                             realname=name.name,
                         ))
         elif module == "rbx":
@@ -780,7 +852,6 @@ class NodeVisitor(ast.NodeVisitor):
                     else:
                         self.emit("local {name} = game:GetService(\"{name}\")".format(
                             name=name.name,
-                            module=module,
                         ))
                 else:
                     if name.name == "*":
@@ -788,7 +859,6 @@ class NodeVisitor(ast.NodeVisitor):
                     else:
                         self.emit("local {name} = game:GetService(\"{realname}\")".format(
                             name=name.asname,
-                            module=module,
                             realname=name.name,
                         ))
         else:
@@ -892,7 +962,7 @@ class NodeVisitor(ast.NodeVisitor):
                 self.emit(line)
                 ends_count += 1
 
-        line = f"table.insert(result._data," + "{" + {self.visit_all(node.elt, inline=True)} + "}"
+        line = "table.insert(result._data," + "{" + str(self.visit_all(node.elt, inline=True)) + "}"
         self.emit(line)
 
         self.emit(" ".join(["end"] * ends_count))
@@ -1061,6 +1131,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         self.emit("end")
 
+
     
     def visit_SetComp(self, node):
         """Visit set comprehension"""
@@ -1122,7 +1193,7 @@ class NodeVisitor(ast.NodeVisitor):
             last_ctx = self.context.last()
             last_ctx["locals"].push()
 
-        visitor = NodeVisitor(context=self.context, config=self.config)
+        visitor = NodeVisitor(context=self.context, config=self.config, variables=self.variables)
 
         if isinstance(nodes, list):
             for node in nodes:
@@ -1140,6 +1211,7 @@ class NodeVisitor(ast.NodeVisitor):
 
         if inline:
             return " ".join(visitor.output)
+
 
     def emit(self, value):
         """Add translated value to the output"""

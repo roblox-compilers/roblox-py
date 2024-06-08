@@ -9,8 +9,8 @@ class BinaryOperationDesc:
     OPERATION = {
         ast.Add: {
             "value": "+",
-            "format": "(safeadd({left}, {right}))",
-            "depend": "safeadd",
+            "format": _DEFAULT_BIN_FORMAT,
+            "depend": "",
         },
         ast.Sub: {
             "value": "-",

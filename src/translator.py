@@ -5,10 +5,10 @@ from config import Config
 from nodevisitor import NodeVisitor
 from log import error
 from const import HEADER
-from libs import *
-import libs
+from lib import *
+import lib
 
-DEPEND = libs.DEPENDENCY
+DEPEND = lib.DEPENDENCY
 class Translator:
     """Python to lua main class translator"""
     def __init__(self, config=None, show_ast=False):
@@ -57,7 +57,7 @@ class Translator:
                 FOOTER = ""
             
         if reqfile:
-            dependencies = ["class", "dict", "list", "in", "fn", "safeadd", "is","tuple"]
+            dependencies = ["class", "dict", "list", "in", "fn", "is","tuple"]
             DEPEND = ""
         if not useRequire:
             for depend in dependencies:
@@ -73,8 +73,6 @@ class Translator:
                     DEPEND += IN
                 elif depend == "fn":
                     DEPEND += FN
-                elif depend == "safeadd":
-                    DEPEND += ADD
                 elif depend == "is":
                     DEPEND += IS
                 elif depend == "tuple":
@@ -86,7 +84,7 @@ class Translator:
             DEPEND += "\n\n--> code begin\n"  
         else:
             allDepends = ""
-            for depend in libs.libs:
+            for depend in lib.libs:
                 allDepends += f"[\"{depend}\"] = {depend},"
             DEPEND += "\n\nreturn {"+allDepends+"}\n"
             return DEPEND
@@ -101,7 +99,7 @@ class Translator:
 end
 """
             
-        for i in libs.libs:
+        for i in lib.libs:
             if i in CODE:
                 DEPEND += f"{i} = py.{i}\n"
                 

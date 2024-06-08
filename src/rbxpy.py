@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, ast, os, subprocess, threading, libs, json
+import sys, ast, os, subprocess, threading, lib, json
 from pprint import pprint
 from pathlib import Path
 from enum import Enum
@@ -12,7 +12,7 @@ except ImportError:
 
 
 #### PYRIGHT ####
-def check_pyright():
+def check_pyright(): #TODO: make this into mypy
     exists = shutil.which("pyright") is not None
    # if not exists:
    #     warn("pyright is not installed, install it for more descriptive and compiler errors.")
@@ -164,7 +164,7 @@ def main():
         else:
             if bython:
                 try: 
-                    from bython import parser
+                    from bython import parser #type: ignore
                 except:
                     error("bython not installed, please install it with 'pip install bython'")
                 parser.parse_file(input_filename, False, '', 'temp')

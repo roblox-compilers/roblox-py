@@ -1,4 +1,254 @@
 # This file includes Lua snippets
+COMPLEX = """
+local _cmplxMeta = {
+	__index = function(n, index)
+		if index == "real" then
+			return n[1] 
+		elseif index == "imag" then
+			return n[2] 
+		elseif index == "conjugate" then
+			return function() return setmetatable({n[1], -n[2]}, getmetatable(n)) end
+		end
+	end,
+	__newindex = function(n, index, value)
+		if type(index) == "number" or type(index) == "string" then
+			error(index .. " cannot be assigned to")
+		else
+			error("invalid argument #2 (number or string expected, got " .. typeof(index) .. ")")
+		end
+	end,
+	__unm = function(n) -- Negates the number.
+		return setmetatable({-n[1], -n[2]}, getmetatable(n))
+	end,
+	__add = function(n1, n2) -- Adds two numbers.
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			local t1, t2
+			if math.abs(n1[1]) == math.huge and math.abs(n2[1]) == math.huge and -n1[1] == n2 then
+				t1 = 0
+			else
+				t1 = n1[1] + n2[1]
+			end
+			if math.abs(n1[2]) == math.huge and math.abs(n2[2]) == math.huge and -n1[2] == n2 then
+				t2 = 0
+			else
+				t2 = n1[2] + n2[2]
+			end
+
+			return setmetatable({t1, t2}, getmetatable(n1) or getmetatable(n2))
+		else
+			if type(n1) == type(n2) then
+				error("attempt to perform arithmetic (add) on " .. typeof(n1))
+			else
+				error("attempt to perform arithmetic (add) on " .. typeof(n1) .. "and" .. typeof(n2))
+			end
+		end
+	end,
+	__sub = function(n1, n2) -- Subtracts the first number with the second one.
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			local t1, t2
+			if math.abs(n1[1]) == math.huge and math.abs(n2[1]) == math.huge and n1[1] == n2[1] then
+				t1 = 0
+			else
+				t1 = n1[1] - n2[1]
+			end
+			if math.abs(n1[2]) == math.huge and math.abs(n2[2]) == math.huge and n1[2] == n2[2] then
+				t2 = 0
+			else
+				t2 = n1[2] - n2[2]
+			end
+
+			return setmetatable({t1, t2}, getmetatable(n1) or getmetatable(n2))
+		else
+			if type(n1) == type(n2) then
+				error("attempt to perform arithmetic (sub) on " .. typeof(n1))
+			else
+				error("attempt to perform arithmetic (sub) on " .. typeof(n1) .. "and" .. typeof(n2))
+			end
+		end
+	end,
+	__mul = function(n1, n2) -- Multiply two numbers.
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			local t1, t2 = n1[1] * n2[1] - n1[2] * n2[2], n1[1] * n2[2] + n2[1] * n1[2]
+			if string.find(tostring(t1), "nan") and not string.find(tostring(n1[1]), "nan") and not string.find(tostring(n1[2]), "nan") and not string.find(tostring(n2[1]), "nan") and not string.find(tostring(n2[2]), "nan") then
+				t1 = 0
+			end
+			if string.find(tostring(t2), "nan") and not string.find(tostring(n1[1]), "nan") and not string.find(tostring(n1[2]), "nan") and not string.find(tostring(n2[1]), "nan") and not string.find(tostring(n2[2]), "nan") then
+				t2 = 0
+			end
+
+			return setmetatable({t1, t2}, getmetatable(n1) or getmetatable(n2))
+		else
+			if type(n1) == type(n2) then
+				error("attempt to perform arithmetic (mul) on " .. typeof(n1))
+			else
+				error("attempt to perform arithmetic (mul) on " .. typeof(n1) .. "and" .. typeof(n2))
+			end
+		end
+	end,
+	__div = function(n1, n2) -- Divides two numbers.
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			local t1, t2
+			if (n1[1] == 0 and n1[2] == 0 and n2[1] == 0 and n2[2] == 0) or ((math.abs(n1[1]) == math.huge or math.abs(n1[2]) == math.huge) and (math.abs(n2[1]) == math.huge or math.abs(n2[2]) == math.huge)) then
+				t1, t2 = tonumber("-nan(ind)"), tonumber("-nan(ind)")
+			elseif math.abs(n1[1]) == math.huge or math.abs(n1[2]) == math.huge then
+				t1 = (setmetatable({n1[1], 0}, getmetatable(n1) or getmetatable(n2)) * setmetatable({n2[1], 0}, getmetatable(n1) or getmetatable(n2)) + setmetatable({n1[2], 0}, getmetatable(n1) or getmetatable(n2)) * setmetatable({n2[2], 0}, getmetatable(n1) or getmetatable(n2)))[1] / (n2[1] ^ 2 + n2[2] ^ 2)
+				t2 = (setmetatable({n1[2], 0}, getmetatable(n1) or getmetatable(n2)) * setmetatable({n2[1], 0}, getmetatable(n1) or getmetatable(n2)) - setmetatable({n1[1], 0}, getmetatable(n1) or getmetatable(n2)) * setmetatable({n2[2], 0}, getmetatable(n1) or getmetatable(n2)))[1] / (n2[1] ^ 2 + n2[2] ^ 2)
+			elseif math.abs(n2[1]) == math.huge or math.abs(n2[2]) == math.huge then
+				t1, t2 = 0, 0
+			else
+				t1 = (n1[1] * n2[1] + n1[2] * n2[2]) / (n2[1] ^ 2 + n2[2] ^ 2)
+				t2 = (n1[2] * n2[1] - n1[1] * n2[2]) / (n2[1] ^ 2 + n2[2] ^ 2)
+			end
+
+			if tostring(t1) == "nan" and (tostring(n1[1]) ~= "nan" or tostring(n2[1]) ~= "nan") then
+				t1 = 0
+			end
+			if tostring(t2) == "nan" and (tostring(n1[2]) ~= "nan" or tostring(n2[2]) ~= "nan") then
+				t2 = 0
+			end
+
+			return setmetatable({t1, t2}, getmetatable(n1) or getmetatable(n2))
+		else
+			if type(n1) == type(n2) then
+				error("attempt to perform arithmetic (div) on " .. typeof(n1))
+			else
+				error("attempt to perform arithmetic (div) on " .. typeof(n1) .. "and" .. typeof(n2))
+			end
+		end
+	end,
+	__pow = function(n1, n2)
+		local function __asin(x)
+			return 1 / math.sin(x)
+		end
+
+		local function __acos(x)
+			return 1 / math.cos(x)
+		end
+
+		local function __atan(x)
+			return 1 / math.tan(x)
+		end
+
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			local z, ex, i
+			local norm = math.sqrt(n1[1] ^ 2 + n1[2] ^ 2)
+			if norm ~= 0 then
+				z = setmetatable({math.log(norm), math.atan2(n1[2], n1[1])}, getmetatable(n1))
+				ex = n2 * z
+				norm = math.exp(ex[1])
+				i = ex[2]
+			else
+				norm = 0
+				i = 0
+			end
+
+			return setmetatable({norm * math.cos(i), norm * math.sin(i)}, getmetatable(n1) or getmetatable(n2))
+		else
+			if type(n1) == type(n2) then
+				error("attempt to perform arithmetic (pow) on " .. typeof(n1))
+			else
+				error("attempt to perform arithmetic (pow) on " .. typeof(n1) .. "and" .. typeof(n2))
+			end
+		end
+	end,
+	__eq = function(n1, n2) -- Tests for equality.
+		if (type(n1) == "number" or type(n2) == "number") or (type(n1) == "table" and type(n2) == "table" and getmetatable(n1) == getmetatable(n2)) then
+			if type(n1) == "number" then
+				n1 = {n1, 0}
+			end
+			if type(n2) == "number" then
+				n2 = {n2, 0}
+			end
+
+			return (n1[1] == n2[1]) and (n1[2] == n2[2])
+		else
+			return false
+		end
+	end,
+	__tostring = function(n) -- Converts CmplxNumber datatype to a string.
+		local t1, t2
+		if n[1] == 0 and n[2] == 0 then
+			t1 = "0"
+		elseif n[1] == 0 then
+			t1 = ""
+		else
+			t1 = tostring(n[1])
+		end
+		if n[2] == 0 then
+			t2 = ""
+		elseif n[2] == 1 then
+			if n[1] == 0 then
+				t2 = "i"
+			else
+				t2 = "+i"
+			end	
+		elseif n[2] == -1 then
+			t2 = "-i"
+		else
+			if string.find(tostring(n[2]), "e") or string.find(tostring(n[2]), "inf") or string.find(n[2], "nan") then
+				t2 = tostring(n[2]) .. "*i"
+			else
+				t2 = tostring(n[2]) .. "i"
+			end
+			if n[1] ~= 0 and string.sub(tostring(n[2]), 1, 1) ~= "-" then
+				t2 = "+" .. t2
+			end
+		end
+
+		return t1 .. t2
+	end,
+	__type = function(n)
+		return typeof(n)
+	end,
+}
+
+local _cmplxFactory = {
+	__call = function(t, re, im)
+		re = type(re) == "number" and re or 0
+		im = type(im) == "number" and im or 0
+		local cmplx = { re, im }
+		setmetatable(cmplx, _cmplxMeta)
+		return cmplx
+	end
+}
+
+complex = setmetatable({}, _cmplxFactory)
+"""
 
 struct = """
 local struct = {}
@@ -200,7 +450,7 @@ function struct.unpack(format: string, stream: string, pos: number?)
 end
 """
 
-json = """local json = {}
+JSON = """local json = {}
 function json.loads(t)
     return game.HttpService:JSONEncode(t)
 end
@@ -216,7 +466,7 @@ json.load, json.dump = fault, fault"""
 
 TYPS = """""" # old
 errs = ["ValueError", "TypeError", "AttributeError", "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NotImplementedError", "RuntimeError", "NameError", "SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError", "OSError", "FileNotFoundError", "PermissionError", "EOFError", "ConnectionError", "TimeoutError", "UnboundLocalError", "RecursionError", "MemoryError", "OverflowError", "FloatingPointError", "ArithmeticError", "ReferenceError", "SystemError", "SystemExit", "GeneratorExit", "KeyboardInterrupt", "StopIteration", "Exception", "BaseException", "Error"]
-libs = ["class", "op_is", "dict", "list", "op_in", "safeadd", "safeloop", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars", "tuple"]
+libs = ["complex","class", "op_is", "dict", "list", "op_in", "safeloop", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars", "tuple"]
 
 DEPENDENCY = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
@@ -231,22 +481,7 @@ IS = """\n\nfunction op_is(a, b)
         warn("[roblox-py] is serves no purpose when compiling to Lua, use == instead")
         return a == b
     end"""
-ADD = """\n\nfunction safeadd(a, b)
-        if type(a) == "string" or type(b) == "string" then
-            return a .. b
-        elseif type(a) == "table" and type(b) == "table" then
-            local result = {}
-            for _, v in ipairs(a) do
-                table.insert(result, v)
-            end
-            for _, v in ipairs(b) do
-                table.insert(result, v)
-            end
-            return result
-        else
-            return a + b
-        end
-    end"""
+
 FN = """\n\nif game then
     __name__ = (if script:IsA("BaseScript") then "__main__" else script.Name)
     else
@@ -505,9 +740,7 @@ FN = """\n\nif game then
         until num == 0
         return "0b" .. table.concat(bits)
     end
-    complex = function (real, imag) -- complex
-        return { real = real, imag = imag }
-    end
+
     deltaattr = function (object, attribute) -- delattr
         object[attribute] = nil
     end
