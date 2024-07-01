@@ -1,8 +1,12 @@
 """Config"""
+
 import json
 from log import error
+
+
 class Config:
     """Translator config."""
+
     def __init__(self, filename=None):
         self.data = {
             "class": {
@@ -21,7 +25,7 @@ class Config:
                 data = json.load(stream)
                 self.data.update(data)
         except FileNotFoundError:
-            pass # Use a default config if the file not found
+            pass  # Use a default config if the file not found
         except json.decoder.JSONDecodeError:
             error("Config file is not a valid JSON file.")
 

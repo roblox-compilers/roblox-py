@@ -1,7 +1,9 @@
-
 """Class for the symbols stack"""
+
+
 class SymbolsStack:
     """Class for the symbols stack"""
+
     def __init__(self):
         self.symbols = [[]]
 

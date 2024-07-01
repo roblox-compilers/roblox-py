@@ -464,9 +464,108 @@ json.load, json.dump = fault, fault"""
 
 # libs = ["json"]
 
-TYPS = """""" # old
-errs = ["ValueError", "TypeError", "AttributeError", "IndexError", "KeyError", "ZeroDivisionError", "AssertionError", "NotImplementedError", "RuntimeError", "NameError", "SyntaxError", "IndentationError", "TabError", "ImportError", "ModuleNotFoundError", "OSError", "FileNotFoundError", "PermissionError", "EOFError", "ConnectionError", "TimeoutError", "UnboundLocalError", "RecursionError", "MemoryError", "OverflowError", "FloatingPointError", "ArithmeticError", "ReferenceError", "SystemError", "SystemExit", "GeneratorExit", "KeyboardInterrupt", "StopIteration", "Exception", "BaseException", "Error"]
-libs = ["complex","class", "op_is", "dict", "list", "op_in", "safeloop", "__name__", "range", "len", "abs", "str", "int", "sum", "max", "min", "reversed", "split", "round", "all", "any", "ord", "chr", "callable", "float", "super", "format", "hex", "id", "map", "bool", "divmod", "slice", "anext", "ascii", "dir", "getattr", "globals", "hasattr", "isinstance", "issubclass", "iter", "locals", "oct", "pow", "eval", "exec", "filter", "frozenset", "aiter", "bin", "complex", "deltaattr", "enumerate", "bytearray", "bytes", "compile", "help", "memoryview", "repr", "sorted", "vars", "tuple"]
+errs = [
+    "ValueError",
+    "TypeError",
+    "AttributeError",
+    "IndexError",
+    "KeyError",
+    "ZeroDivisionError",
+    "AssertionError",
+    "NotImplementedError",
+    "RuntimeError",
+    "NameError",
+    "SyntaxError",
+    "IndentationError",
+    "TabError",
+    "ImportError",
+    "ModuleNotFoundError",
+    "OSError",
+    "FileNotFoundError",
+    "PermissionError",
+    "EOFError",
+    "ConnectionError",
+    "TimeoutError",
+    "UnboundLocalError",
+    "RecursionError",
+    "MemoryError",
+    "OverflowError",
+    "FloatingPointError",
+    "ArithmeticError",
+    "ReferenceError",
+    "SystemError",
+    "SystemExit",
+    "GeneratorExit",
+    "KeyboardInterrupt",
+    "StopIteration",
+    "Exception",
+    "BaseException",
+    "Error",
+]
+libs = [
+    "complex",
+    "class",
+    "op_is",
+    "dict",
+    "list",
+    "op_in",
+    "safeloop",
+    "__name__",
+    "range",
+    "len",
+    "abs",
+    "str",
+    "int",
+    "sum",
+    "max",
+    "min",
+    "reversed",
+    "split",
+    "round",
+    "all",
+    "any",
+    "ord",
+    "chr",
+    "callable",
+    "float",
+    "super",
+    "format",
+    "hex",
+    "id",
+    "map",
+    "bool",
+    "divmod",
+    "slice",
+    "anext",
+    "ascii",
+    "dir",
+    "getattr",
+    "globals",
+    "hasattr",
+    "isinstance",
+    "issubclass",
+    "iter",
+    "locals",
+    "oct",
+    "pow",
+    "eval",
+    "exec",
+    "filter",
+    "frozenset",
+    "aiter",
+    "bin",
+    "deltaattr",
+    "enumerate",
+    "bytearray",
+    "bytes",
+    "compile",
+    "help",
+    "memoryview",
+    "repr",
+    "sorted",
+    "vars",
+    "tuple",
+]
 
 DEPENDENCY = """\n\n--> imports
 py = _G.rbxpy or require(game.ReplicatedStorage.Packages.pyruntime)
@@ -831,7 +930,7 @@ end
         end
         return attributes
     end"""
-IN =  """\n\nfunction op_in(item, items)
+IN = """\n\nfunction op_in(item, items)
         if type(items) == "table" then
             for v in items do
                 if v == item then
@@ -894,8 +993,8 @@ CLASS = """\n\nfunction class(class_init, bases)
         setmetatable(c, mt)
 
         return c
-    end"""  
-DICT =  """\n\nfunction dict(t)
+    end"""
+DICT = """\n\nfunction dict(t)
         local result = {}
 
         result._is_dict = true

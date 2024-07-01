@@ -9,7 +9,7 @@ class NameConstantDesc:
         True: "true",
         False: "false",
     }
-    
+
 
 #### CONSTANTS ####
 VERSION = "3.27.111"

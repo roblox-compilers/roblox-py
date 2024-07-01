@@ -1,5 +1,7 @@
 """Compare operation description"""
+
 import ast
+
 
 class CompareOperationDesc:
     """Compare operation description"""
@@ -18,7 +20,6 @@ class CompareOperationDesc:
             "format": "not op_in({left}, {right})",
             "depend": "in",
         },
-        ast.Is: '==',
-        ast.IsNot: '~=',
+        ast.Is: "==",
+        ast.IsNot: "~=",
     }
-    

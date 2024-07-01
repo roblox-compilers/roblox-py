@@ -1,5 +1,7 @@
 """Binary operation description"""
+
 import ast
+
 _DEFAULT_BIN_FORMAT = "{left} {operation} {right}"
 
 
@@ -14,13 +16,13 @@ class BinaryOperationDesc:
         },
         ast.Sub: {
             "value": "-",
-            "format": _DEFAULT_BIN_FORMAT,            
-	    "depend": "",
+            "format": _DEFAULT_BIN_FORMAT,
+            "depend": "",
         },
         ast.Mult: {
             "value": "*",
             "format": _DEFAULT_BIN_FORMAT,
-	    "depend": "",
+            "depend": "",
         },
         ast.Div: {
             "value": "/",
@@ -30,41 +32,41 @@ class BinaryOperationDesc:
         ast.Mod: {
             "value": "%",
             "format": _DEFAULT_BIN_FORMAT,
-	    "depend": "",
+            "depend": "",
         },
         ast.Pow: {
             "value": "^",
             "format": _DEFAULT_BIN_FORMAT,
-	    "depend": "",
+            "depend": "",
         },
         ast.FloorDiv: {
             "value": "/",
             "format": "math.floor({left} {operation} {right})",
-	    "depend": "",
+            "depend": "",
         },
         ast.LShift: {
             "value": "",
             "format": "bit32.lshift({left}, {right})",
-	    "depend": "",
+            "depend": "",
         },
         ast.RShift: {
             "value": "",
             "format": "bit32.rshift({left}, {right})",
-	    "depend": "",
+            "depend": "",
         },
         ast.BitOr: {
             "value": "",
             "format": "bit32.bor({left}, {right})",
-	    "depend": "",
+            "depend": "",
         },
         ast.BitAnd: {
             "value": "",
             "format": "bit32.band({left}, {right})",
-	    "depend": "",
+            "depend": "",
         },
         ast.BitXor: {
             "value": "",
             "format": "bit32.bxor({left}, {right})",
-	    "depend": "",
+            "depend": "",
         },
     }

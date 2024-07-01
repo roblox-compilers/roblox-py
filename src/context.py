@@ -1,19 +1,25 @@
-
 """Class to store the python code context"""
+
 from tokenend import *
 from symbols import SymbolsStack
 
+
 class Context:
     """Class to store the python code context"""
+
     def __init__(self, values=None):
-        values = values if values is not None else {
-            "token_end_mode": TokenEndMode.LINE_FEED,
-            "class_name": "",
-            "locals": SymbolsStack(),
-            "globals": SymbolsStack(),  # Not working yet
-            "loop_label_name": "",
-            "docstring": False,
-        }
+        values = (
+            values
+            if values is not None
+            else {
+                "token_end_mode": TokenEndMode.LINE_FEED,
+                "class_name": "",
+                "locals": SymbolsStack(),
+                "globals": SymbolsStack(),  # Not working yet
+                "loop_label_name": "",
+                "docstring": False,
+            }
+        )
 
         self.ctx_stack = [values]
 
@@ -29,5 +35,7 @@ class Context:
 
     def pop(self):
         """Pop last context state"""
-        assert len(self.ctx_stack) > 1, "Pop context failed. This is a last context in the stack."
+        assert (
+            len(self.ctx_stack) > 1
+        ), "Pop context failed. This is a last context in the stack."
         return self.ctx_stack.pop()
