@@ -1,5 +1,7 @@
 """Boolean operation description"""
+
 import ast
+
 _DEFAULT_BOOL_FORMAT = "{left} {operation} {right}"
 
 

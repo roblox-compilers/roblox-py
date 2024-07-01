@@ -1,4 +1,5 @@
 """Unary operation description"""
+
 import ast
 
 _DEFAULT_UN_FORMAT = "{operation}{value}"
@@ -25,4 +26,3 @@ class UnaryOperationDesc:
             "format": "bit32.bnot({value})",
         },
     }
-
