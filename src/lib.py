@@ -1250,3 +1250,35 @@ end"""
 TUPLE = """\n\nfunction tuple(t)
 	return list(t,false)
 end"""
+
+GENERATOR = """\n\nlocal __PY_GENERATORS = {}
+function yieldGenerator(name, value)
+    if not __PY_GENERATORS[name] then
+        error("[roblox-py]: Attempt to yield a generator that is not being iterated over.")
+    end
+    table.insert(__PY_GENERATORS[name], value)
+end
+function generatorLoop(name, func, ...)
+    local args = {...}
+    if not __PY_GENERATORS[name] then
+        __PY_GENERATORS[name] = {}
+    end
+    return function(loopFunc)
+        local DONE = false
+		local currentSize = 0
+		task.spawn(function()
+			func(unpack(args))
+		end)
+		while  task.wait() do
+			if #__PY_GENERATORS[name] > currentSize then
+				for i = currentSize + 1, #__PY_GENERATORS[name] do
+					if __PY_GENERATORS[name][i] == "__END" then break end
+					
+					loopFunc(__PY_GENERATORS[name][i])
+				end
+				currentSize = #__PY_GENERATORS[name]
+			end
+		end
+    end
+end
+"""

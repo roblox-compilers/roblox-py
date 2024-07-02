@@ -103,6 +103,8 @@ class Translator:
                     DEPEND += IS
                 elif depend == "tuple":
                     DEPEND += LIST
+                elif depend == "generator":
+                    DEPEND += GENERATOR
                 else:
                     error(
                         "Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(

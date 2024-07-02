@@ -14,7 +14,7 @@ from luau import *
 from symbols import *
 from translator import *
 from config import *
-import lib
+import lib, re
 from unary import *
 
 # Note from @AsynchronousAI: This file is legit the compiler, if u wanna change up the generated code use this.
@@ -27,13 +27,15 @@ class NodeVisitor(ast.NodeVisitor):
 
     """Node visitor"""
 
-    def __init__(self, context=None, config=None, variables=None, functions=None):
+    def __init__(self, context=None, config=None, variables=None, functions=None, currentFunction=None, generators=None):
         self.context = context if context is not None else Context()
         self.config = config
         self.last_end_mode = TokenEndMode.LINE_FEED
         self.output = []
         self.variables = variables if variables is not None else {}
         self.functions = functions if functions is not None else []
+        self.currentFunctionName = currentFunction
+        self.generators = generators if generators is not None else []
 
     def visit_YieldFrom(self, node):
         """Visit yield from"""
@@ -735,6 +737,7 @@ for _,i in {} do
                 "body": [],
             }
         )
+        self.currentFunctionName = node.name
 
         last_ctx = self.context.last()
 
@@ -773,6 +776,9 @@ for _,i in {} do
 
         self.context.push({"class_name": ""})
         self.visit_all(node.body)
+        if node.name in self.generators:
+            self.depend("generator")
+            self.emit("\tyieldGenerator('{}', {})".format(node.name, "'__END'"))
         self.context.pop()
 
         body = self.output[-1]
@@ -807,6 +813,7 @@ for _,i in {} do
             line = "{name} = {decorator}:Connect({name})".format(**values)
             self.emit(line)
 
+        self.currentFunctionName = None
         # exports.append(name)
 
     def visit_For(self, node):
@@ -826,6 +833,16 @@ for _,i in {} do
                 line = 'for {target} in string.gmatch({iter},".") do'
             else:
                 line = "for {target} in {iter} do"
+        
+        isAGenerator = re.sub(r"\([^)]*\)", "", values["iter"]) in self.generators
+        if isAGenerator:
+            funcName = re.sub(r"\([^)]*\)", "", values["iter"])
+            args = re.search(r"\(([^)]*)\)", values["iter"]).group(1)
+            if args == "":
+                args = "nil"
+
+            line = "generatorLoop('"+funcName+"', "+funcName+", "+args+")(function({target})"
+
         self.emit(line.format(**values))
 
         continue_label = LoopCounter.get_next()
@@ -836,8 +853,12 @@ for _,i in {} do
         )
         self.visit_all(node.body)
         self.context.pop()
+        
+        if isAGenerator:
+            self.emit("end)")
+        else:
+            self.emit("end")
 
-        self.emit("end")
 
     def visit_Global(self, node):
         """Visit globals"""
@@ -846,90 +867,10 @@ for _,i in {} do
             last_ctx["globals"].add_symbol(name)
             exports.append(name)
 
-    def visit_AsyncFunctionDef(self, node):
-        """Visit async function definition"""
-        line = "{local}function {name}({arguments}) task.spawn(function()"
-
-        last_ctx = self.context.last()
-
-        name = node.name
-        type = 1  # 1 = static, 2 = class
-        for decorator in reversed(node.decorator_list):
-            decorator_name = self.visit_all(decorator, inline=True)
-
-            if decorator_name == "classmethod":
-                type = 2
-            elif decorator_name == "staticmethod":
-                type = 1
-        if last_ctx["class_name"]:
-            name = ".".join([last_ctx["class_name"], name])
-
-        if type == 1:
-            arguments = [arg.arg for arg in node.args.args]
-        else:
-            arguments = ["self"]
-            arguments.extend([arg.arg for arg in node.args.args])
-
-        if node.args.vararg is not None:
-            arguments.append("...")
-
-        local_keyword = ""
-
-        if "." not in name and not last_ctx["locals"].exists(name):
-            local_keyword = "local "
-            last_ctx["locals"].add_symbol(name)
-
-        function_def = line.format(
-            local=local_keyword, name=name, arguments=", ".join(arguments)
-        )
-
-        self.emit(function_def)
-
-        self.context.push({"class_name": ""})
-        self.visit_all(node.body)
-        self.context.pop()
-
-        body = self.output[-1]
-
-        if node.args.vararg is not None:
-            line = f"local {node.args.vararg.arg} = {...}"
-            body.insert(0, line)
-
-        arg_index = -1
-        for i in reversed(node.args.defaults):
-            line = "{name} = {name} or {value}"
-
-            arg = node.args.args[arg_index]
-            values = {
-                "name": arg.arg,
-                "value": self.visit_all(i, inline=True),
-            }
-            body.insert(0, line.format(**values))
-
-            arg_index -= 1
-
-        self.emit("end) end")
-
-        for decorator in reversed(node.decorator_list):
-            decorator_name = self.visit_all(decorator, inline=True)
-            if decorator_name == "classmethod" or decorator_name == "staticmethod":
-                continue
-            values = {
-                "name": name,
-                "decorator": decorator_name,
-            }
-            line = "{name} = {decorator}:Connect({name})".format(**values)
-            self.emit(line)
-
-        # exports.append(name)
-
-    def visit_Await(self, node):
-        """Visit await"""
-        self.emit("coroutine.await({})".format(self.visit_all(node.value, inline=True)))
-
     def visit_Yield(self, node):
         """Visit yield"""
-        self.emit("coroutine.yield({})".format(self.visit_all(node.value, inline=True)))
+        self.generators.append(self.currentFunctionName)
+        self.emit("yieldGenerator('{}', {})".format(self.currentFunctionName, self.visit_all(node.value, inline=True)))
 
     def visit_If(self, node):
         """Visit if"""
@@ -1398,6 +1339,8 @@ for _,i in {} do
             config=self.config,
             variables=self.variables,
             functions=self.functions,
+            currentFunction=self.currentFunctionName,
+            generators=self.generators,
         )
 
         if isinstance(nodes, list):
