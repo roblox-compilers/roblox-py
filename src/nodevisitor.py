@@ -43,6 +43,12 @@ class NodeVisitor(ast.NodeVisitor):
             )
         )
 
+    def get_variable_name(self, node):
+        if isinstance(node, ast.Name):
+            return node.id
+        return None
+
+
     def visit_Assign(self, node):
         """Visit assign"""
 
@@ -286,8 +292,7 @@ class NodeVisitor(ast.NodeVisitor):
         }
 
         line = "({})".format(operation["format"])
-        # if operation["depend"]:
-        #    self.depend(operation["depend"])
+
         line = line.format(**values)
 
         self.emit("{target} = {line}".format(target=target, line=line))
@@ -310,11 +315,6 @@ class NodeVisitor(ast.NodeVisitor):
             values["object"] = "({})".format(values["object"])
 
         self.emit(line.format(**values))
-
-    def get_variable_name(self, node):
-        if isinstance(node, ast.Name):
-            return node.id
-        return None
 
     def visit_BinOp(self, node):
         """Visit binary operation"""
@@ -390,8 +390,7 @@ class NodeVisitor(ast.NodeVisitor):
         """Visit boolean operation"""
         operation = BooleanOperationDesc.OPERATION[node.op.__class__]
         line = "({})".format(operation["format"])
-        # if operation["depend"]:
-        #    self.depend(operation["depend"])
+
         values = {
             "left": self.visit_all(node.values[0], True),
             "right": self.visit_all(node.values[1], True),
@@ -610,32 +609,45 @@ for _,i in {} do
         """Visit compare"""
 
         line = ""
-
         left = self.visit_all(node.left, inline=True)
-        for i in range(len(node.ops)):
-            operation = node.ops[i]
-            operation = CompareOperationDesc.OPERATION[operation.__class__]
-
-            right = self.visit_all(node.comparators[i], inline=True)
+        for i, (op, comparator) in enumerate(zip(node.ops, node.comparators)):
+            operation = CompareOperationDesc.OPERATION.get(op.__class__)
+            right = self.visit_all(comparator, inline=True)
 
             values = {
                 "left": left,
+                "operation": operation,
                 "right": right,
             }
+            if op.__class__.__name__ == "In" or op.__class__.__name__ == "NotIn":
+                op_str = "not" if op.__class__.__name__ == "NotIn" else ""
+                leftval = type(node.left).__name__
+                rightval = type(comparator).__name__
 
-            if isinstance(operation, str):
-                values["op"] = operation
-                line += "{left} {op} {right}".format(**values)
-            elif isinstance(operation, dict):
-                line += operation["format"].format(**values)
-                if operation.get("depend", None) != None:
-                    self.depend(operation["depend"])
+                if leftval == 'Constant':
+                    leftval = (type(node.left.value).__name__).capitalize()
+                if rightval == 'Name':
+                    x = self.visit_all(comparator, inline=True)
+                    rightval = self.variables.get(x)
+                if rightval == 'Constant':
+                    rightval = (type(comparator.value).__name__).capitalize()
+                if leftval == 'Name':
+                    x = self.visit_all(node.left, inline=True)
+                    leftval = self.variables.get(x)
+                ##IN CHECK##
+                if rightval == 'List':
+                    line += f"{op_str}(table.find({right},{left}))"
+                elif rightval == 'Str':
+                    line += f"{op_str}(string.find({right}, {left}, 1, true) ~= nil)"
+            else:
+                line += f"{values['left']} {values['operation']} {values['right']}"
 
             if i < len(node.ops) - 1:
                 left = right
                 line += " and "
 
-        self.emit("({})".format(line))
+        self.emit(line)
+
 
     def visit_Continue(self, node):
         """Visit continue"""
@@ -1261,8 +1273,7 @@ for _,i in {} do
         value = self.visit_all(node.operand, inline=True)
 
         line = operation["format"]
-        # if operation["depend"]:
-        #    self.depend(operation["depend"])
+
         values = {
             "value": value,
             "operation": operation["value"],
@@ -1379,12 +1390,6 @@ for _,i in {} do
             body.insert(0, line)
 
         self.emit("end")
-
-    def generic_visit(self, node):
-        """Unknown nodes handler"""
-        if node is None:
-            return
-        error("Unsupported feature: '{}'".format(node.__class__.__name__))
 
     def visit_all(self, nodes, inline=False):
         """Visit all nodes in the given list"""

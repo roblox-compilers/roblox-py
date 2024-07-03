@@ -75,34 +75,21 @@ class Translator:
             dependencies = [
                 "class",
                 "dict",
-                "list",
-                "in",
                 "fn",
-                "is",
-                "tuple",
                 "complex",
             ]
             DEPEND = ""
         if not useRequire:
             for depend in dependencies:
                 # set
-
-                if depend == "list":
-                    DEPEND += LIST
-                elif depend == "complex":
+                if depend == "complex":
                     DEPEND += COMPLEX
                 elif depend == "dict":
                     DEPEND += DICT
                 elif depend == "class":
                     DEPEND += CLASS
-                elif depend == "in":
-                    DEPEND += IN
                 elif depend == "fn":
                     DEPEND += FN
-                elif depend == "is":
-                    DEPEND += IS
-                elif depend == "tuple":
-                    DEPEND += LIST
                 else:
                     error(
                         "Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(
