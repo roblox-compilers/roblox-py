@@ -6,7 +6,6 @@ from context import Context
 from log import error, warn
 from symbols import *
 from binop import *
-from boolop import *
 from compop import *
 from const import *
 from loopcounter import *
@@ -387,17 +386,20 @@ class NodeVisitor(ast.NodeVisitor):
             self.emit(line)
 
     def visit_BoolOp(self, node):
-        """Visit boolean operation"""
-        operation = BooleanOperationDesc.OPERATION[node.op.__class__]
-        line = "({})".format(operation["format"])
-
-        values = {
-            "left": self.visit_all(node.values[0], True),
-            "right": self.visit_all(node.values[1], True),
-            "operation": operation["value"],
+        """Visit boolean operations"""
+        BOOL_OPS = {
+            ast.And: " and ",
+            ast.Or: " or ",
         }
 
-        self.emit(line.format(**values))
+        values = []
+        for value in node.values:
+            values.append(self.visit_all(value, inline=True))
+
+        op = BOOL_OPS[type(node.op)]
+        line = f"({op.join(values)})"
+        self.emit(line)
+
 
     def visit_Break(self, node):
         """Visit break"""
@@ -607,11 +609,11 @@ for _,i in {} do
 
     def visit_Compare(self, node):
         """Visit compare"""
-
         line = ""
         left = self.visit_all(node.left, inline=True)
-        for i, (op, comparator) in enumerate(zip(node.ops, node.comparators)):
+        for i, op in enumerate(node.ops):
             operation = CompareOperationDesc.OPERATION.get(op.__class__)
+            comparator = node.comparators[i]
             right = self.visit_all(comparator, inline=True)
 
             values = {
@@ -636,17 +638,20 @@ for _,i in {} do
                     leftval = self.variables.get(x)
                 ##IN CHECK##
                 if rightval == 'List':
-                    line += f"{op_str}(table.find({right},{left}))"
+                    line += f"{op_str}(table.find({right}, {left}) ~= nil)"
                 elif rightval == 'Str':
                     line += f"{op_str}(string.find({right}, {left}, 1, true) ~= nil)"
+                else:
+                    line += f"{op_str}({right}[{left}] ~= nil)"
             else:
                 line += f"{values['left']} {values['operation']} {values['right']}"
 
             if i < len(node.ops) - 1:
-                left = right
                 line += " and "
+                left = right
 
         self.emit(line)
+
 
 
     def visit_Continue(self, node):
@@ -724,7 +729,11 @@ for _,i in {} do
     def visit_Expr(self, node):
         """Visit expr"""
         if isinstance(node.value, ast.Constant):
-            self.functions[-1]["body"].append(node.value.value)
+            try:
+                self.functions[-1]["body"].append(node.value.value)
+            except:
+                pass
+
         expr_is_docstring = False
         if isinstance(node.value, ast.Constant):
             expr_is_docstring = True

@@ -24,7 +24,6 @@ def check_pyright():  # TODO: make this into mypy
 #### COMPILER ####
 from luau import *
 from binop import *
-from boolop import *
 from compop import *
 from const import TAB, VERSION
 from context import *
