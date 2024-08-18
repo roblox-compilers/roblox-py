@@ -573,10 +573,6 @@ else
     setmetatable(rcc, {__index = function(_, index) return function()end end})
 end
 """
-IS = """\n\nfunction op_is(a, b)
-        warn("[roblox-py] 'is' serves no purpose when compiling to Lua, use == instead")
-        return a == b
-    end"""
 
 FN = """\n\nif game then
     __name__ = (if script:IsA("BaseScript") then "__main__" else script.Name)
