@@ -1,4 +1,6 @@
 # This file includes Lua snippets
+
+#checks needed: 721
 COMPLEX = """
 local _cmplxMeta = {
 	__index = function(n, index)
@@ -505,11 +507,7 @@ errs = [
 libs = [
     "complex",
     "class",
-    "op_is",
     "dict",
-    "list",
-    "op_in",
-    "safeloop",
     "__name__",
     "range",
     "len",
@@ -564,7 +562,6 @@ libs = [
     "repr",
     "sorted",
     "vars",
-    "tuple",
 ]
 
 DEPENDENCY = """\n\n--> imports
@@ -576,10 +573,6 @@ else
     setmetatable(rcc, {__index = function(_, index) return function()end end})
 end
 """
-IS = """\n\nfunction op_is(a, b)
-        warn("[roblox-py] is serves no purpose when compiling to Lua, use == instead")
-        return a == b
-    end"""
 
 FN = """\n\nif game then
     __name__ = (if script:IsA("BaseScript") then "__main__" else script.Name)
@@ -716,7 +709,7 @@ FN = """\n\nif game then
         if x == false or x == nil or x == 0 then
             return false
         end
-
+        
         if typeof(x) == "table" then
             if x._is_list or x._is_dict then
                 return next(x._data) ~= nil
@@ -930,19 +923,7 @@ end
         end
         return attributes
     end"""
-IN = """\n\nfunction op_in(item, items)
-        if type(items) == "table" then
-            for v in items do
-                if v == item then
-                    return true
-                end
-            end
-        elseif type(items) == "string" and type(item) == "string" then
-            return string.find(items, item, 1, true) ~= nil
-        end
 
-        return false
-    end"""
 CLASS = """\n\nfunction class(class_init, bases)
         bases = bases or {}
 
@@ -1110,146 +1091,6 @@ DICT = """\n\nfunction dict(t)
 
         return result
     end"""
-LIST = """\n\nfunction list(t,check)
-	local result = {}
-
-	if check == false then
-		result.is_list = false
-	else
-		result._is_list = true
-	end
-
-	result._data = {}
-	for _, v in ipairs(t) do
-		table.insert(result._data, v)
-	end
-
-	if check == false then
-		table.freeze(result._data)
-	end
-	
-	local methods = {}
-
-	methods.append = function(value)
-		table.insert(result._data, value)
-	end
-
-	methods.extend = function(iterable)
-		for value in iterable do
-			table.insert(result._data, value)
-		end
-	end
-
-	methods.insert = function(index, value)
-		table.insert(result._data, index, value)
-	end
-
-	methods.remove = function(value)
-		for i, v in ipairs(result._data) do
-			if value == v then
-				table.remove(result._data, i)
-				break
-			end
-		end
-	end
-
-	methods.pop = function(index)
-		index = index or #result._data
-		local value = result._data[index]
-		table.remove(result._data, index)
-		return value
-	end
-
-	methods.clear = function()
-		result._data = {}
-	end
-
-	methods.index = function(value, start, end_)
-		start = start or 1
-		end_ = end_ or #result._data
-
-		for i = start, end_, 1 do
-			if result._data[i] == value then
-				return i
-			end
-		end
-
-		return nil
-	end
-
-	methods.count = function(value)
-		local cnt = 0
-		for _, v in ipairs(result._data) do
-			if v == value then
-				cnt = cnt + 1
-			end
-		end
-
-		return cnt
-	end
-
-	methods.sort = function(key, reverse)
-		key = key or nil
-		reverse = reverse or false
-		table.sort(result._data, function(a, b)
-			if reverse then
-				return a < b
-			end
-
-			return a > b
-		end)
-	end
-
-	methods.reverse = function()
-
-		local new_data = {}
-		for i = #result._data, 1, -1 do
-			table.insert(new_data, result._data[i])
-		end
-
-		result._data = new_data
-	end
-
-	methods.copy = function()
-		return list(result._data)
-	end
-
-	local iterator_index = nil
-
-	setmetatable(result, {
-		__index = function(self, index)
-			if typeof(index) == "number" then
-				if index < 0 then
-					index = #result._data + index
-				end
-				return rawget(result._data, index + 1)
-			end
-			return methods[index]
-		end,
-		__newindex = function(self, index, value)
-			result._data[index] = value
-		end,
-		__call = function(self, _, idx)
-			if idx == nil and iterator_index ~= nil then
-				iterator_index = nil
-			end
-
-			local v = nil
-			iterator_index, v = next(result._data, iterator_index)
-
-			return v
-		end,
-		__len = function(self)
-			return #self._data
-		end
-	})
-
-	return result
-end"""
-
-TUPLE = """\n\nfunction tuple(t)
-	return list(t,false)
-end"""
 
 GENERATOR = """\n\nlocal __PY_GENERATORS = {}
 function yieldGenerator(name, value)
