@@ -54,7 +54,7 @@ def usage():
 {TAB}\033[1m-r\033[0m        use require instead of rbxpy
 {TAB}\033[1m-clrtxt\033[0m   modify system shell for a better experience
 {TAB}\033[1m-o\033[0m        output file
-\{TAB}\033[1m-u\033[0m        open this
+{TAB}\033[1m-u\033[0m        open this
 
 \033[1mInputs:\033[0m
 {TAB}\033[1m-j\033[0m        input is a jupyter notebook

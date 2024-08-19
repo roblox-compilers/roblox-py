@@ -90,6 +90,8 @@ class Translator:
                     DEPEND += CLASS
                 elif depend == "fn":
                     DEPEND += FN
+                elif depend == "generator":
+                    DEPEND += GENERATOR
                 else:
                     error(
                         "Auto-generated dependency unhandled '{}', please report this issue on Discord or Github".format(
