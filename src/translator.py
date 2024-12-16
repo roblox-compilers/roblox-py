@@ -24,7 +24,7 @@ class Translator:
     @staticmethod
     def reset_dependencies():
         global DEPEND
-        DEPEND = ""
+        DEPEND = lib.DEPENDENCY
     def translate(
         self,
         pycode,
