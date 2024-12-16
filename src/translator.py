@@ -21,7 +21,7 @@ class Translator:
 
         self.output = []
 
-    def reset_dependencies():
+    def reset_dependencies(self):
         DEPEND = lib.DEPENDENCY
     def translate(
         self,
