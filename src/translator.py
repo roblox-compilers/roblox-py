@@ -20,10 +20,10 @@ class Translator:
         self.show_ast = show_ast
 
         self.output = []
-    
+
     @staticmethod
     def reset_dependencies():
-        DEPEND = lib.DEPENDENCY
+        DEPEND = ""
     def translate(
         self,
         pycode,
@@ -102,9 +102,7 @@ class Translator:
                         )
                     )
 
-        if not reqfile:
-            DEPEND += "\n\n--> code begin\n"
-        else:
+        if reqfile:
             allDepends = ""
             for depend in lib.libs:
                 allDepends += f'["{depend}"] = {depend},'
