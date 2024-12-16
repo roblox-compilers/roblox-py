@@ -20,8 +20,9 @@ class Translator:
         self.show_ast = show_ast
 
         self.output = []
-
-    def reset_dependencies(self):
+    
+    @staticmethod
+    def reset_dependencies():
         DEPEND = lib.DEPENDENCY
     def translate(
         self,
