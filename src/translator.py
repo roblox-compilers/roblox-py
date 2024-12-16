@@ -23,6 +23,7 @@ class Translator:
 
     @staticmethod
     def reset_dependencies():
+        global DEPEND
         DEPEND = ""
     def translate(
         self,
