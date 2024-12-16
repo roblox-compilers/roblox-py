@@ -21,6 +21,8 @@ class Translator:
 
         self.output = []
 
+    def reset_dependencies():
+        DEPEND = lib.DEPENDENCY
     def translate(
         self,
         pycode,
