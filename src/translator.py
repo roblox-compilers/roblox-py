@@ -122,7 +122,7 @@ end
 
         for i in lib.libs:
             if i in CODE:
-                DEPEND += f"{i} = py.{i}\n"
+                DEPEND += f"\n{i} = py.{i}"
 
         DEPEND += "\n\n--> code start\n"
 

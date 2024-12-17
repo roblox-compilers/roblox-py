@@ -27,6 +27,9 @@ class NodeVisitor(ast.NodeVisitor):
     """Node visitor"""
 
     def __init__(self, context=None, config=None, variables=None, functions=None, currentFunction=None, generators=None):
+        dependencies = []
+        exports = []
+
         self.context = context if context is not None else Context()
         self.config = config
         self.last_end_mode = TokenEndMode.LINE_FEED
